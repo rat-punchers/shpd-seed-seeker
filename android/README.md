@@ -8,8 +8,15 @@ Build with:
 
 ```shell
 ./gradlew :app:assembleDebug
+./gradlew :app:assembleDev
 ./gradlew :app:assembleRelease
 ```
+
+`assembleDev` builds the real engine with release optimizations, but uses the
+application ID `dev.seedseeker.unofficial.dev` and launcher name **Seed Seeker
+Canary** so it can be installed alongside the production app. Its yellow icon
+distinguishes it from production's blue icon. It is signed with the standard
+local Android debug key and has the version-name suffix `-dev`.
 
 The build uses Gradle 9.4 and AGP 9.1. Run Gradle on JDK 21 with Android SDK 36
 and NDK `28.2.13676358` installed; app bytecode remains Java 11 compatible. The
