@@ -17,7 +17,11 @@
     "dev": "conc -k --kill-timeout 3000 'bun:dev:*'",
     "dev:design": "bun run --filter '@seed-seeker/design' dev",
     "build:wasm": "./scripts/build-web-wasm.sh web-v2",
-    "dev:web-v2": "bun run --filter '@seed-seeker/web-v2' dev"
+    "dev:web-v2": "bun run --filter '@seed-seeker/web-v2' dev",
+    "test:visual": "bun run build && bun run test:visual:only",
+    "test:visual:only": "bun run --cwd tooling/web-visual test:visual",
+    "test:visual:update": "bun run build && bun run --cwd tooling/web-visual test:visual:update",
+    "install:visual-browser": "bun run --cwd tooling/web-visual install:browser"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.5",

@@ -5,6 +5,9 @@
       "path": "./packages/design"
     },
     {
+      "path": "./tooling/web-visual"
+    },
+    {
       "path": "./web-v2"
     }
   ]
