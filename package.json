@@ -1,0 +1,24 @@
+{
+  "name": "shpd-seed-seeker",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@latest",
+  "workspaces": [
+    "web-v2",
+    "packages/*",
+    "tooling/web-*"
+  ],
+  "scripts": {
+    "check": "biome check",
+    "check:fix": "biome check --fix",
+    "check:types": "tsc -b",
+    "build": "bun run --filter '*' --if-present build",
+    "test": "bun run --filter '*' --if-present test",
+    "dev": "conc -k --kill-timeout 3000 'bun:dev:*'"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.5",
+    "concurrently": "10.0.6",
+    "typescript": "7.0.2"
+  }
+}

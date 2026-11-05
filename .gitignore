@@ -57,5 +57,17 @@ pgo/*.profraw
 /tooling/java-finder/.work/
 /.work-uv/
 
+# Bun workspaces (web-v2, packages/*, tooling/web-*).
+node_modules/
+*.tsbuildinfo
+/web-v2/dist/
+/web-v2/.wrangler/
+/web-v2/src/engine/pkg/
+/web-v2/src/engine/editor-pkg/
+/web-v2/src/generated/
+/packages/design/dist/
+/tooling/web-visual/test-results/
+/tooling/web-visual/playwright-report/
+
 # Kotlin compiler sessions
 android/.kotlin/

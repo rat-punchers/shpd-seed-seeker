@@ -1,0 +1,11 @@
+{
+  "name": "@seed-seeker/web-v2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:types": "tsc -b"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}
