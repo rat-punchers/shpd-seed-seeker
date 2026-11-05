@@ -1,9 +1,28 @@
-// The build's identity and storage keys; the only module that may read
-// `import.meta.env`.
+// The build's identity, storage keys and links. The only module that may
+// read `import.meta.env`; it reads none today, so `vite.config.ts` can import
+// it to embed `CONFIG_SCRIPT` in the document.
+
+/** Every localStorage key this app writes starts with this prefix. */
+const STORAGE_PREFIX = 'seed-seeker-v2-'
 
 export const CONFIG = Object.freeze({
   appName: 'Seed Seeker',
-  /** Every localStorage key this app writes starts with this prefix. */
-  storagePrefix: 'seed-seeker-v2-',
-  dev: import.meta.env.DEV,
+  storagePrefix: STORAGE_PREFIX,
+  storageKeys: Object.freeze({
+    mode: `${STORAGE_PREFIX}mode`,
+    theme: `${STORAGE_PREFIX}theme`,
+  }),
+  links: Object.freeze({
+    license: '/licenses/COPYING.txt',
+    attribution: '/third_party/shattered-pixel-dungeon/ATTRIBUTION.md',
+    shpd: 'https://github.com/00-Evan/shattered-pixel-dungeon',
+  }),
 })
+
+export type AppConfig = typeof CONFIG
+
+/** The global the document embed defines; pre-paint scripts read it. */
+export const CONFIG_GLOBAL = '__SEED_SEEKER_CONFIG__'
+
+/** The embed, emitted before any other inline script. */
+export const CONFIG_SCRIPT = `window.${CONFIG_GLOBAL}=${JSON.stringify(CONFIG)};`
