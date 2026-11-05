@@ -60,6 +60,8 @@ pub mod regular_items;
 pub mod regular_level;
 pub mod regular_placement;
 #[cfg(feature = "json-query")]
+pub mod report;
+#[cfg(feature = "json-query")]
 pub mod results_export;
 pub mod rng;
 pub mod room;
