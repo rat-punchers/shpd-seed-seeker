@@ -22,6 +22,23 @@ lints only those workspaces and the root config files.
 - Commands from the repository root: `bun install`, `bun run check`
   (`check:fix` to apply fixes), `bun run check:types` (`tsc -b`, TypeScript
   native compiler), `bun run build`, `bun run test`, `bun run dev`.
+- `bun run build:wasm` builds the engine and editor wasm packages and copies
+  the game assets into `web-v2/` (`scripts/build-web-wasm.sh web-v2`). Run it
+  before building or testing web-v2, and again after engine changes.
+- `bun run dev:web-v2` and `bun run dev:design` start one dev server each.
+  Do not start or leave a dev server running yourself; tell the user the
+  command instead.
+- Browser tests live in `tooling/web-visual` (Playwright, Chromium):
+  `bun run install:visual-browser` once, then `bun run test:visual` (build +
+  run) or `bun run test:visual:only`. Playwright starts and stops
+  `vite preview` on 46001 itself. Canvas output is compared pixel for pixel
+  with `tooling/web-visual/snapshots/`; everything else is asserted.
+  `bun run test:visual:update` rewrites snapshots on purpose only.
+- Deploy: the `web-v2` workflow deploys the Worker `shpd-seed-seeker-v2`
+  (`web-v2/wrangler.toml`) to `seedseeker.nerdcoder.xyz` on every push to
+  `main` after its checks pass. `bun run deploy:setup` stores the Cloudflare
+  credentials in the GitHub `web-v2` environment. Do not run it, or deploy,
+  without being asked.
 - Definition of Done, in order: `bun run check` → `bun run check:types` →
   `bun run build` → `bun run test`. All four must pass.
 - TypeScript: `tsconfig.base.json` holds shared options only. Each package has
