@@ -1,27 +1,40 @@
-import { CONFIG } from '../config'
-import { SHPD_VERSION } from '../engine/constants'
+import { Tabs, TabsContent } from '@seed-seeker/design/ui/tabs'
+import { TooltipProvider } from '@seed-seeker/design/ui/tooltip'
+import { useStore } from '@tanstack/react-store'
+import { AnalyzeWorkspace } from '../features/analyze'
+import { FindWorkspace } from '../features/find'
+import { AppSidebar } from './AppSidebar'
+import { SiteFooter } from './SiteFooter'
+import { $mode, isAppMode, setMode } from './store/mode'
 
-/** The app shell: brand and supported game version. */
+/** The app shell: sidebar with the mode tabs, the active workspace, footer. */
 export function App() {
+  const mode = useStore($mode)
+
   return (
-    <div className="flex min-h-svh flex-col">
-      <header className="border-b bg-card">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-5 lg:px-8">
-          <img
-            src="/favicon.svg"
-            alt=""
-            width={32}
-            height={32}
-            className="pixelated size-8"
-          />
-          <h1 className="font-pixel text-px-1">
-            {CONFIG.appName}
-            <span className="text-muted-foreground"> · </span>
-            <span className="text-muted-foreground">SHPD v{SHPD_VERSION}</span>
-          </h1>
+    <TooltipProvider delayDuration={200}>
+      <Tabs
+        value={mode}
+        onValueChange={(value) => {
+          if (isAppMode(value)) setMode(value)
+        }}
+        className="flex min-h-svh w-full justify-center gap-0 bg-background"
+      >
+        <div className="border-border mx-auto grid min-h-svh w-full max-w-6xl grid-cols-1 grid-rows-[1fr_max-content] bg-background lg:border-x">
+          <div className="grid grid-cols-1 lg:grid-cols-[max-content_1fr]">
+            <AppSidebar />
+            <main className="relative min-w-0 flex-1">
+              <TabsContent value="analyze" className="mt-0">
+                <AnalyzeWorkspace />
+              </TabsContent>
+              <TabsContent value="find" className="mt-0">
+                <FindWorkspace />
+              </TabsContent>
+            </main>
+          </div>
+          <SiteFooter />
         </div>
-      </header>
-      <main className="flex-1" />
-    </div>
+      </Tabs>
+    </TooltipProvider>
   )
 }
