@@ -14,7 +14,8 @@
     "check:types": "tsc -b",
     "build": "bun run --filter '*' --if-present build",
     "test": "bun run --filter '*' --if-present test",
-    "dev": "conc -k --kill-timeout 3000 'bun:dev:*'"
+    "dev": "conc -k --kill-timeout 3000 'bun:dev:*'",
+    "dev:design": "bun run --filter '@seed-seeker/design' dev"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.5",

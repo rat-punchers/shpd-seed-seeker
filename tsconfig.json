@@ -1,4 +1,11 @@
 {
   "files": [],
-  "references": [{ "path": "./web-v2" }]
+  "references": [
+    {
+      "path": "./packages/design"
+    },
+    {
+      "path": "./web-v2"
+    }
+  ]
 }
