@@ -3,8 +3,9 @@
 
 The art is anchored to the top-left of each cell, so rendering a full cell
 makes small items (rings, seeds) look off-center. This emits
-web/src/generated/sprite-bounds.json mapping sprite index -> [x, y, w, h],
-omitting empty cells. Pure-stdlib PNG decode; rerun when items.png changes.
+<app>/src/generated/sprite-bounds.json mapping sprite index -> [x, y, w, h],
+omitting empty cells, for the web app named by the first argument (default
+`web`). Pure-stdlib PNG decode; rerun when items.png changes.
 """
 import json
 import struct
@@ -13,8 +14,9 @@ import zlib
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-SHEET = REPO / 'web/public/third_party/shattered-pixel-dungeon/items.png'
-OUTPUT = REPO / 'web/src/generated/sprite-bounds.json'
+APP = REPO / (sys.argv[1] if len(sys.argv) > 1 else 'web')
+SHEET = APP / 'public/third_party/shattered-pixel-dungeon/items.png'
+OUTPUT = APP / 'src/generated/sprite-bounds.json'
 CELL = 16
 
 

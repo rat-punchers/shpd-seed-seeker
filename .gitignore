@@ -65,6 +65,11 @@ node_modules/
 /web-v2/src/engine/pkg/
 /web-v2/src/engine/editor-pkg/
 /web-v2/src/generated/
+/web-v2/public/third_party/
+/web-v2/public/licenses/
+/packages/design/dist/
+/tooling/web-visual/test-results/
+/tooling/web-visual/playwright-report/
 /packages/design/dist/
 /tooling/web-visual/test-results/
 /tooling/web-visual/playwright-report/
