@@ -1,0 +1,14 @@
+# Cloudflare Worker serving the web-v2 build as static assets; no Worker code.
+# Deploy: `bun run deploy` in web-v2/ after `bun run build` (CI does both on
+# every push to main). Credentials: `bun run deploy:setup` at the repo root.
+name = "shpd-seed-seeker-v2"
+compatibility_date = "2026-11-01"
+
+[assets]
+directory = "./dist"
+# Deep links fall back to index.html.
+not_found_handling = "single-page-application"
+
+[[routes]]
+pattern = "seedseeker.nerdcoder.xyz"
+custom_domain = true
