@@ -24,6 +24,9 @@ pub use shpd_seedfinder_core::results_export::MAX_RESULTS;
 use shpd_seedfinder_core::seed::{self, DungeonSeed, TOTAL_SEEDS};
 use wasm_bindgen::prelude::*;
 
+mod seed_report;
+pub use seed_report::seed_report;
+
 const SEARCH_BATCH_SIZE: u64 = 256;
 
 #[derive(Serialize)]

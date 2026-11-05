@@ -1,0 +1,4413 @@
+{
+  "format": "seed-seeker-seed-report",
+  "schemaVersion": 1,
+  "shpdVersion": "4.0.2",
+  "shpdCommit": "57a4e06a4caf162446d1c28caa7983f0493fecf0",
+  "status": "partial",
+  "notes": [
+    "Floor items list equipment only: weapons, armor, wands, rings, trinkets and artifacts.",
+    "Trinket timing, alchemy pots, builders, quest reward slots and floor encounters are not computed."
+  ],
+  "sections": [
+    "identities",
+    "ringGems",
+    "trinketOffers",
+    "artifactDecks",
+    "feelings",
+    "rooms",
+    "equipment",
+    "quests",
+    "branches"
+  ],
+  "seed": {
+    "code": "AAA-AAA-AAA",
+    "value": 0,
+    "daily": false
+  },
+  "identities": {
+    "scrolls": [
+      {
+        "name": "Scroll of upgrade",
+        "appearance": "KAUNAN",
+        "spriteIndex": 304
+      },
+      {
+        "name": "Scroll of identify",
+        "appearance": "LAGUZ",
+        "spriteIndex": 306
+      },
+      {
+        "name": "Scroll of remove curse",
+        "appearance": "ISAZ",
+        "spriteIndex": 310
+      },
+      {
+        "name": "Scroll of mirror image",
+        "appearance": "MANNAZ",
+        "spriteIndex": 311
+      },
+      {
+        "name": "Scroll of recharging",
+        "appearance": "NAUDIZ",
+        "spriteIndex": 312
+      },
+      {
+        "name": "Scroll of teleportation",
+        "appearance": "TIWAZ",
+        "spriteIndex": 315
+      },
+      {
+        "name": "Scroll of lullaby",
+        "appearance": "RAIDO",
+        "spriteIndex": 309
+      },
+      {
+        "name": "Scroll of magic mapping",
+        "appearance": "BERKANAN",
+        "spriteIndex": 313
+      },
+      {
+        "name": "Scroll of rage",
+        "appearance": "YNGVI",
+        "spriteIndex": 307
+      },
+      {
+        "name": "Scroll of retribution",
+        "appearance": "SOWILO",
+        "spriteIndex": 305
+      },
+      {
+        "name": "Scroll of terror",
+        "appearance": "ODAL",
+        "spriteIndex": 314
+      },
+      {
+        "name": "Scroll of transmutation",
+        "appearance": "GYFU",
+        "spriteIndex": 308
+      }
+    ],
+    "potions": [
+      {
+        "name": "Potion of strength",
+        "appearance": "Crimson",
+        "spriteIndex": 352
+      },
+      {
+        "name": "Potion of healing",
+        "appearance": "Indigo",
+        "spriteIndex": 358
+      },
+      {
+        "name": "Potion of mind vision",
+        "appearance": "Turquoise",
+        "spriteIndex": 356
+      },
+      {
+        "name": "Potion of frost",
+        "appearance": "Charcoal",
+        "spriteIndex": 361
+      },
+      {
+        "name": "Potion of liquid flame",
+        "appearance": "Magenta",
+        "spriteIndex": 359
+      },
+      {
+        "name": "Potion of toxic gas",
+        "appearance": "Amber",
+        "spriteIndex": 353
+      },
+      {
+        "name": "Potion of haste",
+        "appearance": "Ivory",
+        "spriteIndex": 363
+      },
+      {
+        "name": "Potion of invisibility",
+        "appearance": "Golden",
+        "spriteIndex": 354
+      },
+      {
+        "name": "Potion of levitation",
+        "appearance": "Silver",
+        "spriteIndex": 362
+      },
+      {
+        "name": "Potion of paralytic gas",
+        "appearance": "Azure",
+        "spriteIndex": 357
+      },
+      {
+        "name": "Potion of purity",
+        "appearance": "Jade",
+        "spriteIndex": 355
+      },
+      {
+        "name": "Potion of experience",
+        "appearance": "Bistre",
+        "spriteIndex": 360
+      }
+    ],
+    "rings": [
+      {
+        "name": "Ring of accuracy",
+        "appearance": "Ruby",
+        "spriteIndex": 225
+      },
+      {
+        "name": "Ring of arcana",
+        "appearance": "Quartz",
+        "spriteIndex": 233
+      },
+      {
+        "name": "Ring of elements",
+        "appearance": "Tourmaline",
+        "spriteIndex": 230
+      },
+      {
+        "name": "Ring of energy",
+        "appearance": "Onyx",
+        "spriteIndex": 228
+      },
+      {
+        "name": "Ring of evasion",
+        "appearance": "Sapphire",
+        "spriteIndex": 231
+      },
+      {
+        "name": "Ring of force",
+        "appearance": "Garnet",
+        "spriteIndex": 224
+      },
+      {
+        "name": "Ring of furor",
+        "appearance": "Agate",
+        "spriteIndex": 234
+      },
+      {
+        "name": "Ring of haste",
+        "appearance": "Diamond",
+        "spriteIndex": 235
+      },
+      {
+        "name": "Ring of might",
+        "appearance": "Topaz",
+        "spriteIndex": 226
+      },
+      {
+        "name": "Ring of sharpshooting",
+        "appearance": "Amethyst",
+        "spriteIndex": 232
+      },
+      {
+        "name": "Ring of tenacity",
+        "appearance": "Opal",
+        "spriteIndex": 229
+      },
+      {
+        "name": "Ring of wealth",
+        "appearance": "Emerald",
+        "spriteIndex": 227
+      }
+    ]
+  },
+  "ringGems": [
+    1,
+    9,
+    6,
+    4,
+    7,
+    0,
+    10,
+    11,
+    2,
+    8,
+    5,
+    3
+  ],
+  "trinkets": {
+    "offers": [
+      {
+        "id": "dimensional_sundial",
+        "name": "Dimensional Sundial",
+        "spriteIndex": 277,
+        "matched": false
+      },
+      {
+        "id": "mimic_tooth",
+        "name": "Mimic Tooth",
+        "spriteIndex": 280,
+        "matched": false
+      },
+      {
+        "id": "parchment_scrap",
+        "name": "Parchment Scrap",
+        "spriteIndex": 273,
+        "matched": false
+      },
+      {
+        "id": "thirteen_leaf_clover",
+        "name": "Thirteen Leaf Clover",
+        "spriteIndex": 278,
+        "matched": false
+      }
+    ],
+    "selected": null,
+    "transmutationOrder": [
+      {
+        "id": "chaotic_censer",
+        "name": "Chaotic Censer",
+        "spriteIndex": 286,
+        "matched": false
+      },
+      {
+        "id": "trap_mechanism",
+        "name": "Trap Mechanism",
+        "spriteIndex": 279,
+        "matched": false
+      },
+      {
+        "id": "eye_of_newt",
+        "name": "Eye Of Newt",
+        "spriteIndex": 282,
+        "matched": false
+      },
+      {
+        "id": "exotic_crystals",
+        "name": "Exotic Crystals",
+        "spriteIndex": 275,
+        "matched": false
+      },
+      {
+        "id": "vial_of_blood",
+        "name": "Vial Of Blood",
+        "spriteIndex": 284,
+        "matched": false
+      },
+      {
+        "id": "petrified_seed",
+        "name": "Petrified Seed",
+        "spriteIndex": 274,
+        "matched": false
+      },
+      {
+        "id": "shard_of_oblivion",
+        "name": "Shard Of Oblivion",
+        "spriteIndex": 285,
+        "matched": false
+      },
+      {
+        "id": "cracked_spyglass",
+        "name": "Cracked Spyglass",
+        "spriteIndex": 288,
+        "matched": false
+      },
+      {
+        "id": "wondrous_resin",
+        "name": "Wondrous Resin",
+        "spriteIndex": 281,
+        "matched": false
+      },
+      {
+        "id": "mossy_clump",
+        "name": "Mossy Clump",
+        "spriteIndex": 276,
+        "matched": false
+      },
+      {
+        "id": "rat_skull",
+        "name": "Rat Skull",
+        "spriteIndex": 272,
+        "matched": false
+      },
+      {
+        "id": "ferret_tuft",
+        "name": "Ferret Tuft",
+        "spriteIndex": 287,
+        "matched": false
+      },
+      {
+        "id": "salt_cube",
+        "name": "Salt Cube",
+        "spriteIndex": 283,
+        "matched": false
+      }
+    ],
+    "artifactDecks": [
+      {
+        "depth": 0,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 1,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 2,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 3,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 4,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 5,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 6,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 7,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 8,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 9,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 10,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 11,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 12,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 13,
+        "order": [
+          {
+            "id": "unstable_spellbook",
+            "name": "Unstable Spellbook",
+            "spriteIndex": 246,
+            "matched": false
+          },
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 14,
+        "order": [
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 15,
+        "order": [
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 16,
+        "order": [
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 17,
+        "order": [
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 18,
+        "order": [
+          {
+            "id": "sandals_of_nature",
+            "name": "Sandals of Nature",
+            "spriteIndex": 256,
+            "matched": false
+          },
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 19,
+        "order": [
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 20,
+        "order": [
+          {
+            "id": "alchemists_toolkit",
+            "name": "Alchemist's Toolkit",
+            "spriteIndex": 245,
+            "matched": false
+          },
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 21,
+        "order": [
+          {
+            "id": "skeleton_key",
+            "name": "Skeleton Key",
+            "spriteIndex": 264,
+            "matched": false
+          },
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 22,
+        "order": [
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 23,
+        "order": [
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      },
+      {
+        "depth": 24,
+        "order": [
+          {
+            "id": "horn_of_plenty",
+            "name": "Horn of Plenty",
+            "spriteIndex": 249,
+            "matched": false
+          },
+          {
+            "id": "ethereal_chains",
+            "name": "Ethereal Chains",
+            "spriteIndex": 248,
+            "matched": false
+          },
+          {
+            "id": "master_thieves_armband",
+            "name": "Master Thieves' Armband",
+            "spriteIndex": 241,
+            "matched": false
+          },
+          {
+            "id": "timekeepers_hourglass",
+            "name": "Timekeeper's Hourglass",
+            "spriteIndex": 244,
+            "matched": false
+          },
+          {
+            "id": "dried_rose",
+            "name": "Dried Rose",
+            "spriteIndex": 260,
+            "matched": false
+          },
+          {
+            "id": "chalice_of_blood",
+            "name": "Chalice of Blood",
+            "spriteIndex": 253,
+            "matched": false
+          },
+          {
+            "id": "talisman_of_foresight",
+            "name": "Talisman of Foresight",
+            "spriteIndex": 243,
+            "matched": false
+          }
+        ]
+      }
+    ]
+  },
+  "floors": [
+    {
+      "depth": 1,
+      "feeling": "none",
+      "rooms": [
+        "standard_sewer_pipe",
+        "standard_region_deco_patch",
+        "connection_tunnel",
+        "connection_ring_tunnel",
+        "connection_ring_bridge",
+        "pool",
+        "runestone",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "throwing_spear",
+          "name": "Throwing spear",
+          "category": "weapon",
+          "spriteIndex": 151,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 1,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "shuriken",
+          "name": "Shuriken",
+          "category": "weapon",
+          "spriteIndex": 149,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 1,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "wand_frost",
+          "name": "Wand of frost",
+          "category": "wand",
+          "spriteIndex": 210,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 1,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 2,
+      "feeling": "chasm",
+      "rooms": [
+        "standard_sewer_pipe",
+        "standard_water_bridge",
+        "standard_platform",
+        "standard_grassy_grave",
+        "connection_tunnel",
+        "connection_bridge",
+        "connection_ring_bridge",
+        "crypt",
+        "magical_fire",
+        "secret_chest_chasm",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "kunai",
+          "name": "Kunai",
+          "category": "weapon",
+          "spriteIndex": 153,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": true,
+          "depth": 2,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "mail_armor",
+          "name": "Mail armor",
+          "category": "armor",
+          "spriteIndex": 178,
+          "upgrade": 1,
+          "effect": {
+            "name": "Displacement",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": false,
+          "depth": 2,
+          "source": "tomb",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "spear",
+          "name": "Spear",
+          "category": "weapon",
+          "spriteIndex": 106,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 2,
+          "source": "skeleton",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 3,
+      "feeling": "none",
+      "rooms": [
+        "standard_sewer_pipe",
+        "standard_ring",
+        "standard_water_bridge",
+        "connection_tunnel",
+        "connection_walkway",
+        "sacrifice",
+        "traps",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "sai",
+          "name": "Sai",
+          "category": "weapon",
+          "spriteIndex": 116,
+          "upgrade": 1,
+          "effect": {
+            "name": "Annoying",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": false,
+          "depth": 3,
+          "source": "sacrificial_fire",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "crossbow",
+          "name": "Crossbow",
+          "category": "weapon",
+          "spriteIndex": 125,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 3,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "whip",
+          "name": "Whip",
+          "category": "weapon",
+          "spriteIndex": 117,
+          "upgrade": 2,
+          "effect": {
+            "name": "Eldritch",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 3,
+          "source": "ghost_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 0,
+            "option": 0
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "mail_armor",
+          "name": "Mail armor",
+          "category": "armor",
+          "spriteIndex": 178,
+          "upgrade": 2,
+          "effect": {
+            "name": "Affection",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 3,
+          "source": "ghost_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 0,
+            "option": 1
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "leather_armor",
+          "name": "Leather armor",
+          "category": "armor",
+          "spriteIndex": 177,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 3,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "ring_tenacity",
+          "name": "Ring of tenacity",
+          "category": "ring",
+          "spriteIndex": 234,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": true,
+          "secret": false,
+          "depth": 3,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "dimensional_sundial",
+          "name": "Dimensional Sundial",
+          "category": "trinket",
+          "spriteIndex": 277,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 3,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "mimic_tooth",
+          "name": "Mimic Tooth",
+          "category": "trinket",
+          "spriteIndex": 280,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 3,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "parchment_scrap",
+          "name": "Parchment Scrap",
+          "category": "trinket",
+          "spriteIndex": 273,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 3,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "thirteen_leaf_clover",
+          "name": "Thirteen Leaf Clover",
+          "category": "trinket",
+          "spriteIndex": 278,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 3,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 4,
+      "feeling": "water",
+      "rooms": [
+        "standard_sewer_pipe",
+        "standard_ring",
+        "standard_study",
+        "connection_tunnel",
+        "storage",
+        "laboratory",
+        "secret_garden",
+        "entrance",
+        "exit"
+      ],
+      "items": [],
+      "branches": []
+    },
+    {
+      "depth": 5,
+      "rooms": [],
+      "items": [],
+      "branches": []
+    },
+    {
+      "depth": 6,
+      "feeling": "large",
+      "rooms": [
+        "standard_segmented",
+        "standard_pillars",
+        "standard_fissure",
+        "connection_perimeter",
+        "connection_walkway",
+        "weak_floor",
+        "sentry",
+        "crystal_vault",
+        "treasury",
+        "shop",
+        "secret_larder",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "quarterstaff",
+          "name": "Quarterstaff",
+          "category": "weapon",
+          "spriteIndex": 107,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 6,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "holy_dart",
+          "name": "Holy dart",
+          "category": "weapon",
+          "spriteIndex": 170,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 6,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "leather_armor",
+          "name": "Leather armor",
+          "category": "armor",
+          "spriteIndex": 177,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 6,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "throwing_club",
+          "name": "Throwing club",
+          "category": "weapon",
+          "spriteIndex": 150,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 6,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "katana",
+          "name": "Katana",
+          "category": "weapon",
+          "spriteIndex": 126,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 6,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "wand_blast_wave",
+          "name": "Wand of blast wave",
+          "category": "wand",
+          "spriteIndex": 216,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 6,
+          "source": "crystal_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "ring_tenacity",
+          "name": "Ring of tenacity",
+          "category": "ring",
+          "spriteIndex": 234,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 6,
+          "source": "crystal_mimic",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "hand_axe",
+          "name": "Hand axe",
+          "category": "weapon",
+          "spriteIndex": 105,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 6,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 7,
+      "feeling": "large",
+      "rooms": [
+        "standard_region_deco_line",
+        "standard_segmented",
+        "standard_pillars",
+        "standard_chasm_bridge",
+        "standard_cell_block",
+        "standard_platform",
+        "connection_perimeter",
+        "connection_maze",
+        "armory",
+        "statue",
+        "garden",
+        "library",
+        "pit",
+        "secret_maze",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "leather_armor",
+          "name": "Leather armor",
+          "category": "armor",
+          "spriteIndex": 177,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 7,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "scimitar",
+          "name": "Scimitar",
+          "category": "weapon",
+          "spriteIndex": 114,
+          "upgrade": 1,
+          "effect": {
+            "name": "Wondrous",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": false,
+          "depth": 7,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "sickle",
+          "name": "Sickle",
+          "category": "weapon",
+          "spriteIndex": 109,
+          "upgrade": 0,
+          "effect": {
+            "name": "Polarized",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": false,
+          "depth": 7,
+          "source": "skeleton",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "assassins_blade",
+          "name": "Assassin's blade",
+          "category": "weapon",
+          "spriteIndex": 124,
+          "upgrade": 0,
+          "effect": {
+            "name": "Blazing",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 7,
+          "source": "statue",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "mail_armor",
+          "name": "Mail armor",
+          "category": "armor",
+          "spriteIndex": 178,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": true,
+          "depth": 7,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 8,
+      "feeling": "none",
+      "rooms": [
+        "standard_region_deco_line",
+        "standard_cell_block",
+        "standard_aquarium",
+        "standard_burned",
+        "connection_perimeter",
+        "connection_walkway",
+        "crystal_choice",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "ring_energy",
+          "name": "Ring of energy",
+          "category": "ring",
+          "spriteIndex": 227,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 8,
+          "source": "chest",
+          "accessibility": {
+            "type": "choice",
+            "group": 1,
+            "option": 1
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 9,
+      "feeling": "none",
+      "rooms": [
+        "standard_segmented",
+        "standard_chasm_bridge",
+        "standard_cell_block",
+        "connection_perimeter",
+        "connection_walkway",
+        "laboratory",
+        "quest_ritual_site",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "wand_transfusion",
+          "name": "Wand of transfusion",
+          "category": "wand",
+          "spriteIndex": 220,
+          "upgrade": 3,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 9,
+          "source": "wandmaker_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 2,
+            "option": 0
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "wand_frost",
+          "name": "Wand of frost",
+          "category": "wand",
+          "spriteIndex": 210,
+          "upgrade": 3,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 9,
+          "source": "wandmaker_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 2,
+            "option": 1
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 10,
+      "rooms": [],
+      "items": [],
+      "branches": []
+    },
+    {
+      "depth": 11,
+      "feeling": "water",
+      "rooms": [
+        "standard_region_deco_bridge",
+        "standard_circle_pit",
+        "standard_circle_wall",
+        "standard_grassy_grave",
+        "standard_study",
+        "connection_tunnel",
+        "connection_walkway",
+        "connection_ring_tunnel",
+        "connection_maze",
+        "magic_well",
+        "crystal_path",
+        "shop",
+        "secret_hoard",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "chilling_dart",
+          "name": "Chilling dart",
+          "category": "weapon",
+          "spriteIndex": 165,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 11,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "scimitar",
+          "name": "Scimitar",
+          "category": "weapon",
+          "spriteIndex": 114,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 11,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "mail_armor",
+          "name": "Mail armor",
+          "category": "armor",
+          "spriteIndex": 178,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 11,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "throwing_spear",
+          "name": "Throwing spear",
+          "category": "weapon",
+          "spriteIndex": 151,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 11,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "mail_armor",
+          "name": "Mail armor",
+          "category": "armor",
+          "spriteIndex": 178,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 11,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 12,
+      "feeling": "water",
+      "rooms": [
+        "standard_cave",
+        "standard_region_deco_bridge",
+        "standard_circle_pit",
+        "connection_tunnel",
+        "connection_walkway",
+        "connection_ring_bridge",
+        "pool",
+        "sacrifice",
+        "runestone",
+        "secret_runestone",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "greatshield",
+          "name": "Greatshield",
+          "category": "weapon",
+          "spriteIndex": 132,
+          "upgrade": 0,
+          "effect": {
+            "name": "Annoying",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": false,
+          "depth": 12,
+          "source": "sacrificial_fire",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "sword",
+          "name": "Sword",
+          "category": "weapon",
+          "spriteIndex": 112,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 12,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "sai",
+          "name": "Sai",
+          "category": "weapon",
+          "spriteIndex": 116,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 12,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "tomahawk",
+          "name": "Tomahawk",
+          "category": "weapon",
+          "spriteIndex": 155,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 12,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "mace",
+          "name": "Mace",
+          "category": "weapon",
+          "spriteIndex": 113,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 12,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 13,
+      "feeling": "traps",
+      "rooms": [
+        "standard_cave",
+        "standard_circle_pit",
+        "standard_grassy_grave",
+        "connection_tunnel",
+        "connection_walkway",
+        "connection_ring_bridge",
+        "magical_fire",
+        "laboratory",
+        "quest_blacksmith",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "bolas",
+          "name": "Bolas",
+          "category": "weapon",
+          "spriteIndex": 152,
+          "upgrade": 0,
+          "effect": {
+            "name": "Eldritch",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 13,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "scale_armor",
+          "name": "Scale armor",
+          "category": "armor",
+          "spriteIndex": 179,
+          "upgrade": 0,
+          "effect": {
+            "name": "Multiplicity",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": false,
+          "depth": 13,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "battle_axe",
+          "name": "Battle axe",
+          "category": "weapon",
+          "spriteIndex": 121,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 13,
+          "source": "blacksmith_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 3,
+            "option": 0
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "greatshield",
+          "name": "Greatshield",
+          "category": "weapon",
+          "spriteIndex": 132,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 13,
+          "source": "blacksmith_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 3,
+            "option": 1
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "tomahawk",
+          "name": "Tomahawk",
+          "category": "weapon",
+          "spriteIndex": 155,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 13,
+          "source": "blacksmith_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 3,
+            "option": 2
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "scale_armor",
+          "name": "Scale armor",
+          "category": "armor",
+          "spriteIndex": 179,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 13,
+          "source": "blacksmith_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 3,
+            "option": 3
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": [
+        {
+          "branch": 1,
+          "kind": "blacksmith_crystal",
+          "objective": "crystal",
+          "access": {
+            "quest": "blacksmith",
+            "requiresAcceptance": true
+          }
+        }
+      ]
+    },
+    {
+      "depth": 14,
+      "feeling": "water",
+      "rooms": [
+        "standard_region_deco_bridge",
+        "standard_caves_fissure",
+        "standard_suspicious_chest",
+        "connection_tunnel",
+        "connection_walkway",
+        "connection_ring_tunnel",
+        "connection_ring_bridge",
+        "crypt",
+        "toxic_gas",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "mail_armor",
+          "name": "Mail armor",
+          "category": "armor",
+          "spriteIndex": 178,
+          "upgrade": 0,
+          "effect": {
+            "name": "Corrosion",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": false,
+          "depth": 14,
+          "source": "tomb",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "unstable_spellbook",
+          "name": "Unstable Spellbook",
+          "category": "artifact",
+          "spriteIndex": 246,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": true,
+          "secret": false,
+          "depth": 14,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 15,
+      "rooms": [],
+      "items": [],
+      "branches": []
+    },
+    {
+      "depth": 16,
+      "feeling": "none",
+      "rooms": [
+        "standard_library_ring",
+        "standard_statues",
+        "standard_segmented_library",
+        "standard_minefield",
+        "connection_perimeter",
+        "connection_walkway",
+        "connection_ring_tunnel",
+        "treasury",
+        "traps",
+        "shop",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "glaive",
+          "name": "Glaive",
+          "category": "weapon",
+          "spriteIndex": 130,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 16,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "javelin",
+          "name": "Javelin",
+          "category": "weapon",
+          "spriteIndex": 154,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 16,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "katana",
+          "name": "Katana",
+          "category": "weapon",
+          "spriteIndex": 126,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 16,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "scale_armor",
+          "name": "Scale armor",
+          "category": "armor",
+          "spriteIndex": 179,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 16,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "incendiary_dart",
+          "name": "Incendiary dart",
+          "category": "weapon",
+          "spriteIndex": 162,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 16,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "wand_magic_missile",
+          "name": "Wand of magic missile",
+          "category": "wand",
+          "spriteIndex": 208,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 16,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 17,
+      "feeling": "none",
+      "rooms": [
+        "standard_library_hall",
+        "standard_library_ring",
+        "standard_statues",
+        "standard_segmented_library",
+        "connection_perimeter",
+        "connection_walkway",
+        "connection_ring_tunnel",
+        "weak_floor",
+        "storage",
+        "secret_laboratory",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "throwing_hammer",
+          "name": "Throwing hammer",
+          "category": "weapon",
+          "spriteIndex": 158,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 17,
+          "source": "mimic",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 18,
+      "feeling": "none",
+      "rooms": [
+        "standard_hallway",
+        "standard_statues",
+        "standard_segmented_library",
+        "standard_study",
+        "connection_perimeter",
+        "connection_walkway",
+        "connection_ring_tunnel",
+        "sentry",
+        "garden",
+        "pit",
+        "secret_artillery",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "ring_sharpshooting",
+          "name": "Ring of sharpshooting",
+          "category": "ring",
+          "spriteIndex": 233,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 18,
+          "source": "skeleton",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "plate_armor",
+          "name": "Plate armor",
+          "category": "armor",
+          "spriteIndex": 180,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 18,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "trident",
+          "name": "Trident",
+          "category": "weapon",
+          "spriteIndex": 157,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": false,
+          "secret": true,
+          "depth": 18,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "javelin",
+          "name": "Javelin",
+          "category": "weapon",
+          "spriteIndex": 154,
+          "upgrade": 1,
+          "effect": {
+            "name": "Sacrificial",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": true,
+          "depth": 18,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 19,
+      "feeling": "none",
+      "rooms": [
+        "standard_hallway",
+        "standard_library_hall",
+        "standard_statues",
+        "standard_plants",
+        "connection_perimeter",
+        "connection_walkway",
+        "connection_maze",
+        "library",
+        "laboratory",
+        "secret_summoning",
+        "quest_ambitious_imp",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "scale_armor",
+          "name": "Scale armor",
+          "category": "armor",
+          "spriteIndex": 179,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": true,
+          "depth": 19,
+          "source": "skeleton",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "sandals_of_nature",
+          "name": "Sandals of Nature",
+          "category": "artifact",
+          "spriteIndex": 256,
+          "upgrade": 5,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "imp_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 0
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "ring_haste",
+          "name": "Ring of haste",
+          "category": "ring",
+          "spriteIndex": 231,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "imp_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 1
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "greatshield",
+          "name": "Greatshield",
+          "category": "weapon",
+          "spriteIndex": 132,
+          "upgrade": 2,
+          "effect": {
+            "name": "Lucky",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "imp_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 2
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "javelin",
+          "name": "Javelin",
+          "category": "weapon",
+          "spriteIndex": 154,
+          "upgrade": 4,
+          "effect": {
+            "name": "Shocking",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "imp_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 3
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "plate_armor",
+          "name": "Plate armor",
+          "category": "armor",
+          "spriteIndex": 180,
+          "upgrade": 3,
+          "effect": {
+            "name": "Stone",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "imp_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 4
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "wand_corrosion",
+          "name": "Wand of corrosion",
+          "category": "wand",
+          "spriteIndex": 214,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "imp_reward",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 5
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "ring_arcana",
+          "name": "Ring of arcana",
+          "category": "ring",
+          "spriteIndex": 225,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 6
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "battle_axe",
+          "name": "Battle axe",
+          "category": "weapon",
+          "spriteIndex": 121,
+          "upgrade": 4,
+          "effect": {
+            "name": "Blooming",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 7
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "katana",
+          "name": "Katana",
+          "category": "weapon",
+          "spriteIndex": 126,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 8
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "plate_armor",
+          "name": "Plate armor",
+          "category": "armor",
+          "spriteIndex": 180,
+          "upgrade": 3,
+          "effect": {
+            "name": "Entanglement",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 9
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "fishing_spear",
+          "name": "Fishing spear",
+          "category": "weapon",
+          "spriteIndex": 148,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 10
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "whip",
+          "name": "Whip",
+          "category": "weapon",
+          "spriteIndex": 117,
+          "upgrade": 3,
+          "effect": {
+            "name": "Kinetic",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 11
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "ring_evasion",
+          "name": "Ring of evasion",
+          "category": "ring",
+          "spriteIndex": 228,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 12
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "wand_warding",
+          "name": "Wand of warding",
+          "category": "wand",
+          "spriteIndex": 218,
+          "upgrade": 2,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 13
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "sickle",
+          "name": "Sickle",
+          "category": "weapon",
+          "spriteIndex": 109,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 14
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "sai",
+          "name": "Sai",
+          "category": "weapon",
+          "spriteIndex": 116,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 15
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "wand_fireblast",
+          "name": "Wand of fireblast",
+          "category": "wand",
+          "spriteIndex": 209,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 16
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "leather_armor",
+          "name": "Leather armor",
+          "category": "armor",
+          "spriteIndex": 177,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 17
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "force_cube",
+          "name": "Force cube",
+          "category": "weapon",
+          "spriteIndex": 159,
+          "upgrade": 3,
+          "effect": {
+            "name": "Lucky",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 18
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "spear",
+          "name": "Spear",
+          "category": "weapon",
+          "spriteIndex": 106,
+          "upgrade": 2,
+          "effect": {
+            "name": "Corrupting",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 19
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "hand_axe",
+          "name": "Hand axe",
+          "category": "weapon",
+          "spriteIndex": 105,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 19,
+          "source": "vault_treasure",
+          "accessibility": {
+            "type": "choice",
+            "group": 4,
+            "option": 20
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "throwing_hammer",
+          "name": "Throwing hammer",
+          "category": "weapon",
+          "spriteIndex": 158,
+          "upgrade": 0,
+          "effect": {
+            "name": "Friendly",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": false,
+          "depth": 19,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": [
+        {
+          "branch": 1,
+          "kind": "imp_vault",
+          "objective": "vault",
+          "access": {
+            "quest": "imp",
+            "requiresAcceptance": true
+          }
+        }
+      ]
+    },
+    {
+      "depth": 20,
+      "rooms": [],
+      "items": [
+        {
+          "id": "plate_armor",
+          "name": "Plate armor",
+          "category": "armor",
+          "spriteIndex": 180,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 20,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "throwing_hammer",
+          "name": "Throwing hammer",
+          "category": "weapon",
+          "spriteIndex": 158,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 20,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "war_hammer",
+          "name": "War hammer",
+          "category": "weapon",
+          "spriteIndex": 129,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 20,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "incendiary_dart",
+          "name": "Incendiary dart",
+          "category": "weapon",
+          "spriteIndex": 162,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 20,
+          "source": "shop",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 21,
+      "feeling": "none",
+      "rooms": [
+        "standard_region_deco_patch",
+        "standard_chasm",
+        "standard_ritual",
+        "standard_striped",
+        "connection_tunnel",
+        "armory",
+        "crystal_vault",
+        "demon_spawner",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "force_cube",
+          "name": "Force cube",
+          "category": "weapon",
+          "spriteIndex": 159,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 21,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "alchemists_toolkit",
+          "name": "Alchemist's Toolkit",
+          "category": "artifact",
+          "spriteIndex": 245,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": true,
+          "secret": false,
+          "depth": 21,
+          "source": "crystal_chest",
+          "accessibility": {
+            "type": "choice",
+            "group": 5,
+            "option": 0
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "wand_prismatic_light",
+          "name": "Wand of prismatic light",
+          "category": "wand",
+          "spriteIndex": 213,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": true,
+          "secret": false,
+          "depth": 21,
+          "source": "crystal_chest",
+          "accessibility": {
+            "type": "choice",
+            "group": 5,
+            "option": 1
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 22,
+      "feeling": "chasm",
+      "rooms": [
+        "standard_region_deco_patch",
+        "standard_ruins",
+        "standard_chasm",
+        "standard_plants",
+        "connection_tunnel",
+        "connection_bridge",
+        "connection_ring_bridge",
+        "pool",
+        "statue",
+        "crystal_choice",
+        "demon_spawner",
+        "secret_honeypot",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "greataxe",
+          "name": "Greataxe",
+          "category": "weapon",
+          "spriteIndex": 131,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 22,
+          "source": "chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "skeleton_key",
+          "name": "Skeleton Key",
+          "category": "artifact",
+          "spriteIndex": 264,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": true,
+          "secret": false,
+          "depth": 22,
+          "source": "chest",
+          "accessibility": {
+            "type": "choice",
+            "group": 6,
+            "option": 1
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "greatsword",
+          "name": "Greatsword",
+          "category": "weapon",
+          "spriteIndex": 128,
+          "upgrade": 0,
+          "effect": {
+            "name": "Blocking",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 22,
+          "source": "statue",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "force_cube",
+          "name": "Force cube",
+          "category": "weapon",
+          "spriteIndex": 159,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 22,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 23,
+      "feeling": "dark",
+      "rooms": [
+        "standard_ruins",
+        "standard_chasm",
+        "standard_skulls",
+        "standard_ritual",
+        "connection_tunnel",
+        "connection_ring_tunnel",
+        "connection_ring_bridge",
+        "magic_well",
+        "laboratory",
+        "demon_spawner",
+        "secret_well",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "plate_armor",
+          "name": "Plate armor",
+          "category": "armor",
+          "spriteIndex": 180,
+          "upgrade": 0,
+          "effect": {
+            "name": "Stone",
+            "kind": "enchantment"
+          },
+          "cursed": false,
+          "secret": false,
+          "depth": 23,
+          "source": "skeleton",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    },
+    {
+      "depth": 24,
+      "feeling": "none",
+      "rooms": [
+        "standard_region_deco_patch",
+        "standard_ruins",
+        "standard_fissure",
+        "standard_striped",
+        "standard_minefield",
+        "connection_tunnel",
+        "connection_bridge",
+        "connection_ring_tunnel",
+        "connection_ring_bridge",
+        "sacrifice",
+        "crystal_path",
+        "demon_spawner",
+        "secret_chest_chasm",
+        "entrance",
+        "exit"
+      ],
+      "items": [
+        {
+          "id": "longsword",
+          "name": "Longsword",
+          "category": "weapon",
+          "spriteIndex": 120,
+          "upgrade": 2,
+          "effect": {
+            "name": "Polarized",
+            "kind": "curse"
+          },
+          "cursed": true,
+          "secret": false,
+          "depth": 24,
+          "source": "sacrificial_fire",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "wand_warding",
+          "name": "Wand of warding",
+          "category": "wand",
+          "spriteIndex": 218,
+          "upgrade": 1,
+          "effect": null,
+          "cursed": true,
+          "secret": true,
+          "depth": 24,
+          "source": "locked_chest",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        },
+        {
+          "id": "scale_armor",
+          "name": "Scale armor",
+          "category": "armor",
+          "spriteIndex": 179,
+          "upgrade": 0,
+          "effect": null,
+          "cursed": false,
+          "secret": false,
+          "depth": 24,
+          "source": "heap",
+          "accessibility": {
+            "type": "independent"
+          },
+          "matched": false,
+          "resinDonor": false,
+          "excluded": false
+        }
+      ],
+      "branches": []
+    }
+  ],
+  "quests": [
+    {
+      "quest": "ghost",
+      "variant": "gnoll_trickster",
+      "depth": 3,
+      "spawnDepthRange": {
+        "min": 2,
+        "max": 4
+      },
+      "rewards": {
+        "source": "ghost_reward",
+        "optionCount": 2,
+        "selectedCount": 1
+      }
+    },
+    {
+      "quest": "wandmaker",
+      "variant": "elemental_embers",
+      "depth": 9,
+      "spawnDepthRange": {
+        "min": 7,
+        "max": 9
+      },
+      "rewards": {
+        "source": "wandmaker_reward",
+        "optionCount": 2,
+        "selectedCount": 1
+      }
+    },
+    {
+      "quest": "blacksmith",
+      "variant": "crystal",
+      "depth": 13,
+      "spawnDepthRange": {
+        "min": 12,
+        "max": 14
+      },
+      "rewards": {
+        "source": "blacksmith_reward",
+        "optionCount": 4,
+        "selectedCount": 1,
+        "favorRequirement": 2000
+      }
+    },
+    {
+      "quest": "imp",
+      "variant": "vault",
+      "depth": 19,
+      "spawnDepthRange": {
+        "min": 17,
+        "max": 19
+      },
+      "rewards": {
+        "source": "imp_reward",
+        "optionCount": 6,
+        "selectedCount": 1
+      }
+    }
+  ]
+}
