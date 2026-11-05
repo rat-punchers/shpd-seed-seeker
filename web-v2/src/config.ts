@@ -11,6 +11,9 @@ export const CONFIG = Object.freeze({
   storageKeys: Object.freeze({
     mode: `${STORAGE_PREFIX}mode`,
     theme: `${STORAGE_PREFIX}theme`,
+    query: `${STORAGE_PREFIX}query`,
+    presets: `${STORAGE_PREFIX}presets`,
+    workers: `${STORAGE_PREFIX}workers`,
   }),
   links: Object.freeze({
     license: '/licenses/COPYING.txt',
