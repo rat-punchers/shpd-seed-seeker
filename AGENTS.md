@@ -11,6 +11,33 @@ The test profile optimizes `shpd-seedfinder-core` while retaining debug assertio
 and overflow checks. Keep that setting: complex query tests can take minutes in
 an unoptimized build even when they generate only one seed.
 
+## web-v2 (Bun monorepo)
+
+The repository root is a Bun workspace (isolated linker) for `web-v2`,
+`packages/*`, `tooling/web-visual` and `tooling/web-deploy`. Biome formats and
+lints only those workspaces and the root config files.
+
+- Do not edit `web/`. It keeps its own Vite+ (`vp`) and pnpm setup, CI job and
+  Cloudflare Pages deploy. It is not a Bun workspace and Biome ignores it.
+- Commands from the repository root: `bun install`, `bun run check`
+  (`check:fix` to apply fixes), `bun run check:types` (`tsc -b`, TypeScript
+  native compiler), `bun run build`, `bun run test`, `bun run dev`.
+- Definition of Done, in order: `bun run check` → `bun run check:types` →
+  `bun run build` → `bun run test`. All four must pass.
+- TypeScript: `tsconfig.base.json` holds shared options only. Each package has
+  its own composite `tsconfig.json` that includes only its own files and is
+  listed in the root solution `tsconfig.json`. No cross-package `include` or
+  relative import; share code through a workspace package.
+- Files stay at or under 300 lines.
+- Ports (block 46000+): web-v2 dev 46000, web-v2 preview 46001, design
+  preview 46002.
+- `seed_report` contract: `docs/seed-report-format.md` defines the format.
+  Fields not yet computed are optional, and the report lists filled sections
+  in `sections`; the UI renders a section only when it is listed. Adding a
+  section means implementing it, adding it to `sections`, regenerating the
+  fixtures in `crates/seedfinder-wasm/tests/fixtures/seed-report/`, and
+  updating the doc. Renaming or removing a field bumps `schemaVersion`.
+
 ## Android Canary builds
 
 When asked to build the Canary app, use the `dev` build variant. From the
