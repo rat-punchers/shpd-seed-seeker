@@ -21,7 +21,8 @@
     "test:visual": "bun run build && bun run test:visual:only",
     "test:visual:only": "bun run --cwd tooling/web-visual test:visual",
     "test:visual:update": "bun run build && bun run --cwd tooling/web-visual test:visual:update",
-    "install:visual-browser": "bun run --cwd tooling/web-visual install:browser"
+    "install:visual-browser": "bun run --cwd tooling/web-visual install:browser",
+    "deploy:setup": "bun tooling/web-deploy/setup-credentials.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.5",

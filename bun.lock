@@ -42,6 +42,13 @@
         "react-dom": "^19.2.0",
       },
     },
+    "tooling/web-deploy": {
+      "name": "@seed-seeker/web-deploy",
+      "devDependencies": {
+        "@types/bun": "1.4.4",
+        "typescript": "7.0.2",
+      },
+    },
     "tooling/web-visual": {
       "name": "@seed-seeker/web-visual",
       "devDependencies": {
@@ -492,6 +499,8 @@
     "@sec-ant/readable-stream": ["@sec-ant/readable-stream@0.4.1", "", {}, "sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg=="],
 
     "@seed-seeker/design": ["@seed-seeker/design@workspace:packages/design"],
+
+    "@seed-seeker/web-deploy": ["@seed-seeker/web-deploy@workspace:tooling/web-deploy"],
 
     "@seed-seeker/web-v2": ["@seed-seeker/web-v2@workspace:web-v2"],
 
