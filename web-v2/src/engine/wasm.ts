@@ -1,0 +1,125 @@
+import init, {
+  analyze_query,
+  decode_results_file,
+  decode_share_text,
+  encode_query_document,
+  encode_results_file,
+  encode_share_link,
+  engine_info,
+  format_seed_code,
+  parse_seed_code,
+  seed_report,
+} from './pkg/seedfinder.js'
+import type {
+  AnalysisResult,
+  EngineInfo,
+  ParsedSeed,
+  SeedReport,
+  SeedReportRequest,
+} from './types'
+
+let enginePromise: Promise<void> | undefined
+
+export function initEngine(): Promise<void> {
+  enginePromise ??= init(
+    new URL('./pkg/seedfinder_bg.wasm', import.meta.url)
+  ).then(() => undefined)
+  return enginePromise
+}
+
+export async function getEngineInfo(): Promise<EngineInfo> {
+  await initEngine()
+  return JSON.parse(engine_info()) as EngineInfo
+}
+
+/**
+ * Detects seed codes or daily dates from the first letter or digit, using
+ * the engine's shared formatter to group letters or digits while typing.
+ *
+ * Synchronous: it runs on every keystroke of a
+ * controlled input. Callers must have awaited `initEngine()`.
+ */
+export function formatSeedCode(input: string): string {
+  return format_seed_code(input)
+}
+
+export async function parseSeedCode(input: string): Promise<ParsedSeed> {
+  await initEngine()
+  return JSON.parse(parse_seed_code(input)) as ParsedSeed
+}
+
+export async function analyzeQuery(queryJson: string): Promise<AnalysisResult> {
+  await initEngine()
+  return JSON.parse(analyze_query(queryJson)) as AnalysisResult
+}
+
+/** Encodes a canonical query document as a full shareable web link. */
+export async function encodeShareLink(queryJson: string): Promise<string> {
+  await initEngine()
+  return encode_share_link(queryJson)
+}
+
+/**
+ * Rewrites a canonical query document as the pretty-printed JSON "Copy search"
+ * puts on the clipboard. The results import reads it back as a bare query.
+ */
+export async function encodeQueryDocument(queryJson: string): Promise<string> {
+  await initEngine()
+  return encode_query_document(queryJson)
+}
+
+/** Decodes share-link text (full link or bare code) into the canonical query document. */
+export async function decodeShareText(text: string): Promise<string> {
+  await initEngine()
+  return decode_share_text(text)
+}
+
+/**
+ * Parses a canonical seed code into `{code, value}` using the engine's own
+ * base-26 seed semantics.
+ *
+ * Synchronous: the results-import path turns a whole
+ * decoded file into seeds in one synchronous step. Callers must have awaited
+ * `initEngine()`.
+ */
+export function parseSeedCodeSync(input: string): ParsedSeed {
+  return JSON.parse(parse_seed_code(input)) as ParsedSeed
+}
+
+/**
+ * The engine's results-file encoder. `requestJson` is
+ * `{"query", "seeds", "app_version"}`; the answer is the file text. Throws
+ * with the codec's own message for an invalid query or seed code.
+ *
+ * Synchronous, because export and import both sit on
+ * synchronous UI paths. Callers must have awaited `initEngine()`.
+ */
+export function encodeResultsFileText(requestJson: string): string {
+  return encode_results_file(requestJson)
+}
+
+/**
+ * The engine's results-file decoder, answering
+ * `{"query", "seeds", "dropped", "bare_query", "app_version", "shpd_version"}`
+ * as JSON. The seeds arrive deduplicated and capped, and the 2 MiB import
+ * limit, the envelope rules and the query validation are all the engine's.
+ * A bare query document decodes with `bare_query` set and no seeds. Throws
+ * with the codec's own message for an unusable file.
+ *
+ * Synchronous. Callers must have awaited
+ * `initEngine()`.
+ */
+export function decodeResultsFileText(contents: string): string {
+  return decode_results_file(contents)
+}
+
+/**
+ * One seed's Analyze report (docs/seed-report-format.md). Throws with the
+ * engine's message for an invalid seed, challenge, trinket or query.
+ */
+export async function seedReport(
+  request: SeedReportRequest
+): Promise<SeedReport> {
+  await initEngine()
+  return JSON.parse(seed_report(JSON.stringify(request))) as SeedReport
+}
