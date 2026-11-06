@@ -54,7 +54,7 @@ JavaScript error carrying the message.
 | `alchemyPots` | yes | `floors[].appearances` |
 | `builders` | yes | `floors[].builder` |
 | `questRewardSlots` | yes | `quests[].slots`, `quests[].upgradesPinned`, `quests[].totalUpgradeValue`; see [seed-report-quests.md](seed-report-quests.md) |
-| `encounters` | no | `floors[].encounters` |
+| `encounters` | yes | `floors[].encounters`; see [seed-report-encounters.md](seed-report-encounters.md) |
 
 ## Response
 
@@ -112,10 +112,10 @@ JavaScript error carrying the message.
     obtained|transmuted, artifact}`.
   - `ranges`: optional `quantity`, `tier`, `level`, each `{min, max}`
     inclusive.
-- `encounters` (`encounters`): `{mob, quantity, rewards?}`; a reward is
-  `{item?, category, level?, cursed?, effect?, prediction, chance?}` with
-  `prediction` `guaranteed`, `runtime_chance` or `generated_with_floor` and
-  `chance` `{numerator, denominator}`.
+- `encounters` (`encounters`): mobs generated with the floor, `{mob,
+  quantity, rewards?}`; a reward is `{item?, category, level?, cursed?,
+  effect?, prediction, chance?}`, `prediction` `generated_with_floor` here; see
+  [seed-report-encounters.md](seed-report-encounters.md).
 - `branches`: quest sub-levels entered from this floor:
   `{branch, kind, objective, access}`. `kind` is `blacksmith_crystal`,
   `blacksmith_gnoll` or `imp_vault`, as `level_map` names it; request that map
