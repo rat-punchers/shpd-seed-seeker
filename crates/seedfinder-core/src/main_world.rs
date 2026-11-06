@@ -371,6 +371,8 @@ pub(crate) trait FloorObserver {
         _trinket: &crate::trinkets::TrinketEffects,
     ) {
     }
+    /// The quest state once every floor is generated.
+    fn quests(&mut self, _quests: &QuestState) {}
 }
 
 impl<F: FnMut(FloorObservation<'_>)> FloorObserver for F {
@@ -765,6 +767,7 @@ fn generate_gated_world_attempt(
         );
         items.splice(pending.insertion_index..pending.insertion_index, treasure);
     }
+    observer.quests(&quests);
     Ok(Some(GeneratedWorld {
         seed,
         items,
