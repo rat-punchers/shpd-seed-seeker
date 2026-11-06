@@ -15,6 +15,7 @@ import { AdvancedBoundary } from './AdvancedBoundary'
 import { $copied, $copyError, type CopyKind, copyQuery } from './copy'
 import { PresetsSection } from './PresetsSection'
 import { RequirementSections } from './RequirementSections'
+import { AdvancedSettings } from './settings/AdvancedSettings'
 import { $shareNotice, dismissShareNotice } from './share-import'
 import { RequirementEditor } from './sheet/RequirementEditor'
 import {
@@ -132,7 +133,10 @@ function QueryBoard() {
   )
 }
 
-/** Advanced: the whole saved query, as the requirement board and its sheet. */
+/**
+ * Advanced: the whole saved query, as the requirement board and its sheet,
+ * then the settings beyond the requirements.
+ */
 export function AdvancedQuery() {
   return (
     <div className="flex flex-col gap-4" data-testid="advanced-query">
@@ -141,6 +145,7 @@ export function AdvancedQuery() {
       <AdvancedBoundary>
         <QueryBoard />
       </AdvancedBoundary>
+      <AdvancedSettings />
     </div>
   )
 }
