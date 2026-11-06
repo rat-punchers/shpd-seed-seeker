@@ -5,6 +5,9 @@
 mod drift;
 #[cfg(test)]
 mod drift_tests;
+mod encounter;
+#[cfg(test)]
+mod encounter_parity;
 mod floor;
 mod imp_slots;
 mod item;
@@ -73,7 +76,7 @@ pub enum Section {
 }
 
 /// The sections this engine fills.
-pub const SECTIONS: [Section; 14] = [
+pub const SECTIONS: [Section; 15] = [
     Section::Identities,
     Section::RingGems,
     Section::TrinketOffers,
@@ -88,11 +91,11 @@ pub const SECTIONS: [Section; 14] = [
     Section::AlchemyPots,
     Section::Builders,
     Section::QuestRewardSlots,
+    Section::Encounters,
 ];
 
-const NOTES: [&str; 2] = [
-    "Floor items leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment.",
-    "Floor encounters are not computed.",
+const NOTES: [&str; 1] = [
+    "Floor items and encounters leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment.",
 ];
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -207,12 +210,13 @@ fn build(observed: &Observed, selected: Option<ItemId>, query: Option<&SearchQue
     }
     let mut floors = floor::floors(world, items);
     timing::fill_floors(&mut floors, &observed.floors);
+    encounter::fill_floors(&mut floors, &observed.floors);
     SeedReport {
         format: FORMAT.to_owned(),
         schema_version: SCHEMA_VERSION,
         shpd_version: crate::SHPD_VERSION.to_owned(),
         shpd_commit: crate::SHPD_COMMIT.to_owned(),
-        status: Status::Partial,
+        status: Status::Complete,
         notes: NOTES.iter().map(|&note| note.to_owned()).collect(),
         sections: SECTIONS.to_vec(),
         seed: SeedInfo {

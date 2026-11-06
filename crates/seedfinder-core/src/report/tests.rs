@@ -41,16 +41,16 @@ fn reports_survive_a_serde_round_trip() {
 }
 
 #[test]
-fn unlisted_sections_stay_absent() {
+fn every_section_is_filled() {
     let report = report(r#"{"seed":"AAA-AAA-AAA"}"#);
     assert_eq!(report.sections, SECTIONS);
-    assert_eq!(report.status, Status::Partial);
+    assert_eq!(report.status, Status::Complete);
     assert!(report.query.is_none());
     assert!(report.trinkets.timing.is_some());
     assert_eq!(report.floors.len(), 24);
     for floor in &report.floors {
         assert!(floor.appearances.is_some());
-        assert!(floor.encounters.is_none());
+        assert!(floor.encounters.is_some());
         assert!(floor.items.iter().all(|item| {
             item.depth == floor.depth
                 && item.prediction.is_some()

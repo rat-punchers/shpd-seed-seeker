@@ -122,7 +122,7 @@ pub(super) fn item(placed: &PlacedItem, floor: &ObservedFloor, groups: &mut Grou
 
 /// `PotionOfHealing` → `potion_of_healing`; `RegionLorePage$Halls` →
 /// `region_lore_page_halls`.
-fn snake_case(kind: &str) -> String {
+pub(super) fn snake_case(kind: &str) -> String {
     let mut output = String::with_capacity(kind.len() + 4);
     for character in kind.chars() {
         if character == '$' {
@@ -139,7 +139,7 @@ fn snake_case(kind: &str) -> String {
     output
 }
 
-fn category(kind: &str) -> &'static str {
+pub(super) fn category(kind: &str) -> &'static str {
     match kind {
         _ if kind.contains("PotionOf") || kind == "RuntimeLaboratoryPotion" => "potion",
         _ if kind.contains("ScrollOf") || kind == "RuntimeLibraryScroll" => "scroll",

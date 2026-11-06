@@ -6,7 +6,7 @@ use crate::builder::BuilderKind;
 use crate::catalog::ItemId;
 use crate::challenges::Challenges;
 use crate::level::Level;
-use crate::level_map::contents::MapItem;
+use crate::level_map::contents::{MapItem, MapMob};
 use crate::main_world::{
     FloorObservation, FloorObserver, ObservedProfile, generate_main_world_observed,
 };
@@ -40,6 +40,8 @@ pub(super) struct ObservedFloor {
     pub appearances: Vec<Appearance>,
     /// Heap items top first in heap order, then carried items in mob order.
     pub items: Vec<PlacedItem>,
+    /// Mobs the level generated with, in cell order.
+    pub mobs: Vec<MapMob>,
 }
 
 /// A generated object and where it lies.
@@ -79,6 +81,7 @@ impl FloorObserver for Collector {
             builder: Some(super::timing::builder(&floor.contents)),
             appearances: super::timing::alchemy_pots(floor.level, floor.rooms),
             items: placed(floor.level, floor.rooms, &contents),
+            mobs: mobs(&contents),
         });
     }
 
@@ -97,6 +100,7 @@ impl FloorObserver for Collector {
                     secret: false,
                 })
                 .collect(),
+            mobs: Vec::new(),
         });
     }
 
@@ -141,6 +145,7 @@ pub(super) fn observe(
             builder: (depth == 5).then_some(BuilderKind::FigureEight),
             appearances: super::timing::alchemy_pots(&level, &rooms),
             items: placed(&level, &rooms, &contents),
+            mobs: mobs(&contents),
         });
     }
     // `PrisonBossLevel.createItems` always drops one iron key on floor 10,
@@ -156,6 +161,7 @@ pub(super) fn observe(
             source: "heap",
             secret: false,
         }],
+        mobs: Vec::new(),
     });
     collector.floors.sort_by_key(|floor| floor.depth);
     Ok(Observed {
@@ -163,6 +169,12 @@ pub(super) fn observe(
         floors: collector.floors,
         quests: collector.quests,
     })
+}
+
+fn mobs(contents: &crate::level_map::contents::MapContents) -> Vec<MapMob> {
+    let mut mobs = contents.mobs.clone();
+    mobs.sort_by_key(|mob| mob.cell);
+    mobs
 }
 
 fn placed(

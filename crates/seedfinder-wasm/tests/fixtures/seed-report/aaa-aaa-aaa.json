@@ -3,10 +3,9 @@
   "schemaVersion": 1,
   "shpdVersion": "4.0.2",
   "shpdCommit": "57a4e06a4caf162446d1c28caa7983f0493fecf0",
-  "status": "partial",
+  "status": "complete",
   "notes": [
-    "Floor items leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment.",
-    "Floor encounters are not computed."
+    "Floor items and encounters leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment."
   ],
   "sections": [
     "identities",
@@ -22,7 +21,8 @@
     "trinketTiming",
     "alchemyPots",
     "builders",
-    "questRewardSlots"
+    "questRewardSlots",
+    "encounters"
   ],
   "seed": {
     "code": "AAA-AAA-AAA",
@@ -2285,6 +2285,24 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "albino",
+          "quantity": 1
+        },
+        {
+          "mob": "piranha",
+          "quantity": 3
+        },
+        {
+          "mob": "rat",
+          "quantity": 5
+        },
+        {
+          "mob": "snake",
+          "quantity": 2
+        }
+      ],
       "branches": []
     },
     {
@@ -2985,6 +3003,20 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "gnoll",
+          "quantity": 2
+        },
+        {
+          "mob": "rat",
+          "quantity": 3
+        },
+        {
+          "mob": "snake",
+          "quantity": 1
+        }
+      ],
       "branches": []
     },
     {
@@ -3535,6 +3567,24 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "crab",
+          "quantity": 1
+        },
+        {
+          "mob": "gnoll",
+          "quantity": 3
+        },
+        {
+          "mob": "snake",
+          "quantity": 1
+        },
+        {
+          "mob": "swarm",
+          "quantity": 1
+        }
+      ],
       "branches": []
     },
     {
@@ -3923,6 +3973,24 @@
               "max": 1
             }
           }
+        }
+      ],
+      "encounters": [
+        {
+          "mob": "crab",
+          "quantity": 2
+        },
+        {
+          "mob": "gnoll",
+          "quantity": 2
+        },
+        {
+          "mob": "slime",
+          "quantity": 3
+        },
+        {
+          "mob": "swarm",
+          "quantity": 1
         }
       ],
       "branches": []
@@ -4374,6 +4442,12 @@
               "max": 12
             }
           }
+        }
+      ],
+      "encounters": [
+        {
+          "mob": "goo",
+          "quantity": 1
         }
       ],
       "branches": []
@@ -5657,6 +5731,37 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "crystal_mimic",
+          "quantity": 1,
+          "rewards": [
+            {
+              "item": "ring_tenacity",
+              "category": "ring",
+              "level": 1,
+              "cursed": false,
+              "prediction": "generated_with_floor"
+            }
+          ]
+        },
+        {
+          "mob": "sentry",
+          "quantity": 1
+        },
+        {
+          "mob": "skeleton",
+          "quantity": 3
+        },
+        {
+          "mob": "swarm",
+          "quantity": 2
+        },
+        {
+          "mob": "thief",
+          "quantity": 1
+        }
+      ],
       "branches": []
     },
     {
@@ -6357,6 +6462,37 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "dm100",
+          "quantity": 1
+        },
+        {
+          "mob": "guard",
+          "quantity": 1
+        },
+        {
+          "mob": "skeleton",
+          "quantity": 4
+        },
+        {
+          "mob": "statue",
+          "quantity": 1,
+          "rewards": [
+            {
+              "item": "assassins_blade",
+              "category": "weapon",
+              "cursed": false,
+              "effect": "Blazing",
+              "prediction": "generated_with_floor"
+            }
+          ]
+        },
+        {
+          "mob": "thief",
+          "quantity": 2
+        }
+      ],
       "branches": []
     },
     {
@@ -6699,6 +6835,32 @@
               "max": 1
             }
           }
+        }
+      ],
+      "encounters": [
+        {
+          "mob": "dm100",
+          "quantity": 2
+        },
+        {
+          "mob": "guard",
+          "quantity": 2
+        },
+        {
+          "mob": "necromancer",
+          "quantity": 1
+        },
+        {
+          "mob": "piranha",
+          "quantity": 1
+        },
+        {
+          "mob": "skeleton",
+          "quantity": 2
+        },
+        {
+          "mob": "thief",
+          "quantity": 1
         }
       ],
       "branches": []
@@ -7127,6 +7289,28 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "dm100",
+          "quantity": 3
+        },
+        {
+          "mob": "guard",
+          "quantity": 2
+        },
+        {
+          "mob": "necromancer",
+          "quantity": 2
+        },
+        {
+          "mob": "skeleton",
+          "quantity": 1
+        },
+        {
+          "mob": "thief",
+          "quantity": 1
+        }
+      ],
       "branches": []
     },
     {
@@ -7161,6 +7345,7 @@
           }
         }
       ],
+      "encounters": [],
       "branches": []
     },
     {
@@ -8518,6 +8703,20 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "armored_brute",
+          "quantity": 1
+        },
+        {
+          "mob": "bat",
+          "quantity": 3
+        },
+        {
+          "mob": "red_shaman",
+          "quantity": 1
+        }
+      ],
       "branches": []
     },
     {
@@ -9081,6 +9280,28 @@
               "max": 1
             }
           }
+        }
+      ],
+      "encounters": [
+        {
+          "mob": "bat",
+          "quantity": 2
+        },
+        {
+          "mob": "brute",
+          "quantity": 2
+        },
+        {
+          "mob": "piranha",
+          "quantity": 3
+        },
+        {
+          "mob": "purple_shaman",
+          "quantity": 1
+        },
+        {
+          "mob": "spinner",
+          "quantity": 1
         }
       ],
       "branches": []
@@ -9793,6 +10014,28 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "bat",
+          "quantity": 1
+        },
+        {
+          "mob": "brute",
+          "quantity": 1
+        },
+        {
+          "mob": "dm200",
+          "quantity": 1
+        },
+        {
+          "mob": "red_shaman",
+          "quantity": 2
+        },
+        {
+          "mob": "spinner",
+          "quantity": 2
+        }
+      ],
       "branches": [
         {
           "branch": 1,
@@ -10178,6 +10421,48 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "bat",
+          "quantity": 1
+        },
+        {
+          "mob": "blue_shaman",
+          "quantity": 1
+        },
+        {
+          "mob": "brute",
+          "quantity": 1
+        },
+        {
+          "mob": "dm200",
+          "quantity": 2
+        },
+        {
+          "mob": "mimic",
+          "quantity": 1,
+          "rewards": [
+            {
+              "item": "stone_of_enchantment",
+              "category": "stone",
+              "prediction": "generated_with_floor"
+            },
+            {
+              "item": "gold",
+              "category": "gold",
+              "prediction": "generated_with_floor"
+            }
+          ]
+        },
+        {
+          "mob": "red_shaman",
+          "quantity": 1
+        },
+        {
+          "mob": "spinner",
+          "quantity": 3
+        }
+      ],
       "branches": []
     },
     {
@@ -10185,6 +10470,12 @@
       "rooms": [],
       "appearances": [],
       "items": [],
+      "encounters": [
+        {
+          "mob": "pylon",
+          "quantity": 4
+        }
+      ],
       "branches": []
     },
     {
@@ -11141,6 +11432,20 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "fire_elemental",
+          "quantity": 2
+        },
+        {
+          "mob": "ghoul",
+          "quantity": 3
+        },
+        {
+          "mob": "warlock",
+          "quantity": 1
+        }
+      ],
       "branches": []
     },
     {
@@ -11498,6 +11803,45 @@
               "max": 1
             }
           }
+        }
+      ],
+      "encounters": [
+        {
+          "mob": "frost_elemental",
+          "quantity": 1
+        },
+        {
+          "mob": "ghoul",
+          "quantity": 2
+        },
+        {
+          "mob": "mimic",
+          "quantity": 1,
+          "rewards": [
+            {
+              "item": "earthroot_seed",
+              "category": "seed",
+              "prediction": "generated_with_floor"
+            },
+            {
+              "item": "throwing_hammer",
+              "category": "weapon",
+              "cursed": false,
+              "prediction": "generated_with_floor"
+            }
+          ]
+        },
+        {
+          "mob": "monk",
+          "quantity": 1
+        },
+        {
+          "mob": "shock_elemental",
+          "quantity": 2
+        },
+        {
+          "mob": "warlock",
+          "quantity": 1
         }
       ],
       "branches": []
@@ -12021,6 +12365,32 @@
               "max": 1
             }
           }
+        }
+      ],
+      "encounters": [
+        {
+          "mob": "fire_elemental",
+          "quantity": 1
+        },
+        {
+          "mob": "ghoul",
+          "quantity": 1
+        },
+        {
+          "mob": "golem",
+          "quantity": 1
+        },
+        {
+          "mob": "monk",
+          "quantity": 1
+        },
+        {
+          "mob": "sentry",
+          "quantity": 1
+        },
+        {
+          "mob": "warlock",
+          "quantity": 2
         }
       ],
       "branches": []
@@ -13376,6 +13746,24 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "golem",
+          "quantity": 3
+        },
+        {
+          "mob": "monk",
+          "quantity": 2
+        },
+        {
+          "mob": "shock_elemental",
+          "quantity": 1
+        },
+        {
+          "mob": "warlock",
+          "quantity": 2
+        }
+      ],
       "branches": [
         {
           "branch": 1,
@@ -14122,6 +14510,7 @@
           }
         }
       ],
+      "encounters": [],
       "branches": []
     },
     {
@@ -14525,6 +14914,20 @@
               "max": 1
             }
           }
+        }
+      ],
+      "encounters": [
+        {
+          "mob": "demon_spawner",
+          "quantity": 1
+        },
+        {
+          "mob": "eye",
+          "quantity": 2
+        },
+        {
+          "mob": "succubus",
+          "quantity": 2
         }
       ],
       "branches": []
@@ -15165,6 +15568,41 @@
           }
         }
       ],
+      "encounters": [
+        {
+          "mob": "bee",
+          "quantity": 1
+        },
+        {
+          "mob": "demon_spawner",
+          "quantity": 1
+        },
+        {
+          "mob": "eye",
+          "quantity": 4
+        },
+        {
+          "mob": "piranha",
+          "quantity": 3
+        },
+        {
+          "mob": "statue",
+          "quantity": 1,
+          "rewards": [
+            {
+              "item": "greatsword",
+              "category": "weapon",
+              "cursed": false,
+              "effect": "Blocking",
+              "prediction": "generated_with_floor"
+            }
+          ]
+        },
+        {
+          "mob": "succubus",
+          "quantity": 3
+        }
+      ],
       "branches": []
     },
     {
@@ -15516,6 +15954,24 @@
               "max": 1
             }
           }
+        }
+      ],
+      "encounters": [
+        {
+          "mob": "demon_spawner",
+          "quantity": 1
+        },
+        {
+          "mob": "eye",
+          "quantity": 4
+        },
+        {
+          "mob": "scorpio",
+          "quantity": 2
+        },
+        {
+          "mob": "succubus",
+          "quantity": 2
         }
       ],
       "branches": []
@@ -16336,6 +16792,24 @@
               "max": 1
             }
           }
+        }
+      ],
+      "encounters": [
+        {
+          "mob": "demon_spawner",
+          "quantity": 1
+        },
+        {
+          "mob": "eye",
+          "quantity": 2
+        },
+        {
+          "mob": "scorpio",
+          "quantity": 4
+        },
+        {
+          "mob": "succubus",
+          "quantity": 2
         }
       ],
       "branches": []
