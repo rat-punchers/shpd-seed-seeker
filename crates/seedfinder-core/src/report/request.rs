@@ -6,7 +6,6 @@ use serde_json::Value;
 use crate::catalog::ItemId;
 use crate::challenges::Challenges;
 use crate::json_query::{self, CHALLENGE_NAMES};
-use crate::main_world::generate_main_world_with_trinket;
 use crate::query::SearchQuery;
 use crate::seed::{DungeonSeed, format_input};
 use crate::trinkets::{parse_offered, selected_for_query};
@@ -75,11 +74,9 @@ impl ReportRequest {
     /// # Errors
     /// Reports a failed world generation.
     pub fn generate(&self) -> Result<super::SeedReport, String> {
-        let world =
-            generate_main_world_with_trinket(self.seed, 24, self.challenges, self.selected_trinket)
-                .map_err(|error| format!("world generation failed: {error}"))?;
+        let observed = super::observe::observe(self.seed, self.challenges, self.selected_trinket)?;
         Ok(super::build(
-            &world,
+            &observed,
             self.selected_trinket,
             self.query.as_ref(),
         ))

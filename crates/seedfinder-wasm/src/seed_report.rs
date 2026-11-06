@@ -50,19 +50,36 @@ mod tests {
             assert_eq!(report["trinkets"]["selected"], scout["selectedTrinket"]);
             assert_eq!(report["ringGems"], scout["ringGems"], "{request}");
             let floors = report["floors"].as_array().unwrap();
-            let items: Vec<&Value> = floors
-                .iter()
-                .flat_map(|floor| floor["items"].as_array().unwrap())
-                .collect();
             let scout_items = scout["items"].as_array().unwrap();
-            assert_eq!(items.len(), scout_items.len(), "{request}");
             for floor in floors {
                 let expected: Vec<&Value> = scout_items
                     .iter()
                     .filter(|item| item["depth"] == floor["depth"])
                     .collect();
-                let actual: Vec<&Value> = floor["items"].as_array().unwrap().iter().collect();
-                assert_eq!(actual, expected, "{request} depth {}", floor["depth"]);
+                // Equipment comes first in scout order; the other categories follow.
+                let listed = floor["items"].as_array().unwrap();
+                let (equipment, others) = listed.split_at(expected.len().min(listed.len()));
+                let base: Vec<Value> = equipment
+                    .iter()
+                    .map(|item| {
+                        let mut item = item.clone();
+                        for field in ["prediction", "conditions", "ranges"] {
+                            item.as_object_mut().unwrap().remove(field);
+                        }
+                        item
+                    })
+                    .collect();
+                let base: Vec<&Value> = base.iter().collect();
+                assert_eq!(base, expected, "{request} depth {}", floor["depth"]);
+                for item in others {
+                    let category = item["category"].as_str().unwrap();
+                    assert!(
+                        !["weapon", "armor", "wand", "ring", "trinket", "artifact"]
+                            .contains(&category),
+                        "{request} depth {} {item}",
+                        floor["depth"]
+                    );
+                }
             }
             let offers: Vec<_> = report["trinkets"]["offers"]
                 .as_array()

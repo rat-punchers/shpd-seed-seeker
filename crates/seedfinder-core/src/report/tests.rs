@@ -53,9 +53,9 @@ fn unlisted_sections_stay_absent() {
         assert!(floor.encounters.is_none());
         assert!(floor.items.iter().all(|item| {
             item.depth == floor.depth
-                && item.prediction.is_none()
-                && item.conditions.is_none()
-                && item.ranges.is_none()
+                && item.prediction.is_some()
+                && item.conditions.is_some()
+                && item.ranges.is_some()
         }));
     }
     assert!(report.quests.iter().all(|quest| quest.slots.is_none()));

@@ -87,6 +87,17 @@ impl FloorSource<'_> {
     }
 }
 
+fn consumable(
+    reward: &crate::special_consumable::ConsumableReward,
+    a: &ItemAppearanceState,
+) -> MapItem {
+    let mut item = items::consumable(reward.item, a);
+    if let crate::special_consumable::ConsumableAccess::CrystalPath(slot) = reward.access {
+        item.access = Some(super::MapItemAccess::CrystalPath(slot));
+    }
+    item
+}
+
 impl MapContents {
     #[allow(clippy::too_many_arguments, clippy::too_many_lines)] // Exhaustive adapters for the independent generation event logs.
     fn events(
@@ -101,9 +112,12 @@ impl MapContents {
     ) {
         for e in equipment {
             match e {
-                E::Drop { cell, heap, reward } => {
-                    self.drop(*cell, &name(heap), false, items::special(reward.item, a));
-                }
+                E::Drop { cell, heap, reward } => self.drop(
+                    *cell,
+                    &name(heap),
+                    false,
+                    items::special(reward.item, a).with_access(reward.accessibility),
+                ),
                 E::Mob {
                     cell,
                     kind,
@@ -115,7 +129,10 @@ impl MapContents {
                         SpecialMobKind::CrystalMimic { .. } => "CrystalMimic".into(),
                         k => name(k),
                     },
-                    carried.iter().map(|r| items::special(r.item, a)).collect(),
+                    carried
+                        .iter()
+                        .map(|r| items::special(r.item, a).with_access(r.accessibility))
+                        .collect(),
                 ),
                 E::Blob { cell, kind, .. } => self.effect(*cell, name(kind)),
                 E::Feature { point, kind } => self.features.push(MapFeature {
@@ -136,15 +153,12 @@ impl MapContents {
                     *cell,
                     &heap.map_or_else(|| "Heap".into(), name),
                     false,
-                    items::consumable(reward.item, a),
+                    consumable(reward, a),
                 ),
                 C::Mimic { cell, carried } => self.mob(
                     *cell,
                     "Mimic",
-                    carried
-                        .iter()
-                        .map(|r| items::consumable(r.item, a))
-                        .collect(),
+                    carried.iter().map(|r| consumable(r, a)).collect(),
                 ),
                 C::Plant { cell, kind } if level.plants_enabled => self.plant(
                     *cell,
@@ -182,7 +196,7 @@ impl MapContents {
                     *cell,
                     &name(heap),
                     *haunted,
-                    items::forced(&reward.item, a, level.depth),
+                    items::forced(&reward.item, a, level.depth).with_access(reward.accessibility),
                 ),
                 F::Mob { cell, kind } => self.mob(*cell, name(kind), vec![]),
                 F::Blob { cell, kind, .. } => self.effect(*cell, name(kind)),
@@ -196,7 +210,12 @@ impl MapContents {
                     heap,
                     haunted,
                     reward,
-                } => self.drop(*cell, &name(heap), *haunted, items::secret(reward.item, a)),
+                } => self.drop(
+                    *cell,
+                    &name(heap),
+                    *haunted,
+                    items::secret(reward.item, a).with_access(reward.accessibility),
+                ),
                 S::Mob { cell, kind } => self.mob(*cell, name(kind), vec![]),
                 S::Plant { cell, kind } if level.plants_enabled => self.plant(
                     *cell,

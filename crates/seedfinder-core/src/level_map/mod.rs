@@ -313,7 +313,8 @@ pub fn generate_level_map_in_branch(
         depth,
         challenges,
         &MapGate(selected_trinket),
-        &mut |floor| {
+        crate::main_world::ObservedProfile::Map,
+        &mut |floor: crate::main_world::FloorObservation<'_>| {
             if floor.level.depth != u32::from(depth) {
                 return;
             }

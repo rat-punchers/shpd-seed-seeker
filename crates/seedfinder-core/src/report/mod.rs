@@ -4,6 +4,11 @@
 
 mod floor;
 mod item;
+#[cfg(test)]
+mod item_tests;
+mod loose;
+mod observe;
+mod predict;
 mod quest;
 mod request;
 #[cfg(test)]
@@ -21,9 +26,12 @@ pub use quest::{DepthRange, LevelRule, Quest, RewardSelection, RewardSlot, SlotC
 pub use request::{ReportRequest, decode_request, document};
 pub use trinket::{ArtifactDeck, ItemRef, TrinketTiming, Trinkets};
 
+use std::collections::BTreeMap;
+
 use crate::catalog::ItemId;
-use crate::model::GeneratedWorld;
+use crate::model::{self, GeneratedWorld, WorldItem};
 use crate::query::{ScoutMatches, SearchQuery, scout_matches};
+use observe::{Observed, PlacedItem};
 
 pub const FORMAT: &str = "seed-seeker-seed-report";
 pub const SCHEMA_VERSION: u32 = 1;
@@ -53,7 +61,7 @@ pub enum Section {
 }
 
 /// The sections this engine fills.
-pub const SECTIONS: [Section; 9] = [
+pub const SECTIONS: [Section; 10] = [
     Section::Identities,
     Section::RingGems,
     Section::TrinketOffers,
@@ -63,10 +71,11 @@ pub const SECTIONS: [Section; 9] = [
     Section::Equipment,
     Section::Quests,
     Section::Branches,
+    Section::AllItems,
 ];
 
 const NOTES: [&str; 2] = [
-    "Floor items list equipment only: weapons, armor, wands, rings, trinkets and artifacts.",
+    "Floor items leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment.",
     "Trinket timing, alchemy pots, builders, quest reward slots and floor encounters are not computed.",
 ];
 
@@ -133,23 +142,52 @@ pub struct Identity {
     pub sprite_index: u16,
 }
 
-/// Builds the report for a generated world. `selected` is the trinket the
-/// world was generated with; `query` marks matched items like `scout`.
-#[must_use]
-pub fn build(
-    world: &GeneratedWorld,
-    selected: Option<ItemId>,
-    query: Option<&SearchQuery>,
-) -> SeedReport {
+/// Builds the report from a scout-profile replay. `selected` is the trinket
+/// the world was generated with; `query` marks matched items like `scout`.
+fn build(observed: &Observed, selected: Option<ItemId>, query: Option<&SearchQuery>) -> SeedReport {
+    let world = &observed.world;
     let marks = query.map(|query| scout_matches(world, query));
-    let items = world
-        .items
-        .iter()
-        .enumerate()
-        .map(|(index, world_item)| {
-            item::Item::from_world(world_item, item_marks(marks.as_ref(), index))
-        })
-        .collect();
+    let quests = quest::quests(world.quests);
+    let context = predict::Context {
+        quests: &quests,
+        trinket: selected.filter(|id| predict::GENERATION_TRINKETS.contains(id)),
+        trinket_depths: observed
+            .floors
+            .iter()
+            .filter(|floor| floor.trinket_active)
+            .map(|floor| floor.depth)
+            .collect(),
+        group_options: group_options(&world.items),
+    };
+    let mut stacks: BTreeMap<u8, Vec<&PlacedItem>> = BTreeMap::new();
+    for floor in &observed.floors {
+        stacks.entry(floor.depth).or_default().extend(
+            floor
+                .items
+                .iter()
+                .filter(|placed| loose::is_equipment(&placed.item)),
+        );
+    }
+    let mut items = Vec::new();
+    for (index, world_item) in world.items.iter().enumerate() {
+        let mut item = item::Item::from_world(world_item, item_marks(marks.as_ref(), index));
+        let quantity = stack_size(&mut stacks, world_item);
+        predict::annotate(&mut item, true, quantity, &context);
+        items.push(item);
+    }
+    let mut groups = loose::Groups::new(&world.items);
+    for floor in &observed.floors {
+        for placed in floor
+            .items
+            .iter()
+            .filter(|placed| loose::is_listed(&placed.item))
+        {
+            let mut item = loose::item(placed, floor, &mut groups);
+            let quantity = u32::try_from(placed.item.quantity).ok();
+            predict::annotate(&mut item, placed.item.deterministic, quantity, &context);
+            items.push(item);
+        }
+    }
     SeedReport {
         format: FORMAT.to_owned(),
         schema_version: SCHEMA_VERSION,
@@ -171,8 +209,40 @@ pub fn build(
         ring_gems: world.ring_gems.ordinals().to_vec(),
         trinkets: trinket::trinkets(world, selected, marks.as_ref()),
         floors: floor::floors(world, items),
-        quests: quest::quests(world.quests),
+        quests,
     }
+}
+
+/// Options per choice group: one more than its largest option number.
+fn group_options(items: &[WorldItem]) -> BTreeMap<u16, u8> {
+    let mut options = BTreeMap::new();
+    for item in items {
+        if let model::Accessibility::Choice { group, option } = item.accessibility {
+            let count = options.entry(group).or_insert(0_u8);
+            *count = (*count).max(option.saturating_add(1));
+        }
+    }
+    options
+}
+
+/// The stack size of a world item's heap or carried copy on its floor. Items
+/// that lie in no heap (quest rewards, sacrificial prizes, trinket offers,
+/// vault treasure, the depth-20 shop) count one, except thrown weapons,
+/// whose stack size is then unknown.
+fn stack_size(stacks: &mut BTreeMap<u8, Vec<&PlacedItem>>, world_item: &WorldItem) -> Option<u32> {
+    let definition = crate::catalog::item(world_item.item);
+    let roll = crate::equipment::EquipmentRoll {
+        upgrade: world_item.upgrade,
+        effect: world_item.effect,
+        cursed: world_item.cursed,
+    };
+    let floor = stacks.entry(world_item.depth).or_default();
+    if let Some(index) = floor.iter().position(|placed| {
+        placed.item.kind == definition.stable_id && placed.item.roll == Some(roll)
+    }) {
+        return u32::try_from(floor.remove(index).item.quantity).ok();
+    }
+    (definition.weapon_category() != Some(crate::catalog::WeaponCategory::Thrown)).then_some(1)
 }
 
 fn item_marks(marks: Option<&ScoutMatches>, index: usize) -> item::Marks {

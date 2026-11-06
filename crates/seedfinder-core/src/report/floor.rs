@@ -101,7 +101,8 @@ pub struct BranchAccess {
     pub required_item: Option<String>,
 }
 
-/// Floors 1–24 in depth order, each holding its items in world order.
+/// Floors 1–24 in depth order. Items keep their given order: equipment in
+/// world order, then the other categories.
 pub(super) fn floors(world: &GeneratedWorld, items: Vec<Item>) -> Vec<Floor> {
     let mut floors: Vec<Floor> = (1..=24)
         .map(|depth| Floor {

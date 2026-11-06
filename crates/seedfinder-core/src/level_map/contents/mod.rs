@@ -1,10 +1,14 @@
 //! Initial, generation-time objects. Collection never advances the generation RNG.
 //! Future drops, rewards and respawns are deliberately not floor heaps.
 mod items;
+#[cfg(feature = "json-query")]
+mod shop;
 mod sources;
 
 use crate::level::{Level, PaintMob};
 use crate::run::ItemAppearanceState;
+#[cfg(feature = "json-query")]
+pub(crate) use shop::boss_shop_items;
 pub(crate) use sources::FloorSource;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -33,7 +37,18 @@ pub struct MapItem {
     /// Generation-time properties for inspection; the scene/contents wire format stays stable.
     #[cfg_attr(feature = "json-query", serde(skip))]
     pub roll: Option<crate::equipment::EquipmentRoll>,
+    /// Co-acquisition limits a room painter attached; read by the seed report.
+    #[cfg_attr(feature = "json-query", serde(skip))]
+    pub(crate) access: Option<MapItemAccess>,
 }
+
+/// A painted reward's co-acquisition limit, with floor-local choice groups.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum MapItemAccess {
+    Reward(crate::model::Accessibility),
+    CrystalPath(crate::special_consumable::CrystalPathSlot),
+}
+
 impl MapItem {
     pub(crate) fn new(kind: impl Into<String>, image: u16, quantity: i32) -> Self {
         Self {
@@ -43,7 +58,15 @@ impl MapItem {
             deterministic: true,
             glow: None,
             roll: None,
+            access: None,
         }
+    }
+    /// Keeps a painter's choice or scenario limit; independent rewards keep none.
+    fn with_access(mut self, access: crate::model::Accessibility) -> Self {
+        if access != crate::model::Accessibility::Independent {
+            self.access = Some(MapItemAccess::Reward(access));
+        }
+        self
     }
     fn unknown(kind: &str, image: u16) -> Self {
         Self {

@@ -1,12 +1,12 @@
-//! One floor item in a seed report, plus the optional prediction fields.
+//! One floor item in a seed report, plus its `allItems` prediction fields.
 
 use serde::{Deserialize, Serialize};
 
 use crate::catalog::{Effect, item, kind_name};
 use crate::model::{self, WorldItem, source_name};
 
-/// A floor item. The base fields equal one `scout` item; the optional fields
-/// stay absent until the `allItems` section is computed.
+/// A floor item. An equipment item's base fields equal one `scout` item; the
+/// optional fields belong to the `allItems` section.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[allow(clippy::struct_excessive_bools)] // Independent flags in the report document.

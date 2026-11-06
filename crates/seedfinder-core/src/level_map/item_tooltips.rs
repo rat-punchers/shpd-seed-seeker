@@ -100,7 +100,7 @@ fn modified_name(base: String, effect: Option<crate::catalog::Effect>) -> String
 }
 
 impl MapTooltipItem {
-    fn from_item(item: &MapItem) -> Self {
+    pub(crate) fn from_item(item: &MapItem) -> Self {
         let key: String = item
             .kind
             .chars()
