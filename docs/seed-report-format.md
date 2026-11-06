@@ -53,7 +53,7 @@ JavaScript error carrying the message.
 | `trinketTiming` | yes | `trinkets.timing`; see [seed-report-timing.md](seed-report-timing.md) |
 | `alchemyPots` | yes | `floors[].appearances` |
 | `builders` | yes | `floors[].builder` |
-| `questRewardSlots` | no | `quests[].slots`, `quests[].upgradesPinned`, `quests[].totalUpgradeValue` |
+| `questRewardSlots` | yes | `quests[].slots`, `quests[].upgradesPinned`, `quests[].totalUpgradeValue`; see [seed-report-quests.md](seed-report-quests.md) |
 | `encounters` | no | `floors[].encounters` |
 
 ## Response
@@ -131,11 +131,16 @@ JavaScript error carrying the message.
   player keeps `selectedCount` of `optionCount` rewards; the reward items
   carry `source`. Ghost 1 of 2, Wandmaker 1 of 2, Blacksmith 1 of 4 at 2000
   favor, Imp 1 of 6.
-- `questRewardSlots`: `slots` (`{slot, item, level, levelPinned, role?,
-  levelRule?, effect?, candidates?, scenarioCount}`; `levelRule` is
-  `{type: "range", min, max}` or `{type: "transfer_upgrade", transfer}`; a
-  candidate is `{item, drifts, weight}` with weights over `scenarioCount`),
-  and for the Imp `upgradesPinned` and `totalUpgradeValue`.
+- `questRewardSlots` ([seed-report-quests.md](seed-report-quests.md)):
+  `slots`, the reward options in option order, each `{slot, item, level,
+  levelPinned, role?, levelRule?, effect?, candidates?, scenarioCount}`.
+  `slot` is the option index; `role` is `weapon`, `missile`, `armor`, `ring`,
+  `wand` or `artifact` (Ghost, Blacksmith and Imp); `levelRule` (Imp) is
+  `{type: "range", min, max}` or `{type: "transfer_upgrade", transfer}`;
+  `effect` is the enchantment or glyph name. `candidates` (slots drawn from a
+  seeded deck) are `{item, drifts, weight}` with weights over
+  `scenarioCount`; fixed slots omit them and have `scenarioCount` 1. The Imp
+  also has `upgradesPinned` and `totalUpgradeValue`.
 
 ## Fixtures
 
