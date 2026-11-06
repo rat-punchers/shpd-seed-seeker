@@ -186,7 +186,17 @@ export async function openSeed(request: AnalyzeRequest): Promise<void> {
   if (existing) {
     const changed =
       (request.query || request.trinket) && !sameContext(existing, context)
-    if (changed) patch(id, { ...newSession(context), report: existing.report })
+    // Replace rather than patch: keys the new context leaves out must clear.
+    if (changed)
+      setSessions(
+        $sessions
+          .get()
+          .map((s) =>
+            s.id === id
+              ? { ...newSession(context), report: existing.report }
+              : s
+          )
+      )
     else if (existing.status === 'ready' || existing.status === 'loading')
       return
     return run(id)

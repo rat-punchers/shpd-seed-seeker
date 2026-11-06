@@ -106,6 +106,22 @@ describe('opening seeds', () => {
     expect(findSession('AAA-AAA-AAA')?.report?.seed.code).toBe('AAA-AAA-AAA')
   })
 
+  it('drops an earlier trinket and challenges when re-opened with a new query', async () => {
+    const first = openSeed({
+      seed: 'AAA-AAA-AAA',
+      query: { challenges: ['on_diet'], requirements: [] },
+    })
+    calls[0]?.resolve(report('AAA-AAA-AAA'))
+    await first
+    const picked = selectTrinket('AAA-AAA-AAA', 'mimic_tooth')
+    calls[1]?.resolve(report('AAA-AAA-AAA'))
+    await picked
+    const query = { requirements: [{ kind: 'ring' as const }] }
+    void openSeed({ seed: 'AAA-AAA-AAA', query })
+    expect(calls[2]?.request).toEqual({ seed: 'AAA-AAA-AAA', query })
+    expect($savedSeeds.get()).toEqual([{ seed: 'AAA-AAA-AAA', query }])
+  })
+
   it(`keeps at most ${MAX_OPEN_SEEDS} tabs, dropping the oldest`, () => {
     for (let index = 0; index <= MAX_OPEN_SEEDS; index++) {
       void openSeed({ seed: `AAA-AAA-AA${String.fromCharCode(65 + index)}` })
