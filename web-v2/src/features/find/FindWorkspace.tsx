@@ -9,9 +9,10 @@ import { WorkspaceEmptyPlaceholder } from '../../shared/ui/WorkspaceEmptyPlaceho
 import { RESULT_CAP } from '../search/coordinator-state'
 import { searchStore } from '../search/store'
 import { ResultCard } from './ResultCard'
+import { ResultsActions, ResultsNotice } from './results/ResultsActions'
 import { SearchStatusCard } from './SearchStatusCard'
 
-/** The Find workspace: the search run and its matches. */
+/** The Find workspace: the search run, its matches and the results file. */
 export function FindWorkspace() {
   const state = useStore(searchStore, (search) => search.state)
   const error = useStore(searchStore, (search) => search.error)
@@ -22,8 +23,11 @@ export function FindWorkspace() {
       <WorkspaceEmptyPlaceholder
         icon={BinocularsIcon}
         title="No search yet"
-        description="Choose items in the sidebar to start a search."
-      />
+        description="Choose items in the sidebar to start a search, or import results."
+      >
+        <ResultsActions />
+        <ResultsNotice />
+      </WorkspaceEmptyPlaceholder>
     )
   }
 
@@ -32,6 +36,8 @@ export function FindWorkspace() {
   const shown = matches.slice(0, RESULT_CAP)
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
+      <ResultsActions />
+      <ResultsNotice />
       <SearchStatusCard />
       {error ? (
         <Alert variant="destructive">
@@ -56,6 +62,10 @@ export function FindWorkspace() {
       ) : state === 'running' ? (
         <p className="text-muted-foreground text-sm">
           Matching seeds will appear here as they are found.
+        </p>
+      ) : state === 'imported' ? (
+        <p className="text-muted-foreground text-sm">
+          The imported file contained no seeds.
         </p>
       ) : null}
     </div>

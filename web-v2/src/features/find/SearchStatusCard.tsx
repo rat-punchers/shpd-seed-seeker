@@ -23,7 +23,8 @@ import {
   isSearchActive,
 } from '../search/coordinator-state'
 import { searchStatusNotes } from '../search/status'
-import { clearResults, searchStore } from '../search/store'
+import { searchStore } from '../search/store'
+import { discardResults } from './results/results-io'
 import { $analysis } from './run'
 
 /** Re-renders 10 times a second while active so the stats stay live. */
@@ -65,7 +66,14 @@ function statusCopy(search: CoordinatorState): {
     case 'failed':
       return { label: 'Failed', description: 'The search stopped on an error.' }
     case 'imported':
-      return { label: 'Imported', description: 'Seeds loaded from a file.' }
+      return {
+        label: 'Imported',
+        description: `${plural(search.matches.length, 'seed')} loaded from a file${
+          search.importedDropped
+            ? ` · ${search.importedDropped.toLocaleString()} entr${search.importedDropped === 1 ? 'y' : 'ies'} dropped (duplicates or beyond the 1,024-seed limit)`
+            : ''
+        }.`,
+      }
     default:
       return {
         label: 'Completed',
@@ -119,7 +127,7 @@ export function SearchStatusCard() {
             aria-label="Clear results"
             title="Clear these results, so the next search starts from scratch"
             disabled={!canClearResults(search)}
-            onClick={clearResults}
+            onClick={discardResults}
           >
             <TrashIcon />
           </Button>
