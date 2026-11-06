@@ -20,6 +20,9 @@ const ICON_CELL = 8
  */
 export const RING_SPRITE_BASE = 224
 
+/** Atlas cell of Arcane Resin (`ItemSpriteSheet.ARCANE_RESIN`). */
+export const ARCANE_RESIN_SPRITE = 317
+
 // Art size (w, h) of each ring glyph within its 8×8 cell, in catalog ring order.
 const RING_ICON_SIZES: [number, number][] = [
   [7, 7],
@@ -117,5 +120,40 @@ export function spriteBoxCss(
       backgroundSize: `${SHEET_COLUMNS * CELL * scale}px auto`,
       imageRendering: 'pixelated',
     },
+  }
+}
+
+/**
+ * Overlay CSS for an enchantment glow, laid over the `inner` art of
+ * `spriteBoxCss` (as its child, inset 0). A color layer masked to the
+ * sprite's opaque pixels pulses its opacity (the `sprite-glow` class), which
+ * blends the art toward the color as the game's glow shader does; one pulse
+ * lasts `2 × period` seconds.
+ */
+export function spriteGlowCss(
+  cell: number,
+  size: number,
+  glow: { color: string; period: number }
+): CSSProperties {
+  const scale = size / CELL
+  const col = cell % SHEET_COLUMNS
+  const row = Math.floor(cell / SHEET_COLUMNS)
+  const [x = 0, y = 0] = bounds[String(cell)] ?? []
+  const maskPosition = `${-(col * CELL + x) * scale}px ${-(row * CELL + y) * scale}px`
+  const maskSize = `${SHEET_COLUMNS * CELL * scale}px auto`
+  return {
+    position: 'absolute',
+    inset: 0,
+    WebkitMaskImage: `url(${SHEET_URL})`,
+    maskImage: `url(${SHEET_URL})`,
+    WebkitMaskPosition: maskPosition,
+    maskPosition,
+    WebkitMaskSize: maskSize,
+    maskSize,
+    WebkitMaskRepeat: 'no-repeat',
+    maskRepeat: 'no-repeat',
+    pointerEvents: 'none',
+    backgroundColor: glow.color,
+    animationDuration: `${2 * glow.period}s`,
   }
 }

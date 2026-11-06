@@ -2,3 +2,28 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@seed-seeker/design/theme.css";
+
+/* An enchantment glow over an item sprite (`spriteGlowCss`). */
+@keyframes sprite-glow-pulse {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.sprite-glow {
+  opacity: 0;
+  animation-name: sprite-glow-pulse;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sprite-glow {
+    animation: none;
+    opacity: 0.3;
+  }
+}
