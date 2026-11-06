@@ -1696,6 +1696,33 @@ impl RegularLevelBuilder {
             ))
         }
     }
+
+    #[must_use]
+    pub const fn kind(&self) -> BuilderKind {
+        match self {
+            Self::Loop(_) => BuilderKind::Loop,
+            Self::FigureEight(_) => BuilderKind::FigureEight,
+        }
+    }
+}
+
+/// The builder class a floor's room graph was laid out with.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BuilderKind {
+    /// `LoopBuilder`.
+    Loop,
+    /// `FigureEightBuilder`.
+    FigureEight,
+}
+
+impl BuilderKind {
+    #[must_use]
+    pub const fn stable_id(self) -> &'static str {
+        match self {
+            Self::Loop => "loop",
+            Self::FigureEight => "figure_eight",
+        }
+    }
 }
 
 impl Builder for RegularLevelBuilder {
