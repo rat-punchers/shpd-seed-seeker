@@ -191,6 +191,36 @@ It is not part of the release workflow; redeploy it by hand only if that file ch
 npx firebase-tools deploy --only hosting --project shpd-seed-seeker
 ```
 
+### web-v2
+
+`web-v2/` is a second web app with Find (Simple and Advanced) and an Analyze
+report. It lives in the root Bun workspace with `packages/design`,
+`tooling/web-visual` and `tooling/web-deploy`; `web/` is not part of it.
+Install [Bun](https://bun.sh), Rust with the `wasm32-unknown-unknown` target,
+and `wasm-pack`, then from the repository root:
+
+```sh
+bun install
+bun run build:wasm   # build the browser engine into web-v2/
+bun run dev:web-v2   # http://localhost:46000
+```
+
+`bun run dev` starts web-v2 and the design preview (port 46002) together.
+Checks, in order: `bun run check` (Biome), `bun run check:types`,
+`bun run build`, `bun run test`. Browser tests run in Playwright Chromium:
+`bun run install:visual-browser` once, then `bun run test:visual`. See
+[web-v2/README.md](web-v2/README.md) for the source layout and
+[tooling/web-visual/README.md](tooling/web-visual/README.md) for the browser
+tests.
+
+The `web-v2` workflow runs those checks on pull requests and pushes to `main`.
+On a push to `main` it then deploys `web-v2/dist` as the Cloudflare Worker
+`shpd-seed-seeker-v2` (`web-v2/wrangler.toml`) to
+[seedseeker.nerdcoder.xyz](https://seedseeker.nerdcoder.xyz). The deploy reads
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from the GitHub environment
+`web-v2`; `bun run deploy:setup` creates the token and stores both
+([tooling/web-deploy/README.md](tooling/web-deploy/README.md)).
+
 ### Android
 
 #### Building

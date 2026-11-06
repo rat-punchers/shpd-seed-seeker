@@ -40,7 +40,14 @@ lints only those workspaces and the root config files.
   credentials in the GitHub `web-v2` environment. Do not run it, or deploy,
   without being asked.
 - Definition of Done, in order: `bun run check` → `bun run check:types` →
-  `bun run build` → `bun run test`. All four must pass.
+  `bun run build` → `bun run test`. All four must pass. Changes to web-v2's
+  UI also need `bun run test:visual`. Engine changes also need
+  `cargo fmt --all -- --check`,
+  `cargo clippy --workspace --exclude shpd-seedfinder-gtk --all-targets -- -D warnings`
+  and `cargo test --workspace --exclude shpd-seedfinder-gtk`, then
+  `bun run build:wasm` before the web checks.
+- Source layout: `web-v2/README.md`. Browser test helpers:
+  `tooling/web-visual/README.md`.
 - TypeScript: `tsconfig.base.json` holds shared options only. Each package has
   its own composite `tsconfig.json` that includes only its own files and is
   listed in the root solution `tsconfig.json`. No cross-package `include` or
@@ -54,6 +61,10 @@ lints only those workspaces and the root config files.
   section means implementing it, adding it to `sections`, regenerating the
   fixtures in `crates/seedfinder-wasm/tests/fixtures/seed-report/`, and
   updating the doc. Renaming or removing a field bumps `schemaVersion`.
+  web-v2's report tests and browser specs read those real fixtures or run the
+  real engine. For a section the engine does not fill yet, a hand-made
+  fixture served by `installFakeReportWorker` (`tooling/web-visual`) stands
+  in until it does.
 
 ## Android Canary builds
 
