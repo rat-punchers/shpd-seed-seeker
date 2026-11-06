@@ -5,7 +5,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import type { SeedReport } from '../../../src/engine/types'
 import { SeedReportView } from '../../../src/features/analyze/report/SeedReportView'
 import { MAP_DEPTHS } from '../../../src/features/level-map/client'
-import { realReport, syntheticReport } from './fixtures'
+import { realReport } from './fixtures'
 
 let root: Root | undefined
 let container: HTMLDivElement
@@ -65,7 +65,7 @@ describe('floor map buttons', () => {
   })
 
   it('show no branch button when the report lists no branches', async () => {
-    const report = await syntheticReport()
+    const report = await realReport('aaa-aaa-aaa.json')
     render({
       ...report,
       sections: report.sections.filter((section) => section !== 'branches'),

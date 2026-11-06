@@ -4,11 +4,6 @@ import {
   collectBrowserErrors,
   expectNoBrowserErrors,
 } from './helpers/browser-errors'
-import {
-  installFakeReportWorker,
-  loadReportFixtures,
-  loadSyntheticReportFixtures,
-} from './helpers/fake-report-worker'
 
 /** The open-seed tabs above the report. */
 const seedTabs = (page: Page) =>
@@ -37,8 +32,9 @@ test('a typed seed opens a tab with the engine report', async ({ page }) => {
     page.getByRole('navigation', { name: 'Floors' }).getByRole('button')
   ).toHaveCount(24)
   await expect(page.locator('[data-quest]')).toHaveCount(4)
-  // The engine does not fill encounters yet, so none are drawn.
-  await expect(page.getByLabel('Initial encounters')).toHaveCount(0)
+  await expect(
+    page.locator('[data-floor-depth="1"]').getByLabel('Initial encounters')
+  ).toBeVisible()
 
   // The floor strip jumps to a floor; an item opens its description.
   await page.getByRole('button', { name: /^Floor 9, Prison/ }).click()
@@ -135,6 +131,11 @@ test('J and K walk Find results from Analyze', async ({ page }) => {
   await cards.nth(0).getByRole('button', { name: 'Analyze seed' }).click()
 
   await expect(seedTitle(page)).toHaveText(first)
+  // The report is matched against the Find query.
+  await expect(page.locator('[data-query-summary]')).toHaveText(
+    'Matches 1 of 1 query requirements.'
+  )
+  await expect(page.locator('[data-matched]').first()).toBeAttached()
   const position = page.getByRole('navigation', { name: 'Search results' })
   await expect(position).toContainText(/Result 1 of \d+/)
   await page.keyboard.press('j')
@@ -152,47 +153,34 @@ test('J and K walk Find results from Analyze', async ({ page }) => {
   expectNoBrowserErrors(errors)
 })
 
-test('sections the engine does not fill yet render from the synthetic report', async ({
+test('the engine times the Catalyst and fills pots, encounters and reward outlooks', async ({
   page,
 }) => {
   const errors = collectBrowserErrors(page)
-  await installFakeReportWorker(page, {
-    ...(await loadReportFixtures()),
-    ...(await loadSyntheticReportFixtures()),
-  })
   await openApp(page)
-  await page.goto('/?scout=SYN-THE-TIC')
-  await expect(seedTitle(page)).toHaveText('SYN-THE-TIC')
-  await expect(page.locator('[data-query-summary]')).toHaveText(
-    'Matches 1 of 2 query requirements.'
-  )
+  await page.goto('/?scout=AAA-AAA-AAA')
+  await expect(seedTitle(page)).toHaveText('AAA-AAA-AAA')
 
-  // Trinket timing: the Catalyst sits on its floor; later floors say what they hold.
-  const floor3 = page.locator('[data-floor-depth="3"]')
-  const band = floor3.locator('[data-trinket-choice]')
-  await expect(band).toContainText('Floors 4+ are generated with Mimic Tooth.')
+  // The Catalyst is picked on floor 4, where the first alchemy pot stands.
+  const floor4 = page.locator('[data-floor-depth="4"]')
+  const floor5 = page.locator('[data-floor-depth="5"]')
+  const band = floor4.locator('[data-trinket-choice]')
+  await expect(band).toContainText('Floors 5+ are generated with no trinket.')
   await expect(
-    page.locator('[data-floor-depth="4"]').getByRole('button', {
-      name: 'Generated with Mimic Tooth. Change trinket',
+    floor4.getByRole('img', { name: 'Alchemy pot, laboratory' })
+  ).toBeVisible()
+  await expect(
+    page.locator('[data-floor-depth="17"]').getByRole('img', {
+      name: 'Alchemy pot, secret laboratory, in a secret room',
     })
-  ).toBeVisible()
-  await expect(
-    floor3.getByRole('img', { name: 'Alchemy pot, laboratory' })
-  ).toBeVisible()
+  ).toBeAttached()
 
-  // All items: a constrained item lists its conditions.
-  await page
-    .locator('[data-floor-depth="2"] [data-prediction="constrained"]')
-    .click()
-  const detail = page.locator('[data-slot="item-detail"]')
-  await expect(detail).toContainText('Starts between +0 to +2.')
-  await expect(detail).toContainText('On Diet is disabled')
-  await page.keyboard.press('Escape')
-
-  // Encounters and quest reward slots.
+  // Floor encounters and what the floor generates them carrying.
   await expect(
-    page.locator('[data-floor-depth="1"]').getByLabel('Initial encounters')
-  ).toContainText('12.5% runtime chance: Mystery Meat')
+    page.locator('[data-floor-depth="6"]').getByLabel('Initial encounters')
+  ).toContainText('Carries Ring of Tenacity +1')
+
+  // Quest reward slots.
   await page
     .locator('[data-quest="wandmaker"]')
     .getByRole('button', { name: 'Wand reward outlook' })
@@ -201,20 +189,39 @@ test('sections the engine does not fill yet render from the synthetic report', a
     .getByRole('dialog')
     .filter({ hasText: 'Wand reward outlook' })
   await expect(outlook).toContainText('Wand 1')
-  await expect(outlook).toContainText('60%')
+  await expect(outlook).toContainText('33%')
   await page.keyboard.press('Escape')
   await page
     .locator('[data-quest="imp"]')
     .getByRole('button', { name: 'Per-slot reward outlook' })
     .click()
-  await expect(
-    page.getByRole('dialog').filter({ hasText: 'Per-slot outlook' })
-  ).toContainText('18 upgrades across the six options')
+  const impOutlook = page
+    .getByRole('dialog')
+    .filter({ hasText: 'Per-slot outlook' })
+  // The artifact slot can drift onto the Unstable Spellbook, so upgrades
+  // are not pinned for this seed.
+  await expect(impOutlook).toContainText(
+    'unless the artifact slot lands on the Unstable Spellbook'
+  )
+  await expect(impOutlook).toContainText('Sandals of Nature')
   await page.keyboard.press('Escape')
 
-  // Picking another offer asks for a regenerated report.
-  await band.getByRole('radio', { name: 'Dimensional Sundial' }).click()
+  // Picking Mimic Tooth regenerates the floors it changes.
+  await band.getByRole('radio', { name: 'Mimic Tooth' }).click()
   await expect(band).toHaveAttribute('aria-busy', 'false')
+  await expect(band).toContainText('Floors 5+ are generated with Mimic Tooth.')
+  const chip = { name: 'Generated with Mimic Tooth. Change trinket' }
+  await expect(floor5.getByRole('button', chip)).toBeVisible()
+  await expect(floor4.getByRole('button', chip)).toHaveCount(0)
+  // Floor 5 is Goo's; floor 6 is the first with items the pick changes.
+  await page
+    .locator('[data-floor-depth="6"] [data-prediction="constrained"]')
+    .first()
+    .click()
+  await expect(page.locator('[data-slot="item-detail"]')).toContainText(
+    'Mimic Tooth is acquired at +3 or better before floor 6'
+  )
+  await page.keyboard.press('Escape')
   expectNoBrowserErrors(errors)
 })
 

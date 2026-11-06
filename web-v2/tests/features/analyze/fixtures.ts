@@ -20,15 +20,3 @@ export async function realReport(
   )
   return JSON.parse(await readFile(path, 'utf8')) as SeedReport
 }
-
-/**
- * A hand-made report with every section filled (`SYN-THE-TIC`), for the
- * sections the engine does not compute yet.
- */
-export async function syntheticReport(): Promise<SeedReport> {
-  const path = join(
-    import.meta.dir,
-    '../../fixtures/seed-report/synthetic-all-sections.json'
-  )
-  return JSON.parse(await readFile(path, 'utf8')) as SeedReport
-}
