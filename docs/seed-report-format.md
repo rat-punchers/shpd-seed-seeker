@@ -133,14 +133,9 @@ JavaScript error carrying the message.
   favor, Imp 1 of 6.
 - `questRewardSlots` ([seed-report-quests.md](seed-report-quests.md)):
   `slots`, the reward options in option order, each `{slot, item, level,
-  levelPinned, role?, levelRule?, effect?, candidates?, scenarioCount}`.
-  `slot` is the option index; `role` is `weapon`, `missile`, `armor`, `ring`,
-  `wand` or `artifact` (Ghost, Blacksmith and Imp); `levelRule` (Imp) is
-  `{type: "range", min, max}` or `{type: "transfer_upgrade", transfer}`;
-  `effect` is the enchantment or glyph name. `candidates` (slots drawn from a
-  seeded deck) are `{item, drifts, weight}` with weights over
-  `scenarioCount`; fixed slots omit them and have `scenarioCount` 1. The Imp
-  also has `upgradesPinned` and `totalUpgradeValue`.
+  levelPinned, role?, levelRule?, effect?, candidates?, scenarioCount}`, with
+  `candidates` as `{item, drifts, weight}`. The Imp also has
+  `upgradesPinned` and `totalUpgradeValue`.
 
 ## Fixtures
 

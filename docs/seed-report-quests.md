@@ -5,6 +5,18 @@ fills `quests[].slots`, and for the Imp `upgradesPinned` and
 `totalUpgradeValue`. The builders are `report/quest_slots.rs`,
 `report/imp_slots.rs` and `report/drift.rs` in `crates/seedfinder-core/src`.
 
+## Slot fields
+
+- `slot` is the option index.
+- `role` (Ghost, Blacksmith and Imp) is `weapon`, `missile`, `armor`, `ring`,
+  `wand` or `artifact`.
+- `levelRule` (Imp) is `{type: "range", min, max}` or
+  `{type: "transfer_upgrade", transfer}`.
+- `effect` is the enchantment or glyph name.
+- `candidates` (slots drawn from a seeded deck) are `{item, drifts, weight}`
+  with weights over `scenarioCount`. Fixed slots omit them and have
+  `scenarioCount` 1.
+
 ## Deck drift
 
 Each seeded generator deck (wands, rings, artifacts, each weapon and thrown
