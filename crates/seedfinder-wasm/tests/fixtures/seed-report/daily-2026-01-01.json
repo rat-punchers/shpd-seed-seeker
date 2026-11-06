@@ -6,7 +6,7 @@
   "status": "partial",
   "notes": [
     "Floor items leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment.",
-    "Trinket timing, alchemy pots, builders, quest reward slots and floor encounters are not computed."
+    "Quest reward slots and floor encounters are not computed."
   ],
   "sections": [
     "identities",
@@ -18,7 +18,10 @@
     "equipment",
     "quests",
     "branches",
-    "allItems"
+    "allItems",
+    "trinketTiming",
+    "alchemyPots",
+    "builders"
   ],
   "seed": {
     "code": "2026-01-01",
@@ -1781,7 +1784,20 @@
           }
         ]
       }
-    ]
+    ],
+    "timing": {
+      "catalystDepth": 2,
+      "firstAlchemyPotDepth": 3,
+      "firstAlchemyPotSecret": false,
+      "selectionDepth": 3,
+      "firstEffectiveDepth": 4,
+      "optionEffects": [
+        "modeled",
+        "none",
+        "modeled",
+        "none"
+      ]
+    }
   },
   "floors": [
     {
@@ -1797,6 +1813,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "wand_corrosion",
@@ -2259,6 +2277,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "runic_blade",
@@ -2652,6 +2672,14 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
+      ],
       "items": [
         {
           "id": "energy_crystal",
@@ -3034,6 +3062,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "spear",
@@ -3431,6 +3461,8 @@
     {
       "depth": 5,
       "rooms": [],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "gold",
@@ -3892,6 +3924,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "leather_armor",
@@ -4733,6 +4767,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "mail_armor",
@@ -5027,6 +5063,19 @@
         "secret_laboratory",
         "entrance",
         "exit"
+      ],
+      "builder": "figure_eight",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "secret_laboratory",
+          "secret": true
+        },
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
       ],
       "items": [
         {
@@ -5595,6 +5644,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "scale_armor",
@@ -6259,6 +6310,7 @@
     {
       "depth": 10,
       "rooms": [],
+      "appearances": [],
       "items": [
         {
           "id": "iron_key",
@@ -6305,6 +6357,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "paralytic_dart",
@@ -7164,6 +7218,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "ring_might",
@@ -7813,6 +7869,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "unstable_spellbook",
@@ -8637,6 +8695,14 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
+      ],
       "items": [
         {
           "id": "throwing_spear",
@@ -9042,6 +9108,7 @@
     {
       "depth": 15,
       "rooms": [],
+      "appearances": [],
       "items": [],
       "branches": []
     },
@@ -9060,6 +9127,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "heavy_boomerang",
@@ -9965,6 +10034,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "plate_armor",
@@ -10448,6 +10519,14 @@
         "quest_ambitious_imp",
         "entrance",
         "exit"
+      ],
+      "builder": "figure_eight",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
       ],
       "items": [
         {
@@ -11926,6 +12005,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "flail",
@@ -12369,6 +12450,7 @@
     {
       "depth": 20,
       "rooms": [],
+      "appearances": [],
       "items": [
         {
           "id": "plate_armor",
@@ -13124,6 +13206,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "war_hammer",
@@ -13791,6 +13875,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "ring_tenacity",
@@ -14778,6 +14864,14 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
+      ],
       "items": [
         {
           "id": "plate_armor",
@@ -15319,6 +15413,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "glaive",

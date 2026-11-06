@@ -46,10 +46,10 @@ fn unlisted_sections_stay_absent() {
     assert_eq!(report.sections, SECTIONS);
     assert_eq!(report.status, Status::Partial);
     assert!(report.query.is_none());
-    assert!(report.trinkets.timing.is_none());
+    assert!(report.trinkets.timing.is_some());
     assert_eq!(report.floors.len(), 24);
     for floor in &report.floors {
-        assert!(floor.builder.is_none() && floor.appearances.is_none());
+        assert!(floor.appearances.is_some());
         assert!(floor.encounters.is_none());
         assert!(floor.items.iter().all(|item| {
             item.depth == floor.depth

@@ -6,7 +6,7 @@
   "status": "partial",
   "notes": [
     "Floor items leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment.",
-    "Trinket timing, alchemy pots, builders, quest reward slots and floor encounters are not computed."
+    "Quest reward slots and floor encounters are not computed."
   ],
   "sections": [
     "identities",
@@ -18,7 +18,10 @@
     "equipment",
     "quests",
     "branches",
-    "allItems"
+    "allItems",
+    "trinketTiming",
+    "alchemyPots",
+    "builders"
   ],
   "seed": {
     "code": "RZN-LKU-EFS",
@@ -1535,7 +1538,20 @@
           }
         ]
       }
-    ]
+    ],
+    "timing": {
+      "catalystDepth": 3,
+      "firstAlchemyPotDepth": 3,
+      "firstAlchemyPotSecret": false,
+      "selectionDepth": 3,
+      "firstEffectiveDepth": 4,
+      "optionEffects": [
+        "modeled",
+        "modeled",
+        "modeled",
+        "modeled"
+      ]
+    }
   },
   "floors": [
     {
@@ -1551,6 +1567,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "dried_rose",
@@ -1868,6 +1886,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "quarterstaff",
@@ -2533,6 +2553,14 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
+      ],
       "items": [
         {
           "id": "sword",
@@ -3062,6 +3090,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "fishing_spear",
@@ -3699,6 +3729,8 @@
     {
       "depth": 5,
       "rooms": [],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "gold",
@@ -4161,6 +4193,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "sickle",
@@ -5184,6 +5218,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "scale_armor",
@@ -5904,6 +5940,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "runic_blade",
@@ -6251,6 +6289,14 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
+      ],
       "items": [
         {
           "id": "energy_crystal",
@@ -6518,6 +6564,7 @@
     {
       "depth": 10,
       "rooms": [],
+      "appearances": [],
       "items": [
         {
           "id": "iron_key",
@@ -6564,6 +6611,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "mail_armor",
@@ -7372,6 +7421,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "skeleton_key",
@@ -7718,6 +7769,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "sandals_of_nature",
@@ -8398,6 +8451,14 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
+      ],
       "items": [
         {
           "id": "energy_crystal",
@@ -8873,6 +8934,7 @@
     {
       "depth": 15,
       "rooms": [],
+      "appearances": [],
       "items": [],
       "branches": []
     },
@@ -8896,6 +8958,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "greatsword",
@@ -9817,6 +9881,14 @@
         "quest_ambitious_imp",
         "entrance",
         "exit"
+      ],
+      "builder": "loop",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "secret_laboratory",
+          "secret": true
+        }
       ],
       "items": [
         {
@@ -11469,6 +11541,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "plate_armor",
@@ -12063,6 +12137,14 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
+      ],
       "items": [
         {
           "id": "scale_armor",
@@ -12510,6 +12592,7 @@
     {
       "depth": 20,
       "rooms": [],
+      "appearances": [],
       "items": [
         {
           "id": "throwing_hammer",
@@ -13260,6 +13343,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "plate_armor",
@@ -14016,6 +14101,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "figure_eight",
+      "appearances": [],
       "items": [
         {
           "id": "timekeepers_hourglass",
@@ -14712,6 +14799,8 @@
         "entrance",
         "exit"
       ],
+      "builder": "loop",
+      "appearances": [],
       "items": [
         {
           "id": "throwing_hammer",
@@ -15266,6 +15355,14 @@
         "demon_spawner",
         "entrance",
         "exit"
+      ],
+      "builder": "loop",
+      "appearances": [
+        {
+          "kind": "alchemy_pot",
+          "room": "laboratory",
+          "secret": false
+        }
       ],
       "items": [
         {

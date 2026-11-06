@@ -15,6 +15,9 @@ mod quest;
 mod request;
 #[cfg(test)]
 mod tests;
+mod timing;
+#[cfg(test)]
+mod timing_parity;
 mod trinket;
 
 use serde::{Deserialize, Serialize};
@@ -63,7 +66,7 @@ pub enum Section {
 }
 
 /// The sections this engine fills.
-pub const SECTIONS: [Section; 10] = [
+pub const SECTIONS: [Section; 13] = [
     Section::Identities,
     Section::RingGems,
     Section::TrinketOffers,
@@ -74,11 +77,14 @@ pub const SECTIONS: [Section; 10] = [
     Section::Quests,
     Section::Branches,
     Section::AllItems,
+    Section::TrinketTiming,
+    Section::AlchemyPots,
+    Section::Builders,
 ];
 
 const NOTES: [&str; 2] = [
     "Floor items leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment.",
-    "Trinket timing, alchemy pots, builders, quest reward slots and floor encounters are not computed.",
+    "Quest reward slots and floor encounters are not computed.",
 ];
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -190,6 +196,8 @@ fn build(observed: &Observed, selected: Option<ItemId>, query: Option<&SearchQue
             items.push(item);
         }
     }
+    let mut floors = floor::floors(world, items);
+    timing::fill_floors(&mut floors, &observed.floors);
     SeedReport {
         format: FORMAT.to_owned(),
         schema_version: SCHEMA_VERSION,
@@ -209,8 +217,11 @@ fn build(observed: &Observed, selected: Option<ItemId>, query: Option<&SearchQue
         }),
         identities: identities(world),
         ring_gems: world.ring_gems.ordinals().to_vec(),
-        trinkets: trinket::trinkets(world, selected, marks.as_ref()),
-        floors: floor::floors(world, items),
+        trinkets: Trinkets {
+            timing: timing::timing(world, &observed.floors),
+            ..trinket::trinkets(world, selected, marks.as_ref())
+        },
+        floors,
         quests,
     }
 }

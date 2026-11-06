@@ -1,6 +1,8 @@
 //! One scout-profile replay that keeps every floor's generated objects: the
 //! searchable world plus each heap, container and carried item.
 
+use super::floor::Appearance;
+use crate::builder::BuilderKind;
 use crate::catalog::ItemId;
 use crate::challenges::Challenges;
 use crate::level::Level;
@@ -30,6 +32,10 @@ pub(super) struct ObservedFloor {
     pub trinket_active: bool,
     /// See `FloorObservation::choice_group_offset`; zero on boss floors.
     pub choice_group_offset: u16,
+    /// The level builder; absent on floors without a room graph.
+    pub builder: Option<BuilderKind>,
+    /// Alchemy pots in cell order.
+    pub appearances: Vec<Appearance>,
     /// Heap items top first in heap order, then carried items in mob order.
     pub items: Vec<PlacedItem>,
 }
@@ -67,6 +73,8 @@ impl FloorObserver for Collector {
             depth,
             trinket_active: floor.trinket.selected.is_some(),
             choice_group_offset: floor.choice_group_offset,
+            builder: Some(super::timing::builder(&floor.contents)),
+            appearances: super::timing::alchemy_pots(floor.level, floor.rooms),
             items: placed(floor.level, floor.rooms, &contents),
         });
     }
@@ -76,6 +84,8 @@ impl FloorObserver for Collector {
             depth: inventory.depth,
             trinket_active: trinket.selected.is_some(),
             choice_group_offset: 0,
+            builder: None,
+            appearances: Vec::new(),
             items: crate::level_map::contents::boss_shop_items(inventory, &self.appearance)
                 .into_iter()
                 .map(|item| PlacedItem {
@@ -118,6 +128,10 @@ pub(super) fn observe(
             depth,
             trinket_active: false,
             choice_group_offset: 0,
+            // `SewerBossLevel.builder()` is always a `FigureEightBuilder`;
+            // the other boss levels build no room graph.
+            builder: (depth == 5).then_some(BuilderKind::FigureEight),
+            appearances: super::timing::alchemy_pots(&level, &rooms),
             items: placed(&level, &rooms, &contents),
         });
     }
@@ -127,6 +141,8 @@ pub(super) fn observe(
         depth: 10,
         trinket_active: false,
         choice_group_offset: 0,
+        builder: None,
+        appearances: Vec::new(),
         items: vec![PlacedItem {
             item: MapItem::new("IronKey", 55, 1),
             source: "heap",
