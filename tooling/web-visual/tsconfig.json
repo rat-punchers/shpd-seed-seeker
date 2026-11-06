@@ -4,5 +4,5 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "types": ["bun"]
   },
-  "include": ["playwright.config.ts", "tests"]
+  "include": ["playwright.config.ts", "tests", "unit"]
 }

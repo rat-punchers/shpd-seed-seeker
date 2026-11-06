@@ -28,6 +28,14 @@ reproducible pixels: UTC, `en-US`, light color scheme, reduced motion, a
   reads the engine's real reports from
   `crates/seedfinder-wasm/tests/fixtures/seed-report/`. Other workers stay
   real.
+- `map-fixtures.ts`: `MAP_FIXTURES`, the floor maps with committed canvas
+  snapshots (main floors, the Crystal and Gnoll mines, the Imp Vault), and
+  the names the app gives their map buttons and dialogs.
+  `unit/map-fixtures.test.ts` checks the registry under `bun test`
+  (`bun run test` from the repository root runs it).
+- `map-dialog.ts`: `analyzeSeed(page, typed, seed)` with the real engine,
+  `openMap(page, level)`, and pan, zoom and hover helpers that read the
+  stage's `data-zoom`, `data-pan-x` and `data-pan-y`.
 
 ## First-time setup
 

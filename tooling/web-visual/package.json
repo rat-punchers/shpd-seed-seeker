@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "bun test ./unit",
     "test:visual": "playwright test",
     "test:visual:update": "playwright test --update-snapshots",
     "install:browser": "playwright install chromium",
