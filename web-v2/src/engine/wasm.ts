@@ -21,9 +21,9 @@ import type {
 let enginePromise: Promise<void> | undefined
 
 export function initEngine(): Promise<void> {
-  enginePromise ??= init(
-    new URL('./pkg/seedfinder_bg.wasm', import.meta.url)
-  ).then(() => undefined)
+  enginePromise ??= init({
+    module_or_path: new URL('./pkg/seedfinder_bg.wasm', import.meta.url),
+  }).then(() => undefined)
   return enginePromise
 }
 
