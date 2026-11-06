@@ -430,7 +430,22 @@ public final class ParityOracle {
 		record.put("selected", selected);
 		record.put("level_class", className(level));
 		record.put("generator_state_hash", generatorStateHash());
+		record.put("builder", level instanceof RegularLevel ? simpleName(getField(level, "builder")) : null);
+		record.put("trinket_catalyst_dropped", Dungeon.LimitedDrops.TRINKET_CATA.count > 0);
+		List<Map<String, Object>> pots = new ArrayList<Map<String, Object>>();
+		for (int cell = 0; cell < level.map.length; cell++) {
+			if (level.map[cell] != com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ALCHEMY) continue;
+			Map<String, Object> pot = new LinkedHashMap<String, Object>();
+			pot.put("cell", cell);
+			pot.put("room", roomAt(level, cell));
+			pots.add(pot);
+		}
+		record.put("alchemy_pots", pots);
 		return record;
+	}
+
+	private static String simpleName(Object value) {
+		return value == null ? null : value.getClass().getSimpleName();
 	}
 
 	private static Map<String, Object> bossTransition(Level level, PersistentSnapshot before,

@@ -138,6 +138,12 @@ nothing changed, the v1 vocabulary is kept verbatim.
   containing `room`), **`mob_count`/`heap_count`**, limited drops, the complete
   Generator state and its compact hash, and the post-floor room queues.
 - `generator_checkpoint`, `boss_transition`: as in v1, plus `branch`.
+  `generator_checkpoint` also carries `builder` (simple class name of
+  `RegularLevel.builder`, null on levels without one),
+  `trinket_catalyst_dropped` (`LimitedDrops.TRINKET_CATA` counted) and
+  `alchemy_pots` (`{cell, room}` per `ALCHEMY` cell, `room` as for `item`).
+  `generate-seed-report-timing.py` turns these into the seed report's timing
+  fixture.
 - `item`: every searchable item in ordinary heaps, shops, mimics, statues, the
   sacrificial-fire prize, generated Ghost/Wandmaker/Blacksmith/Imp reward
   choices, and the depth-20 Imp shop cache. New/changed fields: **`branch`**,
