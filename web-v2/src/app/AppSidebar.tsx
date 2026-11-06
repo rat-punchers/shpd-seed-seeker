@@ -1,11 +1,15 @@
 import { BinocularsIcon, MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { TabsList, TabsTrigger } from '@seed-seeker/design/ui/tabs'
+import { useStore } from '@tanstack/react-store'
 import { CONFIG } from '../config'
 import { SHPD_VERSION } from '../engine/constants'
+import { FinderForm } from '../features/find'
+import { $mode } from './store/mode'
 import { ThemeToggle } from './ThemeToggle'
 
-/** Brand, theme toggle and the Analyze / Find mode tabs. */
+/** Brand, theme toggle, the Analyze / Find mode tabs and the mode's form. */
 export function AppSidebar() {
+  const mode = useStore($mode)
   return (
     <aside className="border-border bg-sidebar text-sidebar-foreground lg:sticky lg:top-0 lg:h-full lg:max-h-svh lg:w-80 lg:shrink-0 lg:self-start lg:overflow-y-auto lg:border-r">
       <div className="flex flex-col gap-4 p-4">
@@ -35,6 +39,8 @@ export function AppSidebar() {
             Find
           </TabsTrigger>
         </TabsList>
+
+        {mode === 'find' ? <FinderForm /> : null}
       </div>
     </aside>
   )

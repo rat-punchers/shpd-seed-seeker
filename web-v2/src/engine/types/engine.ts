@@ -22,6 +22,8 @@ export interface EngineLimits {
   maxUpgradeWeapon: number
   maxUpgradeAnyTier: number
   extraUpgradeTier: number
+  /** Highest searchable upgrade per item family. */
+  maxUpgradeByKind: Record<ItemCategory, number>
   /** The most items one stack of the requirement editor asks for, its anchor included. */
   stackMax: number
   trinketTransmutationsMax: number
