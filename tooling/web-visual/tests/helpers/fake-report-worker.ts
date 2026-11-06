@@ -17,18 +17,37 @@ const REAL_FIXTURES = fileURLToPath(
 /** A report as the fake serves it; only the seed code is read here. */
 export type ReportFixture = { seed: { code: string } } & Record<string, unknown>
 
-/** Every real fixture, keyed by its seed code (`AAA-AAA-AAA`, `2026-01-01`). */
-export async function loadReportFixtures(): Promise<
-  Record<string, ReportFixture>
-> {
+/**
+ * Hand-made reports with sections the engine does not fill yet
+ * (`SYN-THE-TIC`), shared with web-v2's unit tests.
+ */
+const SYNTHETIC_FIXTURES = fileURLToPath(
+  new URL('../../../../web-v2/tests/fixtures/seed-report', import.meta.url)
+)
+
+async function readFixtures(
+  directory: string
+): Promise<Record<string, ReportFixture>> {
   const reports: Record<string, ReportFixture> = {}
-  for (const name of (await readdir(REAL_FIXTURES)).sort()) {
+  for (const name of (await readdir(directory)).sort()) {
     if (!name.endsWith('.json')) continue
-    const text = await readFile(join(REAL_FIXTURES, name), 'utf8')
+    const text = await readFile(join(directory, name), 'utf8')
     const report = JSON.parse(text) as ReportFixture
     reports[report.seed.code] = report
   }
   return reports
+}
+
+/** Every real fixture, keyed by its seed code (`AAA-AAA-AAA`, `2026-01-01`). */
+export function loadReportFixtures(): Promise<Record<string, ReportFixture>> {
+  return readFixtures(REAL_FIXTURES)
+}
+
+/** Every synthetic fixture, keyed by its seed code. */
+export function loadSyntheticReportFixtures(): Promise<
+  Record<string, ReportFixture>
+> {
+  return readFixtures(SYNTHETIC_FIXTURES)
 }
 
 /**

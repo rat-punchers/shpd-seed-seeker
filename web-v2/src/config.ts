@@ -14,6 +14,8 @@ export const CONFIG = Object.freeze({
     query: `${STORAGE_PREFIX}query`,
     presets: `${STORAGE_PREFIX}presets`,
     workers: `${STORAGE_PREFIX}workers`,
+    openSeeds: `${STORAGE_PREFIX}open-seeds`,
+    activeSeed: `${STORAGE_PREFIX}active-seed`,
   }),
   links: Object.freeze({
     license: '/licenses/COPYING.txt',

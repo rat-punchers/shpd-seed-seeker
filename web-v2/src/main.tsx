@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { App } from './app/App'
 import { initTheme } from './app/store/theme'
 import { initEditor } from './engine/editor'
+import { initAnalyze } from './features/analyze'
 import { initFind } from './features/find'
 import './index.css'
 
@@ -17,6 +18,7 @@ const root = createRoot(rootElement)
 initEditor().then(
   () => {
     initFind()
+    initAnalyze()
     root.render(
       <StrictMode>
         <App />

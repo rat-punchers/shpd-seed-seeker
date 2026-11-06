@@ -3,6 +3,7 @@ import { TabsList, TabsTrigger } from '@seed-seeker/design/ui/tabs'
 import { useStore } from '@tanstack/react-store'
 import { CONFIG } from '../config'
 import { SHPD_VERSION } from '../engine/constants'
+import { SeedForm } from '../features/analyze'
 import { FinderForm } from '../features/find'
 import { $mode } from './store/mode'
 import { ThemeToggle } from './ThemeToggle'
@@ -40,7 +41,7 @@ export function AppSidebar() {
           </TabsTrigger>
         </TabsList>
 
-        {mode === 'find' ? <FinderForm /> : null}
+        {mode === 'find' ? <FinderForm /> : <SeedForm />}
       </div>
     </aside>
   )
