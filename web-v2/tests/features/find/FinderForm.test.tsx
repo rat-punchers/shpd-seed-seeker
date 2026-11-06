@@ -2,11 +2,15 @@ import { afterEach, beforeEach, expect, it } from 'bun:test'
 import { TooltipProvider } from '@seed-seeker/design/ui/tooltip'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
+import { $findView, setFindView } from '../../../src/app/store/find-view'
 import { $query, setQuery } from '../../../src/app/store/query'
 import { FinderForm } from '../../../src/features/find'
 import { $analysis } from '../../../src/features/find/run'
 import { toSimple } from '../../../src/features/find/simple'
-import { defaultQueryState } from '../../../src/features/query/query'
+import {
+  defaultQueryState,
+  fromQueryJson,
+} from '../../../src/features/query/query'
 import { initialCoordinatorState } from '../../../src/features/search/coordinator-state'
 import { searchStore } from '../../../src/features/search/store'
 
@@ -34,6 +38,7 @@ afterEach(() => {
   document.body.innerHTML = ''
   searchStore.setState(() => initialCoordinatorState())
   $analysis.set(undefined)
+  setFindView('simple')
   localStorage.clear()
 })
 
@@ -113,6 +118,27 @@ it('shows an Advanced query as a notice that can clear it', () => {
   expect(select('Item 1 name')).toBeNull()
   act(() => button('Clear')?.click())
   expect($query.get()).toEqual(defaultQueryState())
+})
+
+it('opens an Advanced query in the Advanced view, which shows all of it', () => {
+  act(() =>
+    setQuery(
+      fromQueryJson(
+        '{"requirements":[{"kind":"weapon","effect":"Blazing"}],"auto_apply_trinket":true}'
+      )
+    )
+  )
+  expect(container.textContent).toContain('Advanced query active')
+  act(() => button('Edit in Advanced')?.click())
+  expect($findView.get()).toBe('advanced')
+  expect(container.textContent).not.toContain('Advanced query active')
+  expect(container.querySelector('[data-slot="chip-name"]')?.textContent).toBe(
+    'Any weapon'
+  )
+  expect(container.textContent).toContain('1 requirement')
+  // Find stays, and the match rule is Simple's alone.
+  expect(button('Find')).toBeDefined()
+  expect(container.querySelector('#finder-match-rule')).toBeNull()
 })
 
 it('locks the rows and offers Cancel while a search runs', () => {

@@ -14,14 +14,22 @@ import { Field, FieldLabel } from '@seed-seeker/design/ui/field'
 import { Kbd } from '@seed-seeker/design/ui/kbd'
 import { Switch } from '@seed-seeker/design/ui/switch'
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@seed-seeker/design/ui/tabs'
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@seed-seeker/design/ui/tooltip'
 import { useStore } from '@tanstack/react-store'
 import { type FormEvent, useMemo } from 'react'
+import { $findView, isFindView, setFindView } from '../../app/store/find-view'
 import { $query } from '../../app/store/query'
 import { probabilityLabel } from '../../shared/format'
+import { AdvancedQuery } from '../advanced'
 import { validateQuery } from '../query/validation'
 import { isSearchActive } from '../search/coordinator-state'
 import { searchStore } from '../search/store'
@@ -42,16 +50,25 @@ function AdvancedQueryNotice({ running }: { running: boolean }) {
       <AlertTitle>Advanced query active</AlertTitle>
       <AlertDescription>
         <p>This query uses settings the Simple view cannot show.</p>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="mt-2"
-          disabled={running}
-          onClick={clearQuery}
-        >
-          Clear
-        </Button>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setFindView('advanced')}
+          >
+            Edit in Advanced
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={running}
+            onClick={clearQuery}
+          >
+            Clear
+          </Button>
+        </div>
       </AlertDescription>
     </Alert>
   )
@@ -101,6 +118,7 @@ function QueryEstimate({ blocked }: { blocked: string | undefined }) {
 /** Find's sidebar: the Simple item rows, match mode and the Find button. */
 export function FinderForm() {
   const query = useStore($query)
+  const view = useStore($findView)
   const analysis = useStore($analysis)
   const status = useStore(searchStore, (state) => state.state)
   const running = isSearchActive({ state: status })
@@ -117,14 +135,30 @@ export function FinderForm() {
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-3">
-      {simple ? (
-        <ConstraintEditor simple={simple} running={running} />
-      ) : (
-        <AdvancedQueryNotice running={running} />
-      )}
+      <Tabs
+        value={view}
+        onValueChange={(value) => {
+          if (isFindView(value)) setFindView(value)
+        }}
+      >
+        <TabsList variant="line" className="w-full" aria-label="Query view">
+          <TabsTrigger value="simple">Simple</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+        </TabsList>
+        <TabsContent value="simple">
+          {simple ? (
+            <ConstraintEditor simple={simple} running={running} />
+          ) : (
+            <AdvancedQueryNotice running={running} />
+          )}
+        </TabsContent>
+        <TabsContent value="advanced">
+          <AdvancedQuery />
+        </TabsContent>
+      </Tabs>
       <QueryEstimate blocked={blocked} />
       <div className="flex items-end justify-between gap-2">
-        {simple ? (
+        {simple && view === 'simple' ? (
           <Field orientation="horizontal" className="w-auto gap-2">
             <FieldLabel htmlFor="finder-match-rule">
               {simple.matchMode === 'all' ? 'Match all' : 'Match any'}
