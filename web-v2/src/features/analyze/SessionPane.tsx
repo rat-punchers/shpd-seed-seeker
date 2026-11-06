@@ -105,6 +105,7 @@ export function SessionPane({ session }: { session: SeedSession }) {
     body = (
       <SeedReportView
         report={session.report}
+        challenges={session.challenges}
         trinketChoice={{
           busy: loading,
           select: (trinket) => void selectTrinket(session.id, trinket),

@@ -4,6 +4,7 @@ import { AlchemyBubbles } from './AlchemyBubbles'
 import { FloorBanner } from './FloorBanner'
 import { FloorEncounterSection } from './FloorEncounterSection'
 import { FloorItemSections } from './FloorItemSections'
+import { FloorMapButton } from './FloorMapButton'
 import { questRewardItems } from './floor-items'
 import { BranchNote, QuestCard } from './QuestCard'
 import { hasSection, humanize } from './report-text'
@@ -75,7 +76,10 @@ function FloorDetail({
           top: 'calc(var(--seed-tabs-height, 3rem) + var(--descent-rail-height, 0px))',
         }}
       >
-        <FloorBanner depth={floor.depth}>
+        <FloorBanner
+          depth={floor.depth}
+          action={<FloorMapButton depth={floor.depth} />}
+        >
           {feeling ? (
             <span
               data-feeling={feeling}
@@ -117,7 +121,11 @@ function FloorDetail({
           <FloorEncounterSection encounters={floor.encounters} />
         ) : null}
         {leftover.map((branch) => (
-          <BranchNote key={`${branch.kind}-${branch.branch}`} branch={branch} />
+          <BranchNote
+            key={`${branch.kind}-${branch.branch}`}
+            depth={floor.depth}
+            branch={branch}
+          />
         ))}
       </div>
     </section>

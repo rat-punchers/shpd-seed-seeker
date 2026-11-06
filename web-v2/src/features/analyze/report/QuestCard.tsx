@@ -20,6 +20,7 @@ import { ItemSprite } from '../../../shared/ui/ItemSprite'
 import { QUEST_NPCS } from './art'
 import { FloorBanner } from './FloorBanner'
 import { ItemList } from './FloorItemSections'
+import { BranchMapButton } from './FloorMapButton'
 import { ImpRewardDistribution } from './ImpRewardDistribution'
 import { branchTitle, humanize, itemName, questTitle } from './report-text'
 import { WandmakerRewardDistribution } from './WandmakerRewardDistribution'
@@ -93,15 +94,29 @@ function accessText(branch: ReportBranch): string {
   return parts.join(', ')
 }
 
-/** A quest sub-floor entered from this floor. */
-export function BranchNote({ branch }: { branch: ReportBranch }) {
+/** A quest sub-floor entered from this floor; `map` adds its map button. */
+export function BranchNote({
+  depth,
+  branch,
+  map = true,
+}: {
+  depth: number
+  branch: ReportBranch
+  map?: boolean
+}) {
   return (
-    <p data-branch-kind={branch.kind} className="text-muted-foreground text-sm">
-      <span className="text-foreground font-semibold">
-        {branchTitle(branch.kind)}
-      </span>{' '}
-      (branch {branch.branch}): {accessText(branch)}.
-    </p>
+    <div className="flex items-center gap-2">
+      <p
+        data-branch-kind={branch.kind}
+        className="text-muted-foreground text-sm"
+      >
+        <span className="text-foreground font-semibold">
+          {branchTitle(branch.kind)}
+        </span>{' '}
+        (branch {branch.branch}): {accessText(branch)}.
+      </p>
+      {map ? <BranchMapButton depth={depth} branch={branch} /> : null}
+    </div>
   )
 }
 
@@ -138,6 +153,11 @@ export function QuestCard({
         showDepth={false}
         leading={<Sprite sprite={QUEST_NPCS[quest.quest]} scale={2} />}
         meta={null}
+        action={
+          branch ? (
+            <BranchMapButton depth={quest.depth} branch={branch} />
+          ) : undefined
+        }
       >
         <QuestTarget quest={quest} />
       </FloorBanner>
@@ -168,7 +188,9 @@ export function QuestCard({
           The giver can appear on floors {quest.spawnDepthRange.min}–
           {quest.spawnDepthRange.max}.
         </p>
-        {branch ? <BranchNote branch={branch} /> : null}
+        {branch ? (
+          <BranchNote depth={quest.depth} branch={branch} map={false} />
+        ) : null}
       </div>
     </section>
   )
