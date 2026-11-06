@@ -66,6 +66,16 @@ the positional `SEED FLOORS` form are unchanged. `--no-phases` is accepted as a
 no-op (schema v2 has no phase records). `--transmute-imp` is gone: the v4.0.2
 Imp no longer hands out a single ring, so the diagnostic is obsolete.
 
+## Deck drift
+
+`-Dseedfinder.deckDrift=DEPTH:COUNT:CATEGORY[,CATEGORY...][;...]` (passed
+through `JAVA_TOOL_OPTIONS`) draws and discards `COUNT` items from each named
+`Generator.Category` (`WAND`, `RING`, `ARTIFACT`, `WEP_T4`, …) just before
+floor `DEPTH` is generated. It stands in for run history that draws from the
+seeded decks, so a quest reward lands `COUNT` cards later in its deck. The draws run between
+floors, outside each level's own seeded RNG. `generate-seed-report-quests.py`
+uses it for the seed report's quest reward fixture.
+
 ## Headless technique
 
 Startup follows the v3.3.8 oracle exactly: `Game.version`/`versionCode` are

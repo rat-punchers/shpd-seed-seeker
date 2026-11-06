@@ -157,6 +157,7 @@ public final class ParityOracle {
 		for (int depth = 1; depth <= stopDepth; depth++) {
 			PersistentSnapshot beforeBoss = options.bossSkipCheckpoints && isBossDepth(depth)
 					? persistentSnapshot() : null;
+			driftDecks(System.getProperty("seedfinder.deckDrift"), depth);
 			Level level = Dungeon.newLevel();
 			boolean selected = requestedDepths.contains(depth);
 			List<Map<String, Object>> questItems = quests.observe(depth, selected);
@@ -200,6 +201,28 @@ public final class ParityOracle {
 		if (options.vault) generateVault(options, quests.impDepth);
 
 		output.finish();
+	}
+
+	/**
+	 * Shifts seeded category decks before a floor, standing in for run history
+	 * that draws from them. The {@code seedfinder.deckDrift} property is a
+	 * {@code ;}-separated list of {@code DEPTH:COUNT:CATEGORY[,CATEGORY...]}; each
+	 * entry draws (and discards) {@code COUNT} items from every named
+	 * {@code Generator.Category} just before floor {@code DEPTH} is generated.
+	 * The draws run outside level generation, on the base RNG stream.
+	 */
+	private static void driftDecks(String spec, int depth) {
+		if (spec == null || spec.isEmpty()) return;
+		for (String entry : spec.split(";")) {
+			String[] parts = entry.split(":");
+			if (parts.length != 3) throw new IllegalArgumentException("bad seedfinder.deckDrift entry " + entry);
+			if (Integer.parseInt(parts[0]) != depth) continue;
+			int count = Integer.parseInt(parts[1]);
+			for (String name : parts[2].split(",")) {
+				Generator.Category category = Generator.Category.valueOf(name);
+				for (int i = 0; i < count; i++) Generator.random(category);
+			}
+		}
 	}
 
 	/**
