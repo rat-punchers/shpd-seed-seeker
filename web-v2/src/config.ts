@@ -12,6 +12,7 @@ export const CONFIG = Object.freeze({
     mode: `${STORAGE_PREFIX}mode`,
     theme: `${STORAGE_PREFIX}theme`,
     query: `${STORAGE_PREFIX}query`,
+    findView: `${STORAGE_PREFIX}find-view`,
     presets: `${STORAGE_PREFIX}presets`,
     workers: `${STORAGE_PREFIX}workers`,
     openSeeds: `${STORAGE_PREFIX}open-seeds`,

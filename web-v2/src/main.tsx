@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { App } from './app/App'
 import { initTheme } from './app/store/theme'
 import { initEditor } from './engine/editor'
+import { initShareLink } from './features/advanced'
 import { initAnalyze } from './features/analyze'
 import { initFind } from './features/find'
 import './index.css'
@@ -19,6 +20,7 @@ initEditor().then(
   () => {
     initFind()
     initAnalyze()
+    initShareLink()
     root.render(
       <StrictMode>
         <App />

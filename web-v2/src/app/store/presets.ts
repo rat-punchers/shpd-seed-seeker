@@ -7,6 +7,7 @@ import {
   fromQueryJson,
   toQueryJson,
 } from '../../features/query/query'
+import { type Codec, persistentStore } from '../../shared/store/persistent'
 
 export interface Preset {
   name: string
@@ -230,29 +231,34 @@ export const builtInPresets: Preset[] = [
   },
 ]
 
-/** The user's saved presets; an unreadable list reads as none. */
-export function loadPresets(): Preset[] {
-  try {
-    const value = localStorage.getItem(CONFIG.storageKeys.presets)
-    if (!value) return []
-    const raw = JSON.parse(value) as { name: string; query: unknown }[]
-    return raw.map((preset) => ({
-      name: preset.name,
-      query: fromQueryJson(JSON.stringify(preset.query)),
-    }))
-  } catch {
-    return []
-  }
-}
-
-export function savePresets(presets: Preset[]): void {
-  localStorage.setItem(
-    CONFIG.storageKeys.presets,
+/**
+ * Saved presets as stored: each query as its query document. A list that
+ * cannot be read reads as none.
+ */
+const presetsCodec: Codec<Preset[]> = {
+  encode: (presets) =>
     JSON.stringify(
       presets.map((preset) => ({
         name: preset.name,
         query: JSON.parse(toQueryJson(preset.query)),
       }))
-    )
-  )
+    ),
+  decode: (text) => {
+    try {
+      const raw = JSON.parse(text) as { name: string; query: unknown }[]
+      return raw.map((preset) => ({
+        name: String(preset.name),
+        query: fromQueryJson(JSON.stringify(preset.query)),
+      }))
+    } catch {
+      return []
+    }
+  },
 }
+
+/** The user's saved presets, in the order they were first saved. */
+export const $userPresets = persistentStore<Preset[]>(
+  CONFIG.storageKeys.presets,
+  [],
+  presetsCodec
+)

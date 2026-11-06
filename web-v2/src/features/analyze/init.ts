@@ -1,5 +1,6 @@
 import { setMode } from '../../app/store/mode'
 import { formatSeedCode } from '../../engine/wasm'
+import { hasShareCode } from '../query/share-link'
 import { $analyzeRequest } from './handoff'
 import { initResultKeys } from './navigation'
 import { loadSeedFormatter } from './seed-input'
@@ -14,9 +15,12 @@ export function scoutLinkSeed(search: string): string | undefined {
 /**
  * Starts Analyze: restores the saved tabs, opens a `?scout=` seed link,
  * takes seeds handed over by Find, and installs J/K. Returns the cleanup.
+ * A query share link (`#q=`) takes priority over a seed link.
  */
 export function initAnalyze(): () => void {
-  const linked = scoutLinkSeed(window.location.search)
+  const linked = hasShareCode(window.location.hash)
+    ? undefined
+    : scoutLinkSeed(window.location.search)
   if (linked) setMode('analyze')
   const ready = loadSeedFormatter()
   // Text typed before the engine loaded is grouped once it has.
