@@ -50,9 +50,9 @@ JavaScript error carrying the message.
 | `quests` | yes | `quests[]` without `slots`, `upgradesPinned`, `totalUpgradeValue` |
 | `branches` | yes | `floors[].branches` |
 | `allItems` | yes | `floors[].items` for every category, with `prediction`, `conditions`, `ranges`; see [seed-report-items.md](seed-report-items.md) |
-| `trinketTiming` | no | `trinkets.timing` |
-| `alchemyPots` | no | `floors[].appearances` |
-| `builders` | no | `floors[].builder` |
+| `trinketTiming` | yes | `trinkets.timing`; see [seed-report-timing.md](seed-report-timing.md) |
+| `alchemyPots` | yes | `floors[].appearances` |
+| `builders` | yes | `floors[].builder` |
 | `questRewardSlots` | no | `quests[].slots`, `quests[].upgradesPinned`, `quests[].totalUpgradeValue` |
 | `encounters` | no | `floors[].encounters` |
 
@@ -83,17 +83,17 @@ JavaScript error carrying the message.
 - `artifactDecks`: `{depth, order}` for depth 0 (before floor 1) through 24,
   the remaining artifact deck after that floor, as in `scout`.
 - `timing` (`trinketTiming`): `catalystDepth`, `firstAlchemyPotDepth`,
-  `firstAlchemyPotSecret`, `selectionDepth` (first floor the trinket can be
-  chosen on), `firstEffectiveDepth` (first floor whose generation it can
-  change), `optionEffects` (index-aligned with `offers`: `modeled`,
-  `unmodeled` or `none`).
+  `firstAlchemyPotSecret`, `selectionDepth`, `firstEffectiveDepth`,
+  `optionEffects` (index-aligned with `offers`: `modeled`, `unmodeled` or
+  `none`); see [seed-report-timing.md](seed-report-timing.md).
 
 ### `floors[]`
 
 - `depth`; `feeling` (absent on boss floors); `rooms` (room type ids, empty on
   floors without room tracking).
-- `builder` (`builders`): the level builder class.
-- `appearances` (`alchemyPots`): `{kind: "alchemy_pot", room?, secret}`.
+- `builder` (`builders`): `loop` or `figure_eight`; absent on floors 10, 15, 20.
+- `appearances` (`alchemyPots`): one `{kind: "alchemy_pot", room?, secret}`
+  per pot, in map cell order.
 - `items`: equipment in world order, then the other categories. Equipment
   base fields equal one `scout` item: `id`, `name`, `category`,
   `spriteIndex`, `upgrade`, `effect` (`{name, kind}`, `kind` `enchantment` or
