@@ -147,6 +147,8 @@ nothing changed, the v1 vocabulary is kept verbatim.
   sorted room descriptors/connections, sorted mob descriptors (now with the
   containing `room`), **`mob_count`/`heap_count`**, limited drops, the complete
   Generator state and its compact hash, and the post-floor room queues.
+  `generate-seed-report-encounters.py` turns the `--map-contents` mobs into
+  the seed report's encounter fixture.
 - `generator_checkpoint`, `boss_transition`: as in v1, plus `branch`.
   `generator_checkpoint` also carries `builder` (simple class name of
   `RegularLevel.builder`, null on levels without one),
