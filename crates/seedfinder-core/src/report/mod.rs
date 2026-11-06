@@ -8,6 +8,8 @@ mod item;
 mod item_tests;
 mod loose;
 mod observe;
+#[cfg(test)]
+mod parity;
 mod predict;
 mod quest;
 mod request;
