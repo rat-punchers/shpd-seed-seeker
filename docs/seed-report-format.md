@@ -49,7 +49,7 @@ JavaScript error carrying the message.
 | `equipment` | yes | `floors[].items` for weapons, armor, wands, rings, trinkets and artifacts |
 | `quests` | yes | `quests[]` without `slots`, `upgradesPinned`, `totalUpgradeValue` |
 | `branches` | yes | `floors[].branches` |
-| `allItems` | no | `floors[].items` for every category, with `prediction`, `conditions`, `ranges` |
+| `allItems` | yes | `floors[].items` for every category, with `prediction`, `conditions`, `ranges`; see [seed-report-items.md](seed-report-items.md) |
 | `trinketTiming` | no | `trinkets.timing` |
 | `alchemyPots` | no | `floors[].appearances` |
 | `builders` | no | `floors[].builder` |
@@ -94,13 +94,13 @@ JavaScript error carrying the message.
   floors without room tracking).
 - `builder` (`builders`): the level builder class.
 - `appearances` (`alchemyPots`): `{kind: "alchemy_pot", room?, secret}`.
-- `items`: in world order. The base fields equal one `scout` item: `id`,
-  `name`, `category`, `spriteIndex`, `upgrade`, `effect` (`{name, kind}` with
-  `kind` `enchantment` or `curse`, or `null`), `cursed`, `secret`, `depth`,
-  `source`, `accessibility` (`{type: "independent"}`,
-  `{type: "choice", group, option}` or `{type: "scenarios", group, mask}`
-  with `mask` as `0x…` hex), `matched`, `resinDonor`, `excluded`. With
-  `allItems`:
+- `items`: equipment in world order, then the other categories. Equipment
+  base fields equal one `scout` item: `id`, `name`, `category`,
+  `spriteIndex`, `upgrade`, `effect` (`{name, kind}`, `kind` `enchantment` or
+  `curse`, or `null`), `cursed`, `secret`, `depth`, `source`, `accessibility`
+  (`{type: "independent"}`, `{type: "choice", group, option}` or `{type:
+  "scenarios", group, mask}`, `mask` as `0x…` hex), `matched`, `resinDonor`,
+  `excluded`. With `allItems` ([seed-report-items.md](seed-report-items.md)):
   - `prediction`: `exact`, `constrained` or `variable`.
   - `conditions`: any of `{type: "challenge", challenge, enabled}`,
     `{type: "trinket", events}`, `{type: "artifact", events}`,
