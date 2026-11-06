@@ -39,6 +39,7 @@
 
 # Claude
 .claude
+.agents
 
 # PGO raw counter dumps (the merged .profdata is checked in).
 pgo/*.profraw
