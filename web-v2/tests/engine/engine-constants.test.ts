@@ -8,6 +8,11 @@ import {
   MAX_UPGRADE_DEFAULT,
 } from '../../src/features/find/simple-items'
 import {
+  MAP_BRANCH_DEPTHS,
+  MAP_DEPTHS,
+} from '../../src/features/level-map/client'
+import { TILE_PX } from '../../src/features/level-map/map-view'
+import {
   BLACKSMITH_LAST_FLOOR,
   EMPTY_BOSS_FLOORS,
   MAX_DEPTH,
@@ -68,4 +73,10 @@ it('challenge list, mask order, and generation relevance', () => {
       .map((challenge) => challenge.name)
       .sort()
   )
+})
+
+it('level map coverage and tile size', () => {
+  expect([...MAP_DEPTHS]).toEqual(info.levelMaps.supportedDepths)
+  expect([...MAP_BRANCH_DEPTHS]).toEqual(info.levelMaps.branchDepths)
+  expect(TILE_PX).toBe(info.levelMaps.tileSize)
 })

@@ -52,6 +52,14 @@ export interface EngineInfo {
   maxResults: number
   limits: EngineLimits
   emptyBossFloors: number[]
+  /** What `level_map` draws: main floors, and quest branches at these depths. */
+  levelMaps: {
+    schemaVersion: number
+    supportedDepths: number[]
+    branches: number[]
+    branchDepths: number[]
+    tileSize: number
+  }
   /** Inclusive `[first, last]` depth window per quest. */
   questWindows: Record<QuestName, [number, number]>
   challenges: EngineChallenge[]
