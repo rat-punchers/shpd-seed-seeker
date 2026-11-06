@@ -6,7 +6,7 @@
   "status": "partial",
   "notes": [
     "Floor items leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment.",
-    "Quest reward slots and floor encounters are not computed."
+    "Floor encounters are not computed."
   ],
   "sections": [
     "identities",
@@ -21,7 +21,8 @@
     "allItems",
     "trinketTiming",
     "alchemyPots",
-    "builders"
+    "builders",
+    "questRewardSlots"
   ],
   "seed": {
     "code": "AAA-AAA-AAA",
@@ -16353,7 +16354,58 @@
         "source": "ghost_reward",
         "optionCount": 2,
         "selectedCount": 1
-      }
+      },
+      "slots": [
+        {
+          "slot": 0,
+          "item": "whip",
+          "level": 2,
+          "levelPinned": true,
+          "role": "weapon",
+          "effect": "Eldritch",
+          "candidates": [
+            {
+              "item": "whip",
+              "drifts": [
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "item": "scimitar",
+              "drifts": [
+                1,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "item": "sai",
+              "drifts": [
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "sword",
+              "drifts": [
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "scenarioCount": 5
+        },
+        {
+          "slot": 1,
+          "item": "mail_armor",
+          "level": 2,
+          "levelPinned": true,
+          "role": "armor",
+          "effect": "Affection",
+          "scenarioCount": 1
+        }
+      ]
     },
     {
       "quest": "wandmaker",
@@ -16367,7 +16419,105 @@
         "source": "wandmaker_reward",
         "optionCount": 2,
         "selectedCount": 1
-      }
+      },
+      "slots": [
+        {
+          "slot": 0,
+          "item": "wand_transfusion",
+          "level": 3,
+          "levelPinned": true,
+          "candidates": [
+            {
+              "item": "wand_transfusion",
+              "drifts": [
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_frost",
+              "drifts": [
+                1,
+                -2
+              ],
+              "weight": 2
+            },
+            {
+              "item": "wand_blast_wave",
+              "drifts": [
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_magic_missile",
+              "drifts": [
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_corrosion",
+              "drifts": [
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "scenarioCount": 6
+        },
+        {
+          "slot": 1,
+          "item": "wand_frost",
+          "level": 3,
+          "levelPinned": true,
+          "candidates": [
+            {
+              "item": "wand_frost",
+              "drifts": [
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_transfusion",
+              "drifts": [
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_magic_missile",
+              "drifts": [
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_blast_wave",
+              "drifts": [
+                -2
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_corrosion",
+              "drifts": [
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_prismatic_light",
+              "drifts": [
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "scenarioCount": 6
+        }
+      ]
     },
     {
       "quest": "blacksmith",
@@ -16382,7 +16532,41 @@
         "optionCount": 4,
         "selectedCount": 1,
         "favorRequirement": 2000
-      }
+      },
+      "slots": [
+        {
+          "slot": 0,
+          "item": "battle_axe",
+          "level": 2,
+          "levelPinned": true,
+          "role": "weapon",
+          "scenarioCount": 1
+        },
+        {
+          "slot": 1,
+          "item": "greatshield",
+          "level": 2,
+          "levelPinned": true,
+          "role": "weapon",
+          "scenarioCount": 1
+        },
+        {
+          "slot": 2,
+          "item": "tomahawk",
+          "level": 2,
+          "levelPinned": true,
+          "role": "missile",
+          "scenarioCount": 1
+        },
+        {
+          "slot": 3,
+          "item": "scale_armor",
+          "level": 2,
+          "levelPinned": true,
+          "role": "armor",
+          "scenarioCount": 1
+        }
+      ]
     },
     {
       "quest": "imp",
@@ -16396,7 +16580,288 @@
         "source": "imp_reward",
         "optionCount": 6,
         "selectedCount": 1
-      }
+      },
+      "slots": [
+        {
+          "slot": 0,
+          "item": "sandals_of_nature",
+          "level": 2,
+          "levelPinned": false,
+          "role": "artifact",
+          "levelRule": {
+            "type": "transfer_upgrade",
+            "transfer": 5
+          },
+          "candidates": [
+            {
+              "item": "sandals_of_nature",
+              "drifts": [
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "item": "unstable_spellbook",
+              "drifts": [
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "alchemists_toolkit",
+              "drifts": [
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "skeleton_key",
+              "drifts": [
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "item": "horn_of_plenty",
+              "drifts": [
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "scenarioCount": 5
+        },
+        {
+          "slot": 1,
+          "item": "ring_haste",
+          "level": 2,
+          "levelPinned": false,
+          "role": "ring",
+          "levelRule": {
+            "type": "range",
+            "min": 2,
+            "max": 4
+          },
+          "candidates": [
+            {
+              "item": "ring_haste",
+              "drifts": [
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "item": "ring_evasion",
+              "drifts": [
+                1,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "item": "ring_sharpshooting",
+              "drifts": [
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "ring_energy",
+              "drifts": [
+                -2
+              ],
+              "weight": 1
+            },
+            {
+              "item": "ring_tenacity",
+              "drifts": [
+                -3
+              ],
+              "weight": 1
+            },
+            {
+              "item": "ring_elements",
+              "drifts": [
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "scenarioCount": 7
+        },
+        {
+          "slot": 2,
+          "item": "greatshield",
+          "level": 2,
+          "levelPinned": false,
+          "role": "weapon",
+          "levelRule": {
+            "type": "range",
+            "min": 2,
+            "max": 4
+          },
+          "effect": "Lucky",
+          "candidates": [
+            {
+              "item": "greatshield",
+              "drifts": [
+                0,
+                -2
+              ],
+              "weight": 2
+            },
+            {
+              "item": "glaive",
+              "drifts": [
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "war_hammer",
+              "drifts": [
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "greataxe",
+              "drifts": [
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "item": "greatsword",
+              "drifts": [
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "scenarioCount": 6
+        },
+        {
+          "slot": 3,
+          "item": "javelin",
+          "level": 4,
+          "levelPinned": false,
+          "role": "missile",
+          "levelRule": {
+            "type": "range",
+            "min": 3,
+            "max": 5
+          },
+          "effect": "Shocking",
+          "candidates": [
+            {
+              "item": "javelin",
+              "drifts": [
+                0,
+                -1,
+                1
+              ],
+              "weight": 3
+            },
+            {
+              "item": "heavy_boomerang",
+              "drifts": [
+                2,
+                3
+              ],
+              "weight": 2
+            },
+            {
+              "item": "tomahawk",
+              "drifts": [
+                -2
+              ],
+              "weight": 1
+            }
+          ],
+          "scenarioCount": 6
+        },
+        {
+          "slot": 4,
+          "item": "plate_armor",
+          "level": 3,
+          "levelPinned": false,
+          "role": "armor",
+          "levelRule": {
+            "type": "range",
+            "min": 2,
+            "max": 4
+          },
+          "effect": "Stone",
+          "scenarioCount": 1
+        },
+        {
+          "slot": 5,
+          "item": "wand_corrosion",
+          "level": 2,
+          "levelPinned": false,
+          "role": "wand",
+          "levelRule": {
+            "type": "range",
+            "min": 2,
+            "max": 4
+          },
+          "candidates": [
+            {
+              "item": "wand_corrosion",
+              "drifts": [
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_magic_missile",
+              "drifts": [
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_prismatic_light",
+              "drifts": [
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_frost",
+              "drifts": [
+                -2
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_regrowth",
+              "drifts": [
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_transfusion",
+              "drifts": [
+                -3
+              ],
+              "weight": 1
+            },
+            {
+              "item": "wand_disintegration",
+              "drifts": [
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "scenarioCount": 7
+        }
+      ],
+      "upgradesPinned": false,
+      "totalUpgradeValue": 18
     }
   ]
 }

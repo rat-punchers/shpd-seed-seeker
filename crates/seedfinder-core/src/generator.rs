@@ -1070,6 +1070,52 @@ pub fn random_tipped_dart(
 /// Blacksmith duplicate rerolls therefore keep their consumed deck cards.
 pub const fn undo_drop(_generator: &mut GeneratorState, _item: ItemId) {}
 
+/// The classes a seeded equipment deck yields at draw indices `0..count`,
+/// replayed from `initial`, the generator as `Dungeon.init()` leaves it.
+///
+/// A deck's draws depend only on its private seed and its own earlier draws,
+/// so the class at index `i` is fixed by the seed; run history only moves
+/// which index a later draw lands on. `None` marks an exhausted artifact deck
+/// or a class outside the catalog.
+///
+/// # Errors
+///
+/// Returns an invariant error for a category without a seeded equipment deck.
+#[cfg_attr(not(feature = "json-query"), allow(dead_code))] // Read by the seed report.
+pub(crate) fn deck_sequence(
+    initial: &GeneratorState,
+    category: GeneratorCategory,
+    count: usize,
+) -> Result<Vec<Option<ItemId>>, GeneratorError> {
+    let mut generator = initial.clone();
+    let mut random = RandomStack::with_base_seed(0);
+    (0..count)
+        .map(|_| {
+            if category == GeneratorCategory::Artifact {
+                return Ok(select_artifact_identity_index(&mut random, &mut generator)?
+                    .and_then(|index| ARTIFACT_ITEMS.get(index))
+                    .and_then(|kind| kind.item_id()));
+            }
+            let index = select_seeded_identity_index(&mut random, &mut generator, category)?;
+            Ok(match category {
+                GeneratorCategory::Wand => Some(wand_identity(index)?),
+                GeneratorCategory::Ring => Some(ring_identity(index)?.item_id()),
+                GeneratorCategory::MissileTier1
+                | GeneratorCategory::MissileTier2
+                | GeneratorCategory::MissileTier3
+                | GeneratorCategory::MissileTier4
+                | GeneratorCategory::MissileTier5 => missile_identity(category, index)?.item_id(),
+                GeneratorCategory::WeaponTier1
+                | GeneratorCategory::WeaponTier2
+                | GeneratorCategory::WeaponTier3
+                | GeneratorCategory::WeaponTier4
+                | GeneratorCategory::WeaponTier5 => weapon_identity(category, index).ok(),
+                _ => return Err(GeneratorError::NotEquipmentCategory(category)),
+            })
+        })
+        .collect()
+}
+
 fn random_weapon_from_tier(
     random: &mut RandomStack,
     generator: &mut GeneratorState,

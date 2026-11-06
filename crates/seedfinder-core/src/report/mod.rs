@@ -2,7 +2,11 @@
 //! `docs/seed-report-format.md`. Fields not yet computed stay absent, and
 //! `sections` lists the sections the report fills.
 
+mod drift;
+#[cfg(test)]
+mod drift_tests;
 mod floor;
+mod imp_slots;
 mod item;
 #[cfg(test)]
 mod item_tests;
@@ -12,6 +16,9 @@ mod observe;
 mod parity;
 mod predict;
 mod quest;
+#[cfg(test)]
+mod quest_parity;
+mod quest_slots;
 mod request;
 #[cfg(test)]
 mod tests;
@@ -66,7 +73,7 @@ pub enum Section {
 }
 
 /// The sections this engine fills.
-pub const SECTIONS: [Section; 13] = [
+pub const SECTIONS: [Section; 14] = [
     Section::Identities,
     Section::RingGems,
     Section::TrinketOffers,
@@ -80,11 +87,12 @@ pub const SECTIONS: [Section; 13] = [
     Section::TrinketTiming,
     Section::AlchemyPots,
     Section::Builders,
+    Section::QuestRewardSlots,
 ];
 
 const NOTES: [&str; 2] = [
     "Floor items leave out the Blacksmith mines and the Imp's vault, apart from the vault's treasure equipment.",
-    "Quest reward slots and floor encounters are not computed.",
+    "Floor encounters are not computed.",
 ];
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -155,7 +163,8 @@ pub struct Identity {
 fn build(observed: &Observed, selected: Option<ItemId>, query: Option<&SearchQuery>) -> SeedReport {
     let world = &observed.world;
     let marks = query.map(|query| scout_matches(world, query));
-    let quests = quest::quests(world.quests);
+    let mut quests = quest::quests(world.quests);
+    quest_slots::fill(&mut quests, &observed.quests, world.seed);
     let context = predict::Context {
         quests: &quests,
         trinket: selected.filter(|id| predict::GENERATION_TRINKETS.contains(id)),

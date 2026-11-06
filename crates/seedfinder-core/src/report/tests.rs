@@ -58,7 +58,11 @@ fn unlisted_sections_stay_absent() {
                 && item.ranges.is_some()
         }));
     }
-    assert!(report.quests.iter().all(|quest| quest.slots.is_none()));
+    assert!(report.quests.iter().all(|quest| {
+        quest.slots.is_some()
+            && (quest.upgrades_pinned.is_some() == (quest.quest == "imp"))
+            && (quest.total_upgrade_value.is_some() == (quest.quest == "imp"))
+    }));
     let text: Value =
         serde_json::from_str(&document(r#"{"seed":"AAA-AAA-AAA"}"#).unwrap()).unwrap();
     assert_eq!(text["format"], "seed-seeker-seed-report");

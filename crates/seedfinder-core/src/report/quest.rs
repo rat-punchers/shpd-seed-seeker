@@ -19,11 +19,11 @@ pub struct Quest {
     pub depth: u8,
     pub spawn_depth_range: DepthRange,
     pub rewards: RewardSelection,
-    /// Ordered reward slots (Wandmaker wands, Imp vault options); the
-    /// `questRewardSlots` section.
+    /// The reward options in option order; the `questRewardSlots` section.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub slots: Option<Vec<RewardSlot>>,
-    /// Imp: no reachable deck drift changes any slot's level or effect.
+    /// Imp: no deck drift in the window moves the floor RNG behind the
+    /// range-rule slots' levels and effects.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub upgrades_pinned: Option<bool>,
     /// Imp: Scroll of Upgrade equivalents across all options.
@@ -60,14 +60,16 @@ pub struct RewardSlot {
     pub level: u8,
     /// The level cannot change with run history.
     pub level_pinned: bool,
-    /// Imp slot role: `artifact`, `ring`, `weapon`, `missile`, `armor`, `wand`.
+    /// Ghost, Blacksmith and Imp: `artifact`, `ring`, `weapon`, `missile`,
+    /// `armor` or `wand`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub role: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub level_rule: Option<LevelRule>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub effect: Option<String>,
-    /// Items a deck-index drift can put in this slot.
+    /// Items a deck-index drift can put in this slot; absent for slots drawn
+    /// from no seeded deck.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub candidates: Option<Vec<SlotCandidate>>,
     /// Denominator for candidate weights.

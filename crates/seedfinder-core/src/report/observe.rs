@@ -11,7 +11,7 @@ use crate::main_world::{
     FloorObservation, FloorObserver, ObservedProfile, generate_main_world_observed,
 };
 use crate::model::{GeneratedWorld, WorldItem};
-use crate::quests::QuestSummary;
+use crate::quests::{QuestState, QuestSummary};
 use crate::room::{Room, RoomKind};
 use crate::run::ItemAppearanceState;
 use crate::search::FloorGate;
@@ -24,6 +24,8 @@ pub(super) struct Observed {
     pub world: GeneratedWorld,
     /// Depth order; floors without generated objects are absent.
     pub floors: Vec<ObservedFloor>,
+    /// Quest state after the last floor, with each reward's deck draw.
+    pub quests: QuestState,
 }
 
 pub(super) struct ObservedFloor {
@@ -63,6 +65,7 @@ impl FloorGate for Gate {
 struct Collector {
     appearance: ItemAppearanceState,
     floors: Vec<ObservedFloor>,
+    quests: QuestState,
 }
 
 impl FloorObserver for Collector {
@@ -96,6 +99,10 @@ impl FloorObserver for Collector {
                 .collect(),
         });
     }
+
+    fn quests(&mut self, quests: &QuestState) {
+        self.quests = quests.clone();
+    }
 }
 
 /// Replays the world through depth 24 exactly as `scout` generates it.
@@ -108,6 +115,7 @@ pub(super) fn observe(
     let mut collector = Collector {
         appearance: crate::run::RunState::new(dungeon_seed).appearances,
         floors: Vec::new(),
+        quests: QuestState::new(),
     };
     let world = generate_main_world_observed(
         seed,
@@ -153,6 +161,7 @@ pub(super) fn observe(
     Ok(Observed {
         world,
         floors: collector.floors,
+        quests: collector.quests,
     })
 }
 
