@@ -63,13 +63,11 @@ function panelStyle(focus: MapFocus, width: number, height: number) {
  */
 export function InteractiveFloorMap({
   bundle,
-  secrets,
   label,
   pinned,
   onPin,
 }: {
   bundle: MapBundle
-  secrets: boolean
   label: string
   pinned: MapFocus | null
   onPin: (focus: MapFocus | null) => void
@@ -81,7 +79,7 @@ export function InteractiveFloorMap({
   const [hover, setHover] = useState<MapFocus | null>(null)
 
   const inspect = (focus: MapFocus | null): MapInspection | null =>
-    focus ? inspectPoint(map, focus.mapX, focus.mapY, secrets) : null
+    focus ? inspectPoint(map, focus.mapX, focus.mapY) : null
 
   function focusAt(clientX: number, clientY: number): MapFocus | null {
     const root = rootRef.current
@@ -170,7 +168,7 @@ export function InteractiveFloorMap({
           >
             <FloorMapCanvas
               bundle={bundle}
-              secrets={secrets}
+              focusCell={inspection?.cell ?? null}
               displayScale={zoom}
               label={label}
             />
@@ -196,6 +194,7 @@ export function InteractiveFloorMap({
       {showPanel && panelFocus && root ? (
         <MapInspectPanel
           inspection={inspection}
+          bundle={bundle}
           pinned={pinned !== null}
           style={panelStyle(panelFocus, root.clientWidth, root.clientHeight)}
         />

@@ -32,8 +32,9 @@ test('a typed seed opens a tab with the engine report', async ({ page }) => {
     page.getByRole('navigation', { name: 'Floors' }).getByRole('button')
   ).toHaveCount(24)
   await expect(page.locator('[data-quest]')).toHaveCount(4)
+  await expect(page.getByLabel('Initial encounters')).toHaveCount(0)
   await expect(
-    page.locator('[data-floor-depth="1"]').getByLabel('Initial encounters')
+    page.locator('[data-floor-depth="5"] [data-boss="Goo"]')
   ).toBeVisible()
 
   // The floor strip jumps to a floor; an item opens its description.
@@ -153,7 +154,7 @@ test('J and K walk Find results from Analyze', async ({ page }) => {
   expectNoBrowserErrors(errors)
 })
 
-test('the engine times the Catalyst and fills pots, encounters and reward outlooks', async ({
+test('the engine times the Catalyst and fills pots and reward outlooks', async ({
   page,
 }) => {
   const errors = collectBrowserErrors(page)
@@ -174,11 +175,6 @@ test('the engine times the Catalyst and fills pots, encounters and reward outloo
       name: 'Alchemy pot, secret laboratory, in a secret room',
     })
   ).toBeAttached()
-
-  // Floor encounters and what the floor generates them carrying.
-  await expect(
-    page.locator('[data-floor-depth="6"]').getByLabel('Initial encounters')
-  ).toContainText('Carries Ring of Tenacity +1')
 
   // Quest reward slots.
   await page

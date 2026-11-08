@@ -11,14 +11,15 @@ import {
   mapTestName,
 } from './helpers/map-fixtures'
 
-// Each registered level, drawn by the real engine and renderer with reduced
-// motion (the first animation frame), compared pixel for pixel.
+// Each registered level, drawn revealed by the real engine and renderer with
+// reduced motion (the first animation frame), compared pixel for pixel. The
+// concealed overlay that fades over secrets is a separate canvas.
 for (const fixture of MAP_FIXTURES) {
   test(mapTestName(fixture), async ({ page }) => {
     const errors = collectBrowserErrors(page)
     await analyzeSeed(page, fixture.typed, fixture.seed)
     const { canvas } = await openMap(page, fixture.level)
-    await expect(canvas).toHaveAttribute('data-secrets', 'hidden')
+    await expect(page.locator('canvas[data-secret-overlay]')).toBeAttached()
     await waitForCanvasPaint(canvas)
     await snapshotCanvas(canvas, mapSnapshotName(fixture))
     expectNoBrowserErrors(errors)

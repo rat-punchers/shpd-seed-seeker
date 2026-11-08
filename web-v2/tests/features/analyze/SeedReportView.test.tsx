@@ -47,8 +47,11 @@ describe('a real report', () => {
       expect(container.querySelector('[data-seed-title]')?.textContent).toBe(
         report.seed.code
       )
-      // Each item appears once: on its floor, or on its quest's card.
-      const items = report.floors.flatMap((floor) => floor.items)
+      // Each item but gold and keys appears once: on its floor, or on its
+      // quest's card.
+      const items = report.floors
+        .flatMap((floor) => floor.items)
+        .filter((item) => item.category !== 'gold' && item.category !== 'key')
       expect(slots()).toHaveLength(items.length)
       expect(all('[data-rail-depth]')).toHaveLength(report.floors.length)
       expect(all('[data-floor-depth]')).toHaveLength(report.floors.length)
@@ -65,12 +68,7 @@ describe('a real report', () => {
       expect(band?.querySelectorAll('[role="radio"]')).toHaveLength(4)
       const pots = report.floors.flatMap((floor) => floor.appearances ?? [])
       expect(all('[data-alchemy-pot]')).toHaveLength(pots.length)
-      const encounters = report.floors.filter(
-        (floor) => (floor.encounters ?? []).length > 0
-      )
-      expect(all('[aria-label="Initial encounters"]')).toHaveLength(
-        encounters.length
-      )
+      expect(all('[aria-label="Initial encounters"]')).toHaveLength(0)
       expect(
         all('[aria-label="Per-slot reward outlook"]').length +
           all('[aria-label="Wand reward outlook"]').length
@@ -84,9 +82,8 @@ describe('a real report', () => {
     const without = (section: SeedReport['sections'][number]): SeedReport => ({
       ...report,
       sections: report.sections.filter((listed) => listed !== section),
-      floors: report.floors.map(({ encounters, appearances, ...floor }) => ({
+      floors: report.floors.map(({ appearances, ...floor }) => ({
         ...floor,
-        ...(section === 'encounters' ? {} : { encounters }),
         ...(section === 'alchemyPots' ? {} : { appearances }),
       })),
       quests: report.quests.map(
@@ -97,7 +94,6 @@ describe('a real report', () => {
       ),
     })
     for (const [section, selector] of [
-      ['encounters', '[aria-label="Initial encounters"]'],
       ['alchemyPots', '[data-alchemy-pot]'],
       ['questRewardSlots', '[aria-label="Per-slot reward outlook"]'],
       ['questRewardSlots', '[aria-label="Wand reward outlook"]'],
@@ -114,8 +110,12 @@ describe('a real report', () => {
     render(report)
     const floor2 = container.querySelector('[data-floor-depth="2"]')
     expect(floor2?.querySelector('[data-feeling]')?.textContent).toBe('Chasm')
+    expect(floor2?.querySelector('[data-boss]')).toBeNull()
     const floor5 = container.querySelector('[data-floor-depth="5"]')
     expect(floor5?.textContent).toContain('Sewers, boss: Goo')
+    expect(
+      all('[data-boss]').map((block) => block.getAttribute('data-boss'))
+    ).toEqual(['Goo', 'Tengu', 'DM-300', 'Dwarf King'])
     expect(
       container
         .querySelector('[data-rail-depth="3"]')
@@ -186,17 +186,14 @@ describe('the engine-filled sections of AAA-AAA-AAA', () => {
     ])
   })
 
-  it('lists encounters and what the floor generates them carrying', async () => {
+  it('leaves gold and keys out of the item lists', async () => {
     render(await realReport('aaa-aaa-aaa.json'))
-    const encounters = (depth: number) =>
-      container.querySelector(
-        `[data-floor-depth="${depth}"] [aria-label="Initial encounters"]`
-      )?.textContent
-    expect(encounters(1)).toContain('No seed-determined base drop')
-    expect(encounters(6)).toContain('Crystal Mimic')
-    expect(encounters(6)).toContain('Carries Ring of Tenacity +1')
-    expect(encounters(7)).toContain('Carries Blazing Assassin')
-    expect(encounters(10)).toBeUndefined()
+    const labels = slots().map((slot) => slot.getAttribute('aria-label') ?? '')
+    expect(
+      labels.some((label) =>
+        /^(Gold|Iron key|Golden key|Crystal key)\b/i.test(label)
+      )
+    ).toBe(false)
   })
 
   it('marks gameplay-variable items', async () => {

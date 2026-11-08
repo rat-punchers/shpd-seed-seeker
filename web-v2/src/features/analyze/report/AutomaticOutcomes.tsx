@@ -2,7 +2,6 @@ import { FlaskIcon } from '@phosphor-icons/react'
 import type { ReportFloor, SeedReport } from '../../../engine/types/report'
 import { AlchemyBubbles } from './AlchemyBubbles'
 import { FloorBanner } from './FloorBanner'
-import { FloorEncounterSection } from './FloorEncounterSection'
 import { FloorItemSections } from './FloorItemSections'
 import { FloorMapButton } from './FloorMapButton'
 import { questRewardItems } from './floor-items'
@@ -117,9 +116,6 @@ function FloorDetail({
           />
         ))}
         <FloorItemSections floor={floor} report={report} />
-        {hasSection(report, 'encounters') && floor.encounters ? (
-          <FloorEncounterSection encounters={floor.encounters} />
-        ) : null}
         {leftover.map((branch) => (
           <BranchNote
             key={`${branch.kind}-${branch.branch}`}

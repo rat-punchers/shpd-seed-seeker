@@ -113,6 +113,15 @@ export interface MapItemTooltip {
   items: MapTooltipItem[]
 }
 
+/** A mob kind's examine window: in-game name, description and idle film. */
+export interface MapMobDetail {
+  name: string
+  description: string
+  asset: string
+  frameDurationMs: number
+  frames: Rectangle[]
+}
+
 export type MapKind =
   | 'regular'
   | 'blacksmith_crystal'
@@ -127,6 +136,8 @@ export interface MapLayer {
 
 export interface LevelMapDocument {
   itemTooltips?: MapItemTooltip[]
+  /** Keyed by mob kind; absent from older engines. */
+  mobDetails?: Record<string, MapMobDetail>
   format: 'seed-seeker-level-map'
   schemaVersion: 2 | 3
   seed: string

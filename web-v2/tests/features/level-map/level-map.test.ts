@@ -96,26 +96,21 @@ describe('tile inspection', () => {
       level.width,
       level.scene.tileSize
     )
-    const inside = inspectPoint(
-      level,
-      left + width / 2,
-      top + height / 2,
-      false
-    )
+    const inside = inspectPoint(level, left + width / 2, top + height / 2)
     expect(inside?.tip).toBe(tip)
     expect(inside?.cell).toBe(tip.cell)
     expect(hasInspection(inside)).toBe(true)
-    expect(inspectPoint(level, -1, 0, false)).toBeNull()
+    expect(inspectPoint(level, -1, 0)).toBeNull()
   })
 
-  it('lists mobs on their cell and keeps hidden items for secrets', () => {
+  it('lists mobs on their cell and finds hidden items too', () => {
     const level = floor()
     const tile = level.scene.tileSize
     const mob = level.contents?.mobs[0]
     if (!mob) throw new Error('no mob on floor 4')
     const x = (mob.cell % level.width) * tile + tile / 2
     const y = Math.floor(mob.cell / level.width) * tile + tile / 2
-    expect(inspectPoint(level, x, y, false)?.mobs).toContain(mob)
+    expect(inspectPoint(level, x, y)?.mobs).toContain(mob)
     expect(kindName(mob.kind)).toBe('Slime')
     expect(kindName('PoisonDartTrap')).toBe('Poison dart trap')
 
@@ -124,12 +119,51 @@ describe('tile inspection', () => {
     const hidden = secretFloor.itemTooltips?.find((entry) => entry.hidden)
     if (!hidden) throw new Error('no hidden item on floor 2')
     const [left, top] = itemBounds(hidden, secretFloor.width, tile)
-    expect(
-      inspectPoint(secretFloor, left + 1, top + 1, false)?.tip
-    ).toBeUndefined()
-    expect(inspectPoint(secretFloor, left + 1, top + 1, true)?.tip?.cell).toBe(
+    expect(inspectPoint(secretFloor, left + 1, top + 1)?.tip?.cell).toBe(
       hidden.cell
     )
+  })
+
+  it('names each mob with its in-game examine text and portrait film', () => {
+    const level = floor()
+    const slime = level.mobDetails?.Slime
+    if (!slime) throw new Error('no slime details on floor 4')
+    expect(slime.name).toBe('Slime')
+    expect(slime.description).toStartWith('Slimes are')
+    expect(level.assets.map((asset) => asset.id)).toContain(slime.asset)
+    expect(slime.frames.length).toBeGreaterThan(0)
+  })
+
+  it('shows a mimic once, as its secret tooltip, and leaves summoning traps out', () => {
+    const level = JSON.parse(
+      level_map(
+        mapRequestJson({
+          seed: 'AAA-AAA-AAA',
+          depth: 6,
+          challenges: [],
+          selectedTrinket: 'mimic_tooth',
+        })
+      )
+    ) as LevelMapDocument
+    const tile = level.scene.tileSize
+    const tip = level.itemTooltips?.find(
+      (entry) => entry.label === 'Ebony Mimic'
+    )
+    if (!tip) throw new Error('no Ebony mimic on floor 6')
+    expect(tip.hidden).toBe(true)
+    const [left, top, width, height] = itemBounds(tip, level.width, tile)
+    const inside = inspectPoint(level, left + width / 2, top + height / 2)
+    expect(inside?.tip).toBe(tip)
+    expect(inside?.mobs).toEqual([])
+
+    const summoning = map('DDD-DDD-DDD', 13)
+    const trap = summoning.contents?.traps.find(
+      (entry) => entry.kind === 'Summoning'
+    )
+    if (!trap) throw new Error('no summoning trap on floor 13')
+    const x = (trap.cell % summoning.width) * tile + tile / 2
+    const y = Math.floor(trap.cell / summoning.width) * tile + tile / 2
+    expect(inspectPoint(summoning, x, y)?.traps).toEqual([])
   })
 })
 

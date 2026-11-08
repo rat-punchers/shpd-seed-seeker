@@ -4,7 +4,8 @@ import { type CSSProperties, forwardRef, type ReactNode } from 'react'
 import { itemArt } from '../../shared/sprites/sprites'
 import { ItemSprite } from '../../shared/ui/ItemSprite'
 import { kindName, type MapInspection } from './item-inspection'
-import type { MapMob, MapTooltipItem, MapTrap } from './types'
+import { MobPortrait } from './MobPortrait'
+import type { MapBundle, MapMob, MapTooltipItem, MapTrap } from './types'
 
 function PictureRow({
   picture,
@@ -76,25 +77,21 @@ function ItemSection({ item }: { item: MapTooltipItem }) {
   )
 }
 
-function mobNote(mob: MapMob): string {
-  const state = mob.sleeping
-    ? 'Asleep when the floor is generated.'
-    : 'Awake and wandering when the floor is generated.'
-  const drops = mob.items.length
-    ? ` Carries ${mob.items.map((item) => kindName(item.kind)).join(', ')}, dropped when defeated.`
-    : ''
-  return `${state}${drops}`
-}
-
-function MobSection({ mob }: { mob: MapMob }) {
+/** The mob as the game's examine window shows it: portrait, name, description. */
+function MobSection({ mob, bundle }: { mob: MapMob; bundle: MapBundle }) {
+  const detail = bundle.map.mobDetails?.[mob.kind]
   return (
-    <ObjectSection
-      title={kindName(mob.kind)}
-      note={mobNote(mob)}
-      badges={
-        mob.approximate ? <Badge variant="warning">May differ</Badge> : null
-      }
-    />
+    <PictureRow
+      picture={detail ? <MobPortrait bundle={bundle} detail={detail} /> : null}
+    >
+      <ObjectSection
+        title={detail?.name ?? kindName(mob.kind)}
+        desc={detail?.description}
+        badges={
+          mob.approximate ? <Badge variant="warning">May differ</Badge> : null
+        }
+      />
+    </PictureRow>
   )
 }
 
@@ -111,14 +108,21 @@ function TrapSection({ trap }: { trap: MapTrap }) {
 /** Description panel for one map tile: everything generated on it. */
 export const MapInspectPanel = forwardRef<
   HTMLDivElement,
-  { inspection: MapInspection; pinned: boolean; style?: CSSProperties }
->(function MapInspectPanel({ inspection, pinned, style }, ref) {
+  {
+    inspection: MapInspection
+    bundle: MapBundle
+    pinned: boolean
+    style?: CSSProperties
+  }
+>(function MapInspectPanel({ inspection, bundle, pinned, style }, ref) {
   const { tip, mobs, traps, plants } = inspection
   const sections: ReactNode[] = [
     ...(tip?.items ?? []).map((item, index) => (
       <ItemSection key={`item-${index}`} item={item} />
     )),
-    ...mobs.map((mob, index) => <MobSection key={`mob-${index}`} mob={mob} />),
+    ...mobs.map((mob, index) => (
+      <MobSection key={`mob-${index}`} mob={mob} bundle={bundle} />
+    )),
     ...traps.map((trap, index) => (
       <TrapSection key={`trap-${index}`} trap={trap} />
     )),

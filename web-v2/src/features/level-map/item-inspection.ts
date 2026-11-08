@@ -28,21 +28,22 @@ export function itemBounds(
   ]
 }
 
-/** The tooltip under a point given in map pixels; hidden ones only with secrets. */
+/** The tooltip under a point given in map pixels, hidden ones included. */
 export function itemAtPoint(
   map: InspectableMap,
   x: number,
-  y: number,
-  secrets: boolean
+  y: number
 ): MapItemTooltip | undefined {
   const tile = map.scene.tileSize
   if (x < 0 || y < 0 || x >= map.width * tile || y >= map.height * tile) return
   return map.itemTooltips?.find((tip) => {
-    if (tip.hidden && !secrets) return false
     const [left, top, width, height] = itemBounds(tip, map.width, tile)
     return x >= left && y >= top && x < left + width && y < top + height
   })
 }
+
+/** Traps the map does not describe; a summoning room is full of them. */
+const UNLISTED_TRAPS = new Set(['Summoning'])
 
 export interface MapInspection {
   /** The cell under the point. */
@@ -57,8 +58,7 @@ export interface MapInspection {
 export function inspectPoint(
   map: InspectableMap,
   x: number,
-  y: number,
-  secrets: boolean
+  y: number
 ): MapInspection | null {
   const tile = map.scene.tileSize
   const column = Math.floor(x / tile)
@@ -67,14 +67,20 @@ export function inspectPoint(
     return null
   }
   const cell = row * map.width + column
-  const tip = itemAtPoint(map, x, y, secrets)
+  const tip = itemAtPoint(map, x, y)
   const contents = map.contents
+  // A mimic's tooltip already names it and lists its loot.
+  const disguised = (mob: MapMob) =>
+    mob.kind.endsWith('Mimic') &&
+    (map.itemTooltips ?? []).some((entry) => entry.cell === mob.cell)
   return {
     cell: tip?.cell ?? cell,
     tip,
-    mobs: (contents?.mobs ?? []).filter((mob) => mob.cell === cell),
+    mobs: (contents?.mobs ?? []).filter(
+      (mob) => mob.cell === cell && !disguised(mob)
+    ),
     traps: (contents?.traps ?? map.traps).filter(
-      (trap) => trap.cell === cell && (secrets || !trap.hidden)
+      (trap) => trap.cell === cell && !UNLISTED_TRAPS.has(trap.kind)
     ),
     plants: (contents?.plants ?? []).filter((plant) => plant.cell === cell),
   }

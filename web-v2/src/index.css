@@ -21,9 +21,29 @@
   animation-iteration-count: infinite;
 }
 
+/* The floor before searching, over the revealed map (`FloorMapCanvas`). */
+@keyframes secret-fade-pulse {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.secret-fade {
+  animation: secret-fade-pulse 2.4s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sprite-glow {
     animation: none;
     opacity: 0.3;
+  }
+
+  .secret-fade {
+    animation: none;
+    opacity: 0.5;
   }
 }

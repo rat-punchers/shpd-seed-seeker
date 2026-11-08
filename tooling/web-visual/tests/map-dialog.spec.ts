@@ -161,11 +161,9 @@ test('the map dialog focuses itself, then Tab reaches the zoom controls', async 
   await page.keyboard.press('Tab')
   await expect(dialog.getByTestId('map-scroll-container')).toBeFocused()
 
-  // The secrets toggle redraws the map with secret rooms and doors.
-  const secrets = dialog.getByRole('button', { name: 'Secrets' })
-  await secrets.click()
-  await expect(secrets).toHaveAttribute('aria-pressed', 'true')
-  await expect(canvas).toHaveAttribute('data-secrets', 'shown')
+  // Secrets fade in and out over the map instead of behind a toggle.
+  await expect(dialog.getByRole('button', { name: 'Secrets' })).toHaveCount(0)
+  await expect(dialog.locator('canvas[data-secret-overlay]')).toBeAttached()
 
   await page.keyboard.press('Escape')
   await expect(dialog).toBeHidden()

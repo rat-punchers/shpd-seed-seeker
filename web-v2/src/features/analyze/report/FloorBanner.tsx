@@ -1,7 +1,15 @@
 import { isBossFloor, regionOf } from '@seed-seeker/design/lib/regions'
+import { Sprite } from '@seed-seeker/design/spd/sprite'
 import { cn } from '@seed-seeker/design/utils'
 import type { ReactNode } from 'react'
-import { REGION_STRIPS } from './art'
+import { useFilmFrame } from '../../../shared/ui/use-film-frame'
+import { BOSS_FILMS, REGION_STRIPS, type SpriteFilm } from './art'
+
+function FilmSprite({ film }: { film: SpriteFilm }) {
+  const frame = useFilmFrame(film.frames.length, film.frameDurationMs)
+  const sprite = film.frames[frame] ?? film.frames[0]
+  return sprite ? <Sprite sprite={sprite} scale={2} /> : null
+}
 
 /** Bosses are fixed by depth in v4.0.2 (`Dungeon.bossLevel`). */
 const BOSSES: Record<number, string> = {
@@ -48,6 +56,7 @@ export function FloorBanner({
 }) {
   const region = regionOf(depth)
   const boss = showDepth ? bossOf(depth) : undefined
+  const bossFilm = boss ? BOSS_FILMS[depth] : undefined
   const Heading = headingLevel === 4 ? 'h4' : 'h3'
   const metaText =
     meta === undefined
@@ -61,12 +70,17 @@ export function FloorBanner({
       {showDepth ? (
         <div
           aria-hidden
+          data-boss={boss}
           className={cn(
-            'text-region-foreground inset-shadow-raised grid w-14 shrink-0 place-items-center',
+            'text-region-foreground inset-shadow-raised relative grid w-14 shrink-0 place-items-center',
             region.fill
           )}
         >
-          <span className="font-pixel text-px-2">{depth}</span>
+          {bossFilm ? (
+            <FilmSprite film={bossFilm} />
+          ) : (
+            <span className="font-pixel text-px-2">{depth}</span>
+          )}
         </div>
       ) : null}
       <div

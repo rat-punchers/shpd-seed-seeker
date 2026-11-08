@@ -1,24 +1,28 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { createMapFrameRenderer } from './rendering/frame-renderer'
+import { paintSecretOverlay, secretOverlay } from './rendering/secret-overlay'
 import type { MapBundle } from './types'
 
 /** Sprite frames advance at most this often; particles follow the display. */
 const SPRITE_FRAME_MS = 50
 
 /**
- * The map's two surfaces: scenery at one canvas pixel per map pixel, and
- * particles at the displayed density. Both are sized by `displayScale` in
- * CSS. Animation pauses off-screen, in a hidden tab, and with reduced
- * motion, which draws the first frame only.
+ * The map's three surfaces: the revealed floor at one canvas pixel per map
+ * pixel, particles at the displayed density, and the concealed floor over
+ * both, fading in and out where secrets hide. All are sized by
+ * `displayScale` in CSS. Animation pauses off-screen, in a hidden tab, and
+ * with reduced motion, which draws the first frame only and holds the
+ * secrets half faded.
  */
 export function FloorMapCanvas({
   bundle,
-  secrets,
+  focusCell,
   displayScale,
   label,
 }: {
   bundle: MapBundle
-  secrets: boolean
+  /** The inspected cell; its secret region is shown revealed. */
+  focusCell: number | null
   displayScale: number
   label: string
 }) {
@@ -27,11 +31,25 @@ export function FloorMapCanvas({
   const height = map.height * map.scene.tileSize
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particleRef = useRef<HTMLCanvasElement>(null)
+  const secretRef = useRef<HTMLCanvasElement>(null)
+  const overlay = useMemo(() => secretOverlay(bundle), [bundle])
   const densityRef = useRef(1)
   densityRef.current = Math.max(
     1,
     Math.min(4, displayScale * (window.devicePixelRatio || 1))
   )
+
+  useEffect(() => {
+    const context = secretRef.current?.getContext('2d')
+    if (!context) return
+    paintSecretOverlay(
+      context,
+      overlay,
+      map.width,
+      map.scene.tileSize,
+      focusCell
+    )
+  }, [overlay, map, focusCell])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -42,7 +60,7 @@ export function FloorMapCanvas({
       context,
       particleContext,
       bundle,
-      secrets
+      true
     )
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
     let frame = 0
@@ -98,7 +116,7 @@ export function FloorMapCanvas({
       document.removeEventListener('visibilitychange', resume)
       motion.removeEventListener('change', resume)
     }
-  }, [bundle, secrets])
+  }, [bundle])
 
   const style = {
     width: width * displayScale,
@@ -114,7 +132,6 @@ export function FloorMapCanvas({
         role="img"
         aria-label={label}
         data-map-canvas
-        data-secrets={secrets ? 'shown' : 'hidden'}
         className="block max-w-none"
         style={style}
       />
@@ -122,6 +139,16 @@ export function FloorMapCanvas({
         ref={particleRef}
         aria-hidden
         className="pointer-events-none absolute top-0 left-0 block max-w-none"
+        style={style}
+      />
+      <canvas
+        ref={secretRef}
+        width={width}
+        height={height}
+        aria-hidden
+        data-secret-overlay
+        data-secret-regions={overlay.regions.length}
+        className="secret-fade pointer-events-none absolute top-0 left-0 block max-w-none"
         style={style}
       />
     </>

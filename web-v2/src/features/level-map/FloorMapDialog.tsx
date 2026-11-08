@@ -1,9 +1,4 @@
-import {
-  EyeIcon,
-  EyeSlashIcon,
-  MapTrifoldIcon,
-  SpinnerGapIcon,
-} from '@phosphor-icons/react'
+import { MapTrifoldIcon, SpinnerGapIcon } from '@phosphor-icons/react'
 import { Button } from '@seed-seeker/design/ui/button'
 import {
   Dialog,
@@ -67,8 +62,8 @@ export function FloorMapDialog({
         <DialogHeader className="shrink-0 pr-14">
           <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>
-            Items, mobs, and traps as generated for this seed. Hover or tap a
-            tile to inspect it.
+            Items, mobs, and traps as generated for this seed. Secret rooms,
+            doors and traps fade in and out. Hover or tap a tile to inspect it.
           </DialogDescription>
         </DialogHeader>
         <MapBody
@@ -94,68 +89,35 @@ function MapBody({
   onPin: (focus: MapFocus | null) => void
 }) {
   const { state, retry } = useLevelMap(request)
-  const [secrets, setSecrets] = useState(false)
-  const map = state.status === 'ready' ? state.bundle.map : undefined
-  const secretCount = map
-    ? map.secretRooms.length + map.secretDoors.length + map.secretTraps.length
-    : 0
 
   return (
-    <>
-      <div className="relative z-0 min-h-0 min-w-0 flex-1 overflow-hidden bg-black/80">
-        {state.status === 'ready' ? (
-          <InteractiveFloorMap
-            bundle={state.bundle}
-            secrets={secrets}
-            label={label}
-            pinned={pinned}
-            onPin={onPin}
-          />
-        ) : state.status === 'error' ? (
-          <div
-            role="alert"
-            className="flex size-full flex-col items-center justify-center gap-2 p-4 text-center text-white"
-          >
-            <p className="font-semibold">Couldn’t load this map.</p>
-            <p className="text-sm text-white/80">{state.error}</p>
-            <Button type="button" variant="secondary" onClick={retry}>
-              Try again
-            </Button>
-          </div>
-        ) : (
-          <div className="flex size-full items-center justify-center gap-2 text-white">
-            <SpinnerGapIcon className="size-5 animate-spin" />
-            <p role="status" className="text-sm">
-              Charting {request.branch ? 'the quest level' : 'the floor'}…
-            </p>
-          </div>
-        )}
-      </div>
-      <div className="flex shrink-0 flex-wrap items-center gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          aria-pressed={secrets}
-          disabled={!map || secretCount === 0}
-          onClick={() => {
-            onPin(null)
-            setSecrets((value) => !value)
-          }}
+    <div className="relative z-0 min-h-0 min-w-0 flex-1 overflow-hidden bg-black/80">
+      {state.status === 'ready' ? (
+        <InteractiveFloorMap
+          bundle={state.bundle}
+          label={label}
+          pinned={pinned}
+          onPin={onPin}
+        />
+      ) : state.status === 'error' ? (
+        <div
+          role="alert"
+          className="flex size-full flex-col items-center justify-center gap-2 p-4 text-center text-white"
         >
-          {secrets ? <EyeIcon /> : <EyeSlashIcon />}
-          Secrets
-        </Button>
-        <span className="text-muted-foreground text-sm">
-          {!map
-            ? null
-            : secretCount === 0
-              ? 'No secret rooms, doors or traps on this map.'
-              : secrets
-                ? 'Secret rooms, doors and traps are shown.'
-                : 'Secret rooms, doors and traps are hidden until searched.'}
-        </span>
-      </div>
-    </>
+          <p className="font-semibold">Couldn’t load this map.</p>
+          <p className="text-sm text-white/80">{state.error}</p>
+          <Button type="button" variant="secondary" onClick={retry}>
+            Try again
+          </Button>
+        </div>
+      ) : (
+        <div className="flex size-full items-center justify-center gap-2 text-white">
+          <SpinnerGapIcon className="size-5 animate-spin" />
+          <p role="status" className="text-sm">
+            Charting {request.branch ? 'the quest level' : 'the floor'}…
+          </p>
+        </div>
+      )}
+    </div>
   )
 }

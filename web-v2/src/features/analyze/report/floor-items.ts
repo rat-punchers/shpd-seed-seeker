@@ -50,9 +50,16 @@ export interface FloorItemGroups {
   shop: ReportItem[]
 }
 
+/** Gold piles and dungeon keys are not listed. */
+const HIDDEN_CATEGORIES = new Set(['gold', 'key'])
+
+export function isListed(item: ReportItem): boolean {
+  return !HIDDEN_CATEGORIES.has(item.category)
+}
+
 /**
- * The floor's item lists. Quest rewards are left out when the report lists
- * quests, because each quest card shows its own.
+ * The floor's item lists, without gold and keys. Quest rewards are left out
+ * when the report lists quests, because each quest card shows its own.
  */
 export function floorItemGroups(
   floor: ReportFloor,
@@ -61,6 +68,7 @@ export function floorItemGroups(
   const questCards = hasSection(report, 'quests')
   const groups: FloorItemGroups = { notable: [], other: [], shop: [] }
   for (const item of floor.items) {
+    if (!isListed(item)) continue
     if (questCards && QUEST_REWARD_SOURCES.includes(item.source)) continue
     if (item.source === 'shop') groups.shop.push(item)
     else if (isNotable(item)) groups.notable.push(item)
