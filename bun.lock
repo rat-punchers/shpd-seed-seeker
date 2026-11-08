@@ -60,6 +60,7 @@
     },
     "web-v2": {
       "name": "@seed-seeker/web-v2",
+      "version": "0.1.0",
       "dependencies": {
         "@phosphor-icons/react": "2.1.10",
         "@seed-seeker/design": "workspace:*",
