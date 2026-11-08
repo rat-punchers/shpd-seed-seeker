@@ -46,6 +46,7 @@ export function GroupedPicker<T extends PickerEntry>({
   icon,
   searchPlaceholder,
   emptyText,
+  keepOpen,
   onPick,
 }: {
   /** The trigger's and the search field's accessible name. */
@@ -53,16 +54,25 @@ export function GroupedPicker<T extends PickerEntry>({
   /** What the closed trigger shows. */
   face: ReactNode
   groups: () => PickerGroup<T>[]
-  value: (groups: PickerGroup<T>[]) => T | null
-  icon: (entry: T) => ReactNode
+  /** The checked entries: one, several, or none. */
+  value: (groups: PickerGroup<T>[]) => T | T[] | null
+  icon?: (entry: T) => ReactNode
   searchPlaceholder: string
   emptyText: string
+  /** Entries that toggle in place, leaving the list open for more. */
+  keepOpen?: (entry: T) => boolean
+  /** The entry the user checked or unchecked. */
   onPick: (entry: T) => void
 }) {
   // The groups of the open list; `null` while closed.
   const [items, setItems] = useState<PickerGroup<T>[] | null>(null)
   const open = items !== null
   const setOpen = (next: boolean) => setItems(next ? groups() : null)
+  const checked = items
+    ? [value(items)].flat().filter((entry): entry is T => entry !== null)
+    : []
+  const has = (list: T[], entry: T) =>
+    list.some((other) => sameEntry(other, entry))
   return (
     <Popover modal open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -82,13 +92,17 @@ export function GroupedPicker<T extends PickerEntry>({
         className="w-[min(22rem,var(--radix-popover-content-available-width))] gap-0 overflow-hidden p-0"
       >
         {items ? (
-          <Combobox<T>
+          <Combobox<T, true>
+            multiple
             items={items}
-            value={value(items)}
+            value={checked}
             isItemEqualToValue={sameEntry}
             onValueChange={(next) => {
-              if (next) onPick(next)
-              setOpen(false)
+              const toggled =
+                next.find((entry) => !has(checked, entry)) ??
+                checked.find((entry) => !has(next, entry))
+              if (toggled) onPick(toggled)
+              if (!toggled || !keepOpen?.(toggled)) setOpen(false)
             }}
             inline
             open
@@ -117,7 +131,7 @@ export function GroupedPicker<T extends PickerEntry>({
                           value={entry}
                           className="py-1"
                         >
-                          {icon(entry)}
+                          {icon?.(entry)}
                           {entry.label}
                         </ComboboxItem>
                       )}

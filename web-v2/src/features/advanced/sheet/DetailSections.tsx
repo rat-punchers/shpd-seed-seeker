@@ -1,4 +1,3 @@
-import { Switch } from '@seed-seeker/design/ui/switch'
 import type {
   EditorChange,
   EditorFloorToggle,
@@ -8,11 +7,17 @@ import {
   Caption,
   CheckBox,
   LabeledControl,
-  Segmented,
   SliderRow,
   Stepper,
   SwitchRow,
 } from './controls'
+import {
+  checkedEffects,
+  type EffectEntry,
+  effectChanges,
+  effectGroups,
+  effectSummary,
+} from './effect-choices'
 import { GroupedPicker } from './GroupedPicker'
 import { HEADING, SECTION } from './ItemSection'
 import { type SourceEntry, SourceIcon, sourceGroups } from './source-choices'
@@ -116,8 +121,11 @@ export function StackSection({
   )
 }
 
-/** The effect filter, and the "Specific…" grid of effects to tick. */
-function EffectControls({
+/**
+ * The effect filter as one searchable list: Any, Any enchantment, or the
+ * effects to tick, which stay open for more.
+ */
+function EffectPicker({
   form,
   onChange,
 }: {
@@ -125,53 +133,25 @@ function EffectControls({
   onChange: Change
 }) {
   const { effect } = form
+  const noun = effect.label.toLowerCase()
   return (
-    <>
-      <LabeledControl label={effect.label}>
-        <Segmented
-          value={effect.mode}
-          options={effect.modes}
-          onChange={(value) => onChange({ type: 'set_effect_mode', value })}
-          ariaLabel={`${effect.label} filter`}
-        />
-      </LabeledControl>
-      {effect.choices_visible ? (
-        <fieldset
-          aria-label="Effects"
-          className="grid min-w-0 grid-cols-2 gap-x-3 gap-y-1.5"
-        >
-          {effect.groups.flatMap((group) => [
-            <span
-              key={group.value}
-              className="text-muted-foreground col-span-2 mt-1 text-xs font-semibold uppercase"
-            >
-              {group.label}
-            </span>,
-            ...effect.choices
-              .filter((choice) => choice.group === group.value)
-              .map((choice) => (
-                // biome-ignore lint/a11y/noLabelWithoutControl: the switch inside is the label's control.
-                <label
-                  key={choice.value}
-                  className="flex items-center gap-2 text-sm"
-                >
-                  <Switch
-                    size="sm"
-                    checked={choice.selected}
-                    onCheckedChange={() =>
-                      onChange({ type: 'toggle_effect', value: choice.value })
-                    }
-                  />
-                  <span>{choice.label}</span>
-                </label>
-              )),
-          ])}
-          <p className="text-muted-foreground col-span-2 text-xs">
-            {effect.caption}
-          </p>
-        </fieldset>
-      ) : null}
-    </>
+    <LabeledControl label={effect.label}>
+      <GroupedPicker<EffectEntry>
+        label={effect.label}
+        face={
+          <span className="min-w-0 flex-1 truncate">{effectSummary(form)}</span>
+        }
+        groups={() => effectGroups(form)}
+        value={(groups) => checkedEffects(groups, form)}
+        searchPlaceholder={`Search ${noun}s…`}
+        emptyText={`No ${noun}s match.`}
+        keepOpen={(entry) => entry.effect !== null}
+        onPick={(entry) => {
+          for (const change of effectChanges(form, entry)) onChange(change)
+        }}
+      />
+      {effect.choices_visible ? <Caption>{effect.caption}</Caption> : null}
+    </LabeledControl>
   )
 }
 
@@ -229,7 +209,7 @@ export function DetailsSection({
     <section className={SECTION}>
       <h3 className={HEADING}>Details</h3>
       {form.effect.visible ? (
-        <EffectControls form={form} onChange={onChange} />
+        <EffectPicker form={form} onChange={onChange} />
       ) : null}
       {form.uncursed.visible ? (
         <CheckBox

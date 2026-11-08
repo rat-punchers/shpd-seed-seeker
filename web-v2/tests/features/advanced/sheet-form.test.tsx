@@ -114,23 +114,17 @@ it("shows a slider, the effect grid and a caption on the core's flags, not on th
   expect(html(upgrade(false), '[aria-label="Exactly"]')).toBe(false)
   expect(html(upgrade(true), '[aria-label="Exactly"]')).toBe(true)
   expect(
-    html(
-      {
-        effect: {
-          ...form.effect,
-          mode: 'specific',
-          choices_visible: false,
-        },
-      },
-      '[aria-label="Effects"]'
+    captions(
+      withForm(armor, {
+        effect: { ...form.effect, mode: 'specific', choices_visible: false },
+      })
     )
-  ).toBe(false)
+  ).not.toContain(form.effect.caption)
   expect(
-    html(
-      { effect: { ...form.effect, choices_visible: true } },
-      '[aria-label="Effects"]'
+    captions(
+      withForm(armor, { effect: { ...form.effect, choices_visible: true } })
     )
-  ).toBe(true)
+  ).toContain(form.effect.caption)
   const limited = {
     ...form.transmutations,
     visible: true,
@@ -156,7 +150,7 @@ it("labels the sections and switches and shows their help texts in the core's wo
   const armor = sheetAfter({ type: 'set_category', value: 'armor' })
   expect(armor.form.effect.label).toBe('Glyph')
   expect(labels(drawn(armor))).toContain('Glyph')
-  expect(has(drawn(armor), '[aria-label="Glyph filter"]')).toBe(true)
+  expect(has(drawn(armor), '[role="combobox"][aria-label="Glyph"]')).toBe(true)
 
   // An ordinary wand: resin exclusion, with its help under it.
   const wand = sheetAfter({ type: 'set_category', value: 'wand' })

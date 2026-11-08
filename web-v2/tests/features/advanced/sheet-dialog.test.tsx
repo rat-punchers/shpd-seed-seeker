@@ -44,15 +44,29 @@ async function slide(thumb: HTMLElement, index: number) {
   for (let step = 0; step < index; step++) await key('ArrowRight')
 }
 
-/** Opens the sheet's picker named `name` and picks the entry labelled `label`. */
-async function pick(name: string, label: string) {
-  const trigger = inSheet(`[aria-label="${name}"]`)
+/** Opens or closes the sheet's picker named `name`. */
+async function togglePicker(name: string) {
+  const trigger = inSheet(`[role="combobox"][aria-label="${name}"]`)
   await act(async () => trigger.click())
-  const entry = [
-    ...document.querySelectorAll<HTMLElement>('[data-slot="combobox-item"]'),
-  ].find((element) => element.textContent?.trim() === label)
+}
+
+const entries = () => [
+  ...document.querySelectorAll<HTMLElement>('[data-slot="combobox-item"]'),
+]
+
+/** Checks or unchecks the open picker's entry labelled `label`. */
+async function choose(label: string) {
+  const entry = entries().find(
+    (element) => element.textContent?.trim() === label
+  )
   expect(entry ?? undefined).toBeDefined()
   await act(async () => entry?.click())
+}
+
+/** Opens the sheet's picker named `name` and picks the entry labelled `label`. */
+async function pick(name: string, label: string) {
+  await togglePicker(name)
+  await choose(label)
 }
 
 it("draws the core's form and saves a stack with its copies' floor", async () => {
@@ -86,14 +100,27 @@ it('ticks effects through the core and keeps an unchanged save from touching the
   await render('{"requirements":[{"kind":"armor"}]}')
   const state = $query.get()
   await press(chip('Any armor'), 'Enter')
-  await click('Specific…')
-  expect(sheet()?.textContent).toContain('Tick the effects the item may carry')
-  const glyph = inSheet('[aria-label="Effects"] [role="switch"]')
-  await act(async () => glyph.click())
+  await togglePicker('Glyph')
+  // The modes but "Specific…" come first, then the glyphs and curses.
+  const labels = entries().map((entry) => entry.textContent?.trim())
+  expect(labels.slice(0, 2)).toEqual(['Any', 'Any glyph'])
+  expect(labels).not.toContain('Specific…')
+  const first = labels[2] ?? ''
+  const second = labels[3] ?? ''
+  // Effects tick in place, the list staying open for more.
+  await choose(first)
+  await choose(second)
+  expect(sheet()?.textContent).toContain('Matches any one of 2 effects.')
+  expect(inSheet('[aria-label="Glyph"]').textContent).toBe(
+    `${first}, ${second}`
+  )
+  await choose(second)
   expect(sheet()?.textContent).toContain('Matches any one of 1 effect.')
-  await act(async () => glyph.click())
-  await click('Any', inSheet('[aria-label="Glyph filter"]'))
-  expect(sheet()?.querySelector('[aria-label="Effects"]')).toBeNull()
+  // Unticking the last one returns to Any.
+  await choose(first)
+  expect(inSheet('[aria-label="Glyph"]').textContent).toBe('Any')
+  expect(sheet()?.textContent).not.toContain('Matches any one')
+  await togglePicker('Glyph')
   await click('Save Changes')
   expect($query.get()).toBe(state)
 })
@@ -138,15 +165,8 @@ it('adds an enchanted weapon through the sheet, and Cancel leaves the query', as
   expect(requirements()).toEqual([])
 
   await click('Add')
-  await click('Specific…')
-  const blazing = [
-    ...(sheet()?.querySelectorAll<HTMLLabelElement>(
-      '[aria-label="Effects"] label'
-    ) ?? []),
-  ].find((label) => label.textContent === 'Blazing')
-  await act(async () =>
-    blazing?.querySelector<HTMLElement>('[role="switch"]')?.click()
-  )
+  await pick('Enchantment', 'Blazing')
+  await togglePicker('Enchantment')
   await click('Add Requirement', sheet() ?? document)
   expect(requirements()).toEqual([{ kind: 'weapon', effect: 'Blazing' }])
   expect(chip('Any weapon').getAttribute('aria-label')).toContain('Blazing')
