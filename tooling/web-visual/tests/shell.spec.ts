@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test'
+import { loadPreset, sectionToggle } from './helpers/advanced'
 import { openApp, STORAGE_PREFIX } from './helpers/app'
 import {
   collectBrowserErrors,
@@ -141,13 +142,9 @@ test('on desktop a long Advanced query scrolls inside the sidebar, not the page'
   await page.setViewportSize({ width: 1440, height: 700 })
   const errors = collectBrowserErrors(page)
   await openApp(page, { mode: 'find', 'find-view': 'advanced' })
-  await page.getByLabel('Load preset').selectOption({ label: 'Necromancer' })
-  for (const name of ['Wandmaker', 'Challenges']) {
-    await page
-      .getByRole('region', { name, exact: true })
-      .locator('summary')
-      .click()
-  }
+  await loadPreset(page, 'Necromancer')
+  for (const name of ['Wandmaker', 'Challenges'])
+    await sectionToggle(page, name).click()
 
   const scroll = page.getByTestId('find-query-scroll')
   const heights = await scroll.evaluate((node) => ({

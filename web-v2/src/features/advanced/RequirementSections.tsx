@@ -1,5 +1,11 @@
 import { CaretRightIcon, InfoIcon } from '@phosphor-icons/react'
 import { Badge } from '@seed-seeker/design/ui/badge'
+import { Button } from '@seed-seeker/design/ui/button'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@seed-seeker/design/ui/collapsible'
 import {
   Tooltip,
   TooltipContent,
@@ -10,20 +16,22 @@ import { useEffect } from 'react'
 import { $query } from '../../app/store/query'
 import type { BoardResponse } from '../../engine/types'
 import { RequirementBoard } from './board/RequirementBoard'
+import { COLLAPSIBLE_TRIGGER } from './settings/parts'
 import { $savedFocus, applyBoardEdits, openEditor, removeResin } from './store'
 
 function BlanketHelp() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button
+        <Button
           type="button"
-          className="text-muted-foreground hover:text-foreground inline-flex"
+          variant="ghost"
+          size="icon-xs"
+          className="text-muted-foreground"
           aria-label="About blanket requirements"
-          onClick={(event) => event.preventDefault()}
         >
-          <InfoIcon className="size-4" />
-        </button>
+          <InfoIcon />
+        </Button>
       </TooltipTrigger>
       <TooltipContent className="flex max-w-80 flex-col gap-2 text-left">
         <span>
@@ -88,17 +96,21 @@ export function RequirementSections({ board }: { board: BoardResponse }) {
         {boardFor(false)}
       </section>
       <section aria-label="Blanket Requirements">
-        <details className="group/blanket flex flex-col gap-2">
-          <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm font-semibold [&::-webkit-details-marker]:hidden">
-            <CaretRightIcon className="size-3.5 transition-transform group-open/blanket:rotate-90" />
-            <span>Blanket Requirements</span>
-            {counts.blanket > 0 ? (
-              <Badge variant="secondary">{counts.blanket}</Badge>
-            ) : null}
+        <Collapsible className="group/blanket flex flex-col">
+          <div className="flex items-center gap-1.5">
+            <CollapsibleTrigger className={COLLAPSIBLE_TRIGGER}>
+              <CaretRightIcon className="size-3.5 transition-transform group-data-[state=open]/blanket:rotate-90" />
+              <span>Blanket Requirements</span>
+              {counts.blanket > 0 ? (
+                <Badge variant="secondary">{counts.blanket}</Badge>
+              ) : null}
+            </CollapsibleTrigger>
             <BlanketHelp />
-          </summary>
-          <div className="pt-2">{boardFor(true)}</div>
-        </details>
+          </div>
+          <CollapsibleContent forceMount className="data-[state=closed]:hidden">
+            <div className="pt-2">{boardFor(true)}</div>
+          </CollapsibleContent>
+        </Collapsible>
       </section>
     </>
   )

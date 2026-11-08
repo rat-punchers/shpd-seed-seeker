@@ -2,10 +2,14 @@ import { XIcon } from '@phosphor-icons/react'
 import { Button } from '@seed-seeker/design/ui/button'
 import { Input } from '@seed-seeker/design/ui/input'
 import {
-  NativeSelect,
-  NativeSelectOptGroup,
-  NativeSelectOption,
-} from '@seed-seeker/design/ui/native-select'
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@seed-seeker/design/ui/select'
 import { useStore } from '@tanstack/react-store'
 import { $userPresets, builtInPresets } from '../../app/store/presets'
 import { $query } from '../../app/store/query'
@@ -31,33 +35,37 @@ export function PresetsSection() {
         Presets
       </h3>
       <div className="flex gap-2">
-        <NativeSelect
-          className="min-w-0 flex-1"
-          aria-label="Load preset"
+        <Select
           value={selected}
-          onChange={(event) => {
-            const preset = presetOf(event.currentTarget.value)
+          onValueChange={(value) => {
+            const preset = presetOf(value)
             if (preset) applyPreset(preset)
           }}
         >
-          <NativeSelectOption value="">Load preset…</NativeSelectOption>
-          <NativeSelectOptGroup label="Included">
-            {builtInPresets.map((preset, index) => (
-              <NativeSelectOption key={preset.name} value={`b:${index}`}>
-                {preset.name}
-              </NativeSelectOption>
-            ))}
-          </NativeSelectOptGroup>
-          {saved.length > 0 ? (
-            <NativeSelectOptGroup label="Saved">
-              {saved.map((preset, index) => (
-                <NativeSelectOption key={preset.name} value={`u:${index}`}>
+          <SelectTrigger className="min-w-0 flex-1" aria-label="Load preset">
+            <SelectValue placeholder="Load preset…" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Included</SelectLabel>
+              {builtInPresets.map((preset, index) => (
+                <SelectItem key={preset.name} value={`b:${index}`}>
                   {preset.name}
-                </NativeSelectOption>
+                </SelectItem>
               ))}
-            </NativeSelectOptGroup>
-          ) : null}
-        </NativeSelect>
+            </SelectGroup>
+            {saved.length > 0 ? (
+              <SelectGroup>
+                <SelectLabel>Saved</SelectLabel>
+                {saved.map((preset, index) => (
+                  <SelectItem key={preset.name} value={`u:${index}`}>
+                    {preset.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            ) : null}
+          </SelectContent>
+        </Select>
         <Button
           type="button"
           variant="outline"
@@ -96,27 +104,28 @@ export function PresetsSection() {
       {saved.length > 0 ? (
         <ul className="flex flex-wrap gap-1.5" aria-label="Saved presets">
           {saved.map((preset) => (
-            <li
-              key={preset.name}
-              className="flex items-center rounded-sm border border-border bg-card"
-            >
-              <button
+            <li key={preset.name} className="flex items-center">
+              <Button
                 type="button"
-                className="hover:bg-muted rounded-l-sm px-2 py-1 text-sm"
+                variant="outline"
+                size="sm"
+                className="rounded-r-none"
                 title="Apply preset"
                 onClick={() => applyPreset(preset)}
               >
                 {preset.name}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className="hover:bg-muted text-muted-foreground rounded-r-sm border-l px-1.5 py-1.5"
+                variant="outline"
+                size="icon-sm"
+                className="text-muted-foreground -ml-px rounded-l-none"
                 aria-label={`Delete preset ${preset.name}`}
                 title="Delete preset"
                 onClick={() => deletePreset(preset.name)}
               >
-                <XIcon className="size-3.5" />
-              </button>
+                <XIcon />
+              </Button>
             </li>
           ))}
         </ul>

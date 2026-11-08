@@ -21,6 +21,9 @@ reproducible pixels: UTC, `en-US`, light color scheme, reduced motion, a
 
 - `app.ts`: `openApp(page, storage)` opens the app with cleared storage, the
   given `seed-seeker-v2-` entries, light theme and reduced motion.
+- `advanced.ts`: `selectOption(page, trigger, name)` for the Select and
+  grouped pickers, `loadPreset(page, name)`, and `sectionToggle(page, name)`
+  for a collapsible Advanced section's heading.
 - `browser-errors.ts`: `collectBrowserErrors(page)` and
   `expectNoBrowserErrors(errors)` for console errors and uncaught exceptions.
 - `canvas.ts`: `waitForCanvasPaint(canvas)` and

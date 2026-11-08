@@ -43,7 +43,7 @@ export function SheetBody({
   const { form } = sheet
   return (
     <div data-slot="sheet-body" className="flex flex-col gap-4">
-      <ItemSection form={form} onChange={onChange} />
+      <ItemSection sheet={sheet} onChange={onChange} />
       <TrinketSections form={form} onChange={onChange} />
       <ResinSection form={form} onChange={onChange} />
       <UpgradeSection form={form} onChange={onChange} />

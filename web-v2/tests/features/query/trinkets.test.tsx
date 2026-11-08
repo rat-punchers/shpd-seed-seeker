@@ -2,6 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { QueryState } from '../../../src/engine/types'
 import type { ReportTrinkets } from '../../../src/engine/types/report'
+import { itemGroups } from '../../../src/features/advanced/sheet/item-choices'
 import { TrinketChoiceBand } from '../../../src/features/analyze/report/TrinketChoiceBand'
 import {
   fromQueryJson,
@@ -171,10 +172,13 @@ describe('offered trinkets', () => {
     expect(subject).toBe('Rat Skull')
     expect(body.textContent).toContain('Choose matching trinket at +3')
     expect(body.textContent).not.toContain('Any trinket')
-    expect(body.querySelector('select[aria-label="Source"]')).toBeNull()
+    expect(body.querySelector('[aria-label="Source"]')).toBeNull()
     expect(body.textContent).not.toContain('Limit this item')
+    expect(body.querySelector('[aria-label="Item"]')?.textContent).toBe(
+      'Rat Skull'
+    )
     expect(
-      body.querySelectorAll('select[aria-label="Trinket"] option')
+      itemGroups(sheet).find((group) => group.value === 'Trinkets')?.items
     ).toHaveLength(17)
   })
 

@@ -63,7 +63,7 @@ afterEach(() => {
 const section = (name: string) =>
   container.querySelector<HTMLElement>(`section[aria-label="${name}"]`)
 const summaryText = (name: string) =>
-  section(name)?.querySelector('summary')?.textContent
+  section(name)?.querySelector('[data-slot="collapsible-trigger"]')?.textContent
 const scope = () =>
   container.querySelector<HTMLElement>(
     'section[aria-labelledby="search-scope-heading"]'
@@ -81,14 +81,16 @@ const buttonNamed = (name: string) =>
 const click = (element: Element | null | undefined) =>
   act(async () => (element as HTMLElement | undefined)?.click())
 
-async function slide(input: HTMLInputElement, index: number) {
-  await act(async () => {
-    Object.getOwnPropertyDescriptor(
-      HTMLInputElement.prototype,
-      'value'
-    )?.set?.call(input, String(index))
-    input.dispatchEvent(new Event('input', { bubbles: true }))
-  })
+/** Moves a slider's thumb to option `index` from the keyboard, one key at a time. */
+async function slide(thumb: HTMLElement, index: number) {
+  const key = (name: string) =>
+    act(async () => {
+      thumb.dispatchEvent(
+        new KeyboardEvent('keydown', { key: name, bubbles: true })
+      )
+    })
+  await key('Home')
+  for (let step = 0; step < index; step++) await key('ArrowRight')
 }
 
 it('lays the settings out below the boards, collapsed after Search scope', async () => {
@@ -110,8 +112,10 @@ it('lays the settings out below the boards, collapsed after Search scope', async
   ])
   for (const name of titles.slice(1))
     expect(
-      section(name as string)?.querySelector('details')?.open ?? null
-    ).toBe(false)
+      section(name as string)
+        ?.querySelector('[data-slot="collapsible"]')
+        ?.getAttribute('data-state')
+    ).toBe('closed')
   // The Requirements board holds no setting.
   expect(
     section('Requirements')?.querySelector('[data-farming-floors]')
@@ -120,9 +124,9 @@ it('lays the settings out below the boards, collapsed after Search scope', async
 
 it('moves the floor limit across the selector floors only', async () => {
   await render()
-  const slider = scope()?.querySelector<HTMLInputElement>(
-    'input[type="range"]'
-  ) as HTMLInputElement
+  const slider = scope()?.querySelector<HTMLElement>(
+    '[role="slider"]'
+  ) as HTMLElement
   expect(slider.getAttribute('aria-label')).toBe('Floor limit')
   expect(scope()?.textContent).toContain('first 24 floors')
   // Option 4 is floor 6: the empty boss floor 5 is not offered.
@@ -165,25 +169,31 @@ it('shows AutoTrinket on and defers only to an explicit trinket selection', asyn
 
 it('picks the Wandmaker quest and counts it', async () => {
   await render()
-  const select = section('Wandmaker')?.querySelector('select')
-  expect([...(select?.options ?? [])].map((option) => option.text)).toEqual([
+  const trigger =
+    section('Wandmaker')?.querySelector<HTMLElement>('[role="combobox"]')
+  const options = () => [
+    ...document.querySelectorAll<HTMLElement>('[role="option"]'),
+  ]
+  const open = () =>
+    act(async () => {
+      trigger?.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })
+      )
+    })
+  const pick = (label: string) =>
+    click(options().find((option) => option.textContent === label))
+  await open()
+  expect(options().map((option) => option.textContent)).toEqual([
     'Any',
     'Corpse Dust',
     'Elemental Embers',
     'Rotberry',
   ])
-  await act(async () => {
-    if (!select) return
-    select.value = 'rotberry'
-    select.dispatchEvent(new Event('change', { bubbles: true }))
-  })
+  await pick('Rotberry')
   expect($query.get().wandmakerQuest).toBe('rotberry')
   expect(summaryText('Wandmaker')).toBe('Wandmaker1')
-  await act(async () => {
-    if (!select) return
-    select.value = ''
-    select.dispatchEvent(new Event('change', { bubbles: true }))
-  })
+  await open()
+  await pick('Any')
   expect($query.get().wandmakerQuest).toBeUndefined()
 })
 
@@ -245,9 +255,9 @@ it('toggles the three farming floors, and lists and removes other floor requirem
 it('sets the worker count, and hides it on one core', async () => {
   setWorkerCount(8)
   await render()
-  const workers = section('Performance')?.querySelector<HTMLInputElement>(
-    'input[type="range"]'
-  ) as HTMLInputElement
+  const workers = section('Performance')?.querySelector<HTMLElement>(
+    '[role="slider"]'
+  ) as HTMLElement
   expect(section('Performance')?.textContent).toContain('8 of 8 cores')
   await slide(workers, 2)
   expect($workerCount.get()).toBe(3)

@@ -1,8 +1,11 @@
 import { Field, FieldLabel } from '@seed-seeker/design/ui/field'
 import {
-  NativeSelect,
-  NativeSelectOption,
-} from '@seed-seeker/design/ui/native-select'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@seed-seeker/design/ui/select'
 import { useStore } from '@tanstack/react-store'
 import { useId } from 'react'
 import { $query } from '../../../app/store/query'
@@ -17,6 +20,9 @@ const WANDMAKER_LABELS: Record<WandmakerQuest, string> = {
   rotberry: 'Rotberry',
 }
 
+/** The "Any" item's value: a select item cannot have an empty one. */
+const ANY = 'any'
+
 const isWandmakerQuest = (value: string): value is WandmakerQuest =>
   (WANDMAKER_QUESTS as readonly string[]).includes(value)
 
@@ -28,23 +34,26 @@ export function WandmakerSettings() {
     <SettingsDetails title="Wandmaker" count={quest ? 1 : 0}>
       <Field>
         <FieldLabel htmlFor={id}>Quest</FieldLabel>
-        <NativeSelect
-          id={id}
-          value={quest ?? ''}
-          onChange={(event) => {
-            const value = event.currentTarget.value
+        <Select
+          value={quest ?? ANY}
+          onValueChange={(value) =>
             patchQuery({
               wandmakerQuest: isWandmakerQuest(value) ? value : undefined,
             })
-          }}
+          }
         >
-          <NativeSelectOption value="">Any</NativeSelectOption>
-          {WANDMAKER_QUESTS.map((variant) => (
-            <NativeSelectOption key={variant} value={variant}>
-              {WANDMAKER_LABELS[variant]}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
+          <SelectTrigger id={id} className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ANY}>Any</SelectItem>
+            {WANDMAKER_QUESTS.map((variant) => (
+              <SelectItem key={variant} value={variant}>
+                {WANDMAKER_LABELS[variant]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </Field>
     </SettingsDetails>
   )

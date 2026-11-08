@@ -49,19 +49,21 @@ const labels = (element: HTMLElement) =>
 it('draws a control only while the form shows it, with any caption it carries', () => {
   const open = sheetAfter()
   const { form } = open
-  expect(has(withForm(open, {}), '[aria-label="Category"]')).toBe(true)
-  expect(
-    has(
-      withForm(open, { category: { ...form.category, visible: false } }),
-      '[aria-label="Category"]'
-    )
-  ).toBe(false)
+  expect(has(withForm(open, {}), '[aria-label="Item"]')).toBe(true)
   expect(withForm(open, {}).textContent).toContain('Any weapon')
   expect(
-    withForm(open, { item: { ...form.item, visible: false } }).querySelector(
-      'select[aria-label="Item"]'
+    has(
+      withForm(open, { item: { ...form.item, visible: false } }),
+      '[aria-label="Item"]'
     )
-  ).toBeNull()
+  ).toBe(false)
+  expect(has(withForm(open, {}), '[aria-label="Source"]')).toBe(true)
+  expect(
+    has(
+      withForm(open, { source: { ...form.source, visible: false } }),
+      '[aria-label="Source"]'
+    )
+  ).toBe(false)
   // The floor limit alone still gets its Details section.
   const floorOnly = withForm(open, {
     effect: { ...form.effect, visible: false },

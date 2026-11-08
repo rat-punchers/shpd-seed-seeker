@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { expect, type Page, test } from '@playwright/test'
+import { sectionToggle, selectOption } from './helpers/advanced'
 import { openApp, STORAGE_PREFIX } from './helpers/app'
 import {
   collectBrowserErrors,
@@ -14,9 +15,8 @@ const viewTab = (page: Page, name: 'Simple' | 'Advanced') =>
 
 /** A collapsed settings section, opened. */
 async function openSettings(page: Page, name: string) {
-  const section = page.getByRole('region', { name, exact: true })
-  await section.locator('summary').click()
-  return section
+  await sectionToggle(page, name).click()
+  return page.getByRole('region', { name, exact: true })
 }
 
 /** The saved query document, as the app wrote it. */
@@ -58,8 +58,13 @@ for (const viewport of [
     await expect(page.getByText('Dark floor with a garden.')).toBeVisible()
     await page.keyboard.press('Escape')
 
+    const quest = page
+      .getByRole('region', { name: 'Wandmaker', exact: true })
+      .getByLabel('Quest')
+    await expect(quest).toBeHidden()
     const wandmaker = await openSettings(page, 'Wandmaker')
-    await wandmaker.getByLabel('Quest').selectOption('rotberry')
+    await expect(quest).toBeVisible()
+    await selectOption(page, wandmaker.getByLabel('Quest'), 'Rotberry')
     const blacksmith = await openSettings(page, 'Blacksmith')
     // A floor limit of 14 or more always meets him.
     await expect(
@@ -70,7 +75,7 @@ for (const viewport of [
       .click()
     const challenges = await openSettings(page, 'Challenges')
     await challenges.getByRole('switch', { name: 'Barren Land' }).click()
-    await expect(challenges.locator('summary')).toContainText('1')
+    await expect(sectionToggle(page, 'Challenges')).toContainText('1')
 
     await page.getByRole('switch', { name: 'AutoTrinket' }).click()
     await expect(page.getByTestId('query-estimate')).toContainText(
@@ -101,9 +106,7 @@ for (const viewport of [
     await expect(
       page.getByRole('switch', { name: 'AutoTrinket' })
     ).toHaveAttribute('aria-checked', 'false')
-    await expect(
-      page.getByRole('region', { name: 'Wandmaker' }).locator('summary')
-    ).toContainText('1')
+    await expect(sectionToggle(page, 'Wandmaker')).toContainText('1')
 
     // Simple cannot show these settings.
     await viewTab(page, 'Simple').click()

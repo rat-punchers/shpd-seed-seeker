@@ -1,16 +1,13 @@
 import { Input } from '@seed-seeker/design/ui/input'
-import {
-  NativeSelect,
-  NativeSelectOptGroup,
-  NativeSelectOption,
-} from '@seed-seeker/design/ui/native-select'
 import type {
   EditorChange,
   EditorForm,
-  EditorOption,
+  EditorSheet,
   TierMode,
   UpgradeMode,
 } from '../../../engine/types'
+import { requirementArt } from '../../../shared/sprites/requirement-art'
+import { ItemSprite } from '../../../shared/ui/ItemSprite'
 import {
   Caption,
   CheckBox,
@@ -20,6 +17,13 @@ import {
   Stepper,
   SwitchRow,
 } from './controls'
+import { GroupedPicker } from './GroupedPicker'
+import {
+  currentItem,
+  type ItemEntry,
+  itemGroups,
+  pickChanges,
+} from './item-choices'
 
 // The sheet draws the shared core's form (docs/requirement-editor.md): which
 // controls show, what they offer, their ranges, labels, help texts and errors
@@ -48,83 +52,68 @@ export const SECTION =
   'flex flex-col gap-3 border-t pt-4 first:border-t-0 first:pt-0'
 export const HEADING = 'font-pixel text-px-1'
 
-/** The item picker's options, those under one heading (`Tier 3`) in an optgroup. */
-function ItemOptions({ options }: { options: EditorOption<string | null>[] }) {
-  const runs: {
-    group: string | null
-    options: EditorOption<string | null>[]
-  }[] = []
-  for (const option of options) {
-    const last = runs.at(-1)
-    if (option.group !== null && last?.group === option.group)
-      last.options.push(option)
-    else runs.push({ group: option.group, options: [option] })
-  }
-  const render = (option: EditorOption<string | null>) => (
-    <NativeSelectOption key={option.value ?? ''} value={option.value ?? ''}>
-      {option.label}
-    </NativeSelectOption>
-  )
-  return runs.flatMap(({ group, options: run }) =>
-    group === null
-      ? run.map(render)
-      : [
-          <NativeSelectOptGroup key={group} label={group}>
-            {run.map(render)}
-          </NativeSelectOptGroup>,
-        ]
+/**
+ * One searchable list of every item and wildcard, across the categories and
+ * weapon types: a pick sends the kind and the item to the core.
+ */
+function ItemPicker({
+  sheet,
+  onChange,
+}: {
+  sheet: EditorSheet
+  onChange: Change
+}) {
+  const { form } = sheet
+  const label =
+    form.item.options.find((option) => option.value === form.item.value)
+      ?.label ?? form.title
+  return (
+    <GroupedPicker<ItemEntry>
+      label="Item"
+      face={
+        <>
+          <ItemSprite
+            art={requirementArt({
+              item: form.item.value,
+              kind: form.kind.value,
+            })}
+            size={24}
+          />
+          <span className="min-w-0 flex-1 truncate">{label}</span>
+        </>
+      }
+      groups={() => itemGroups(sheet)}
+      value={(groups) => currentItem(groups, form)}
+      icon={(entry) => (
+        <ItemSprite
+          art={requirementArt({ item: entry.item, kind: entry.kind })}
+          size={24}
+        />
+      )}
+      searchPlaceholder="Search items…"
+      emptyText="No items match."
+      onPick={(entry) => {
+        for (const change of pickChanges(form, entry)) onChange(change)
+      }}
+    />
   )
 }
 
-/** What the requirement is: category, weapon type, item and tier. */
+/** What the requirement is: the item or wildcard, and a wildcard's tier. */
 export function ItemSection({
-  form,
+  sheet,
   onChange,
 }: {
-  form: EditorForm
+  sheet: EditorSheet
   onChange: Change
 }) {
+  const { form } = sheet
   const { tier } = form
   return (
     <section className={SECTION}>
       <h3 className={HEADING}>Item</h3>
-      {form.category.visible ? (
-        <Segmented
-          value={form.category.value}
-          options={form.category.options}
-          onChange={(value) => onChange({ type: 'set_category', value })}
-          ariaLabel="Category"
-          fill
-        />
-      ) : null}
-      {form.weapon_type.visible ? (
-        <LabeledControl label="Weapon type">
-          <Segmented
-            value={form.weapon_type.value}
-            options={form.weapon_type.options}
-            onChange={(value) => onChange({ type: 'set_weapon_type', value })}
-            ariaLabel="Weapon type"
-          />
-        </LabeledControl>
-      ) : null}
       {form.item.visible ? (
-        <LabeledControl
-          label={form.category.value === 'trinket' ? 'Trinket' : 'Item'}
-        >
-          <NativeSelect
-            className="w-full"
-            aria-label={form.category.value === 'trinket' ? 'Trinket' : 'Item'}
-            value={form.item.value ?? ''}
-            onChange={(event) =>
-              onChange({
-                type: 'set_item',
-                value: event.currentTarget.value || null,
-              })
-            }
-          >
-            <ItemOptions options={form.item.options} />
-          </NativeSelect>
-        </LabeledControl>
+        <ItemPicker sheet={sheet} onChange={onChange} />
       ) : null}
       {tier.visible ? (
         <>

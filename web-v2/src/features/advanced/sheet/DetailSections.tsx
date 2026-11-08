@@ -1,13 +1,8 @@
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from '@seed-seeker/design/ui/native-select'
 import { Switch } from '@seed-seeker/design/ui/switch'
 import type {
   EditorChange,
   EditorFloorToggle,
   EditorForm,
-  ItemSource,
 } from '../../../engine/types'
 import {
   Caption,
@@ -18,7 +13,9 @@ import {
   Stepper,
   SwitchRow,
 } from './controls'
+import { GroupedPicker } from './GroupedPicker'
 import { HEADING, SECTION } from './ItemSection'
+import { type SourceEntry, SourceIcon, sourceGroups } from './source-choices'
 
 type Change = (change: EditorChange) => void
 
@@ -178,6 +175,41 @@ function EffectControls({
   )
 }
 
+/** Where the item comes from, as a searchable list under headings. */
+function SourcePicker({
+  form,
+  onChange,
+}: {
+  form: EditorForm
+  onChange: Change
+}) {
+  const { source } = form
+  const label =
+    source.options.find((option) => option.value === source.value)?.label ??
+    'Any'
+  return (
+    <GroupedPicker<SourceEntry>
+      label="Source"
+      face={
+        <>
+          <SourceIcon source={source.value} />
+          <span className="min-w-0 flex-1 truncate">{label}</span>
+        </>
+      }
+      groups={() => sourceGroups(source.options)}
+      value={(groups) =>
+        groups
+          .flatMap((group) => group.items)
+          .find((entry) => entry.source === source.value) ?? null
+      }
+      icon={(entry) => <SourceIcon source={entry.source} />}
+      searchPlaceholder="Search sources…"
+      emptyText="No sources match."
+      onPick={(entry) => onChange({ type: 'set_source', value: entry.source })}
+    />
+  )
+}
+
 /** Effects, uncursed, source and floor limit. */
 export function DetailsSection({
   form,
@@ -207,26 +239,7 @@ export function DetailsSection({
       ) : null}
       {form.source.visible ? (
         <LabeledControl label="Source">
-          <NativeSelect
-            className="w-full"
-            aria-label="Source"
-            value={form.source.value ?? ''}
-            onChange={(event) =>
-              onChange({
-                type: 'set_source',
-                value: (event.currentTarget.value || null) as ItemSource | null,
-              })
-            }
-          >
-            {form.source.options.map((option) => (
-              <NativeSelectOption
-                key={option.value ?? ''}
-                value={option.value ?? ''}
-              >
-                {option.label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
+          <SourcePicker form={form} onChange={onChange} />
         </LabeledControl>
       ) : null}
       {form.floor_limit.visible ? (

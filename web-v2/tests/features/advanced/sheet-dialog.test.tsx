@@ -32,15 +32,27 @@ async function toggle(name: string) {
   await act(async () => control?.click())
 }
 
-/** Moves a range input to option `index`, as a drag of its thumb does. */
-async function slide(input: HTMLInputElement, index: number) {
-  await act(async () => {
-    Object.getOwnPropertyDescriptor(
-      HTMLInputElement.prototype,
-      'value'
-    )?.set?.call(input, String(index))
-    input.dispatchEvent(new Event('input', { bubbles: true }))
-  })
+/** Moves a slider's thumb to option `index` from the keyboard, one key at a time. */
+async function slide(thumb: HTMLElement, index: number) {
+  const key = (name: string) =>
+    act(async () => {
+      thumb.dispatchEvent(
+        new KeyboardEvent('keydown', { key: name, bubbles: true })
+      )
+    })
+  await key('Home')
+  for (let step = 0; step < index; step++) await key('ArrowRight')
+}
+
+/** Opens the sheet's picker named `name` and picks the entry labelled `label`. */
+async function pick(name: string, label: string) {
+  const trigger = inSheet(`[aria-label="${name}"]`)
+  await act(async () => trigger.click())
+  const entry = [
+    ...document.querySelectorAll<HTMLElement>('[data-slot="combobox-item"]'),
+  ].find((element) => element.textContent?.trim() === label)
+  expect(entry ?? undefined).toBeDefined()
+  await act(async () => entry?.click())
 }
 
 it("draws the core's form and saves a stack with its copies' floor", async () => {
@@ -56,7 +68,7 @@ it("draws the core's form and saves a stack with its copies' floor", async () =>
   await toggle('Limit the extra copies to a floor')
   expect(sheet()?.textContent).toContain('Copies within first 4 floors')
   // The slider's name stays put while its reading moves.
-  const floors = inSheet('input[type="range"]') as HTMLInputElement
+  const floors = inSheet('[role="slider"]')
   expect(floors.getAttribute('aria-label')).toBe('Copies within first')
   await slide(floors, 4)
   expect(sheet()?.textContent).toContain('Copies within first 6 floors')
@@ -89,16 +101,32 @@ it('ticks effects through the core and keeps an unchanged save from touching the
 it('shows why a draft cannot be saved and keeps its button off', async () => {
   await render('{"requirements":[{"item":"rat_skull"}]}')
   await click('Add')
-  await click('Trinket')
-  const item = inSheet('select') as HTMLSelectElement
-  await act(async () => {
-    item.value = 'rat_skull'
-    item.dispatchEvent(new Event('change', { bubbles: true }))
-  })
+  await pick('Item', 'Rat Skull')
+  expect(inSheet('[data-slot="sheet-subject"]').textContent).toBe('Rat Skull')
   expect(inSheet('[role="alert"]').textContent).toBe(
     'This trinket is already required. Each trinket appears only once in the deck.'
   )
   expect(button('Add Requirement', sheet() ?? document)?.disabled).toBe(true)
+})
+
+it('picks the kind and source from searchable lists, and keeps a named weapon general', async () => {
+  await render('{"requirements":[]}')
+  await click('Add')
+  await pick('Item', 'Any thrown weapon')
+  expect(inSheet('[aria-label="Item"]').textContent).toContain(
+    'Any thrown weapon'
+  )
+  await pick('Source', 'Locked chest')
+  expect(inSheet('[aria-label="Source"]').textContent).toContain('Locked chest')
+  await click('Add Requirement', sheet() ?? document)
+  expect(requirements()).toEqual([
+    { kind: 'thrown_weapon', source: 'locked_chest' },
+  ])
+
+  await click('Add')
+  await pick('Item', 'Spear')
+  await click('Add Requirement', sheet() ?? document)
+  expect(requirements().at(-1)).toEqual({ kind: 'weapon', item: 'spear' })
 })
 
 it('adds an enchanted weapon through the sheet, and Cancel leaves the query', async () => {

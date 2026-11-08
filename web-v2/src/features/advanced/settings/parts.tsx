@@ -2,6 +2,11 @@ import { CaretRightIcon, InfoIcon } from '@phosphor-icons/react'
 import { Badge } from '@seed-seeker/design/ui/badge'
 import { Button } from '@seed-seeker/design/ui/button'
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@seed-seeker/design/ui/collapsible'
+import {
   Field,
   FieldContent,
   FieldDescription,
@@ -31,17 +36,24 @@ export function SettingsDetails({
 }) {
   return (
     <section aria-label={title}>
-      <details className="group/settings flex flex-col gap-2">
-        <summary className="flex cursor-pointer list-none items-center gap-1.5 text-sm font-semibold [&::-webkit-details-marker]:hidden">
-          <CaretRightIcon className="size-3.5 transition-transform group-open/settings:rotate-90" />
+      <Collapsible className="group/settings flex flex-col">
+        <CollapsibleTrigger className={COLLAPSIBLE_TRIGGER}>
+          <CaretRightIcon className="size-3.5 transition-transform group-data-[state=open]/settings:rotate-90" />
           <span>{title}</span>
           {count > 0 ? <Badge variant="secondary">{count}</Badge> : null}
-        </summary>
-        <div className="flex flex-col gap-3 pt-2">{children}</div>
-      </details>
+        </CollapsibleTrigger>
+        {/* Mounted while closed, as the settings' summaries read their controls. */}
+        <CollapsibleContent forceMount className="data-[state=closed]:hidden">
+          <div className="flex flex-col gap-3 pt-2">{children}</div>
+        </CollapsibleContent>
+      </Collapsible>
     </section>
   )
 }
+
+/** A collapsible section's heading row: caret, title and count. */
+export const COLLAPSIBLE_TRIGGER =
+  'flex w-fit cursor-pointer items-center gap-1.5 rounded-sm text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring/40'
 
 /** A switch with its label beside it and an optional note under the label. */
 export function SettingSwitch({

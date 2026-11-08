@@ -78,21 +78,19 @@ it('shows a collapsed blanket board with a count, and the sheet source and upgra
   const query = state()
   const drawn = renderAdvanced(query)
   const blankets = blanketSection(drawn)
-  const details = blankets?.querySelector('details')
-  expect(details?.open).toBe(false)
-  expect(details?.querySelector('summary')?.textContent).toBe(
-    'Blanket Requirements1'
-  )
+  const collapsible = blankets?.querySelector('[data-slot="collapsible"]')
+  expect(collapsible?.getAttribute('data-state')).toBe('closed')
+  expect(
+    collapsible?.querySelector('[data-slot="collapsible-trigger"]')?.textContent
+  ).toBe('Blanket Requirements1')
   expect(
     blankets?.querySelector('[aria-label="About blanket requirements"]')
   ).not.toBeNull()
   const editor = drawSheet(sheetOn(query, { type: 'row', key: 4 }))
   expect(editor.title).toBe('Edit Blanket Requirement')
-  expect(
-    editor.body
-      .querySelector('select[aria-label="Source"]')
-      ?.querySelector<HTMLOptionElement>('option[selected]')?.value
-  ).toBe('wandmaker_reward')
+  expect(editor.body.querySelector('[aria-label="Source"]')?.textContent).toBe(
+    'Wandmaker reward'
+  )
   expect(editor.body.textContent).toContain('Upgrade')
   expect(editor.body.textContent).not.toContain('Total item count')
   // A new blanket starts on the kind of the first ordinary requirement.

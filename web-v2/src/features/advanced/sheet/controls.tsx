@@ -1,6 +1,7 @@
 import { MinusIcon, PlusIcon } from '@phosphor-icons/react'
 import { Button } from '@seed-seeker/design/ui/button'
 import { Field, FieldLabel } from '@seed-seeker/design/ui/field'
+import { Slider } from '@seed-seeker/design/ui/slider'
 import { Switch } from '@seed-seeker/design/ui/switch'
 import {
   ToggleGroup,
@@ -173,18 +174,19 @@ export function SliderRow({
           </span>
         ) : null}
       </div>
-      <input
-        type="range"
-        className="w-full accent-primary"
+      <Slider
+        className="py-1"
         min={0}
         max={options.length - 1}
         step={1}
-        value={index}
-        aria-label={ariaLabel}
-        aria-valuetext={String(options[index])}
-        onChange={(event) => {
-          const next = options[Number(event.currentTarget.value)]
-          if (next !== undefined) onChange(next)
+        value={[index]}
+        thumbProps={{
+          'aria-label': ariaLabel,
+          'aria-valuetext': String(options[index]),
+        }}
+        onValueChange={([position]) => {
+          const next = options[position ?? index]
+          if (next !== undefined && next !== value) onChange(next)
         }}
       />
     </div>

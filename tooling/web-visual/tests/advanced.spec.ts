@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test'
+import { loadPreset, selectOption } from './helpers/advanced'
 import { openApp } from './helpers/app'
 import {
   collectBrowserErrors,
@@ -90,6 +91,41 @@ for (const viewport of [
   })
 }
 
+test('the sheet picks its item and source from searchable, grouped lists', async ({
+  page,
+}) => {
+  const errors = collectBrowserErrors(page)
+  await openApp(page, { mode: 'find', 'find-view': 'advanced' })
+  await page.getByRole('button', { name: 'Add', exact: true }).first().click()
+
+  await sheet(page).getByRole('combobox', { name: 'Item' }).click()
+  const search = page.getByLabel('Search item')
+  await expect(search).toBeFocused()
+  await expect(
+    page.getByRole('group', { name: 'Melee weapons · Tier 3' })
+  ).toBeVisible()
+  await search.fill('wand of fro')
+  await expect(page.getByRole('option')).toHaveCount(1)
+  await page.getByRole('option', { name: 'Wand of Frost' }).click()
+  await expect(page.getByLabel('Search item')).toHaveCount(0)
+  await expect(sheet(page).getByRole('combobox', { name: 'Item' })).toHaveText(
+    'Wand of Frost'
+  )
+
+  await selectOption(
+    page,
+    sheet(page).getByRole('combobox', { name: 'Source' }),
+    'Wandmaker reward'
+  )
+  await expect(
+    sheet(page).getByRole('combobox', { name: 'Source' })
+  ).toHaveText('Wandmaker reward')
+  // The sheet stays open under the pickers.
+  await sheet(page).getByRole('button', { name: 'Add Requirement' }).click()
+  await expect(chip(page, /^Wand of Frost/)).toBeVisible()
+  expectNoBrowserErrors(errors)
+})
+
 test('a preset loads into the board, saves under a name, and Copy JSON copies its document', async ({
   page,
   context,
@@ -97,7 +133,7 @@ test('a preset loads into the board, saves under a name, and Copy JSON copies it
   await context.grantPermissions(['clipboard-read', 'clipboard-write'])
   const errors = collectBrowserErrors(page)
   await openApp(page, { mode: 'find', 'find-view': 'advanced' })
-  await page.getByLabel('Load preset').selectOption({ label: 'Necromancer' })
+  await loadPreset(page, 'Necromancer')
   await expect(chip(page, /^Wand of Corruption/)).toBeVisible()
   await expect(page.getByTestId('requirement-count')).toHaveText(
     '3 requirements'
