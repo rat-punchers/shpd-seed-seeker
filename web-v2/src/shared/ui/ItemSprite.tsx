@@ -1,12 +1,12 @@
 import type { Glow } from '../sprites/glow'
 import {
   type ItemArt,
-  ringIconCss,
   spriteBoxCss,
   spriteGlowCss,
+  typeIconCss,
 } from '../sprites/sprites'
 
-/** One item sprite from `items.png`, with a ring's type glyph over it. */
+/** One item sprite from `items.png`, with a type glyph over rings, potions and scrolls. */
 export function ItemSprite({
   art,
   size = 32,
@@ -22,7 +22,7 @@ export function ItemSprite({
   glow?: Glow | null
 }) {
   const box = spriteBoxCss(art.cell, size)
-  const ringIcon = ringIconCss(art.ringGlyph, size)
+  const typeIcon = typeIconCss(art, size)
   const content = (
     <>
       <span style={box.inner}>
@@ -33,7 +33,7 @@ export function ItemSprite({
           />
         ) : null}
       </span>
-      {ringIcon ? <span style={ringIcon} /> : null}
+      {typeIcon ? <span style={typeIcon} /> : null}
     </>
   )
   return label ? (

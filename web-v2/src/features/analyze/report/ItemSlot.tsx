@@ -119,7 +119,10 @@ export function ItemSlot({
         ref.current && togglePinItemDetail(ref.current, { kind: 'item', item })
       }
     >
-      <ItemSprite art={itemArt(item.spriteIndex, ringGems)} size={16 * scale} />
+      <ItemSprite
+        art={itemArt(item.spriteIndex, ringGems, item.icon)}
+        size={16 * scale}
+      />
       {item.upgrade !== 0 ? (
         // `dark` scopes the bright tier colors: labels on art are outlined
         // in black in both themes, as in the game.

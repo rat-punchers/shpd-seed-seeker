@@ -25,9 +25,11 @@ function IdentityGrid({
         <li key={entry.name}>
           <SpriteSlot
             art={
-              rings
-                ? { cell: entry.spriteIndex, ringGlyph: index }
-                : { cell: entry.spriteIndex }
+              entry.icon
+                ? { cell: entry.spriteIndex, icon: entry.icon }
+                : rings
+                  ? { cell: entry.spriteIndex, ringGlyph: index }
+                  : { cell: entry.spriteIndex }
             }
             scale={IDENTITY_SCALE}
             label={`${entry.name} (${entry.appearance.toLowerCase()})`}

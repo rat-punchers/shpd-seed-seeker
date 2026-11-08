@@ -65,7 +65,18 @@ function itemTitle(item: MapTooltipItem): string {
 function ItemSection({ item }: { item: MapTooltipItem }) {
   const curse = item.curse ?? (item.cursed ? 'Cursed' : null)
   return (
-    <PictureRow picture={<ItemSprite art={itemArt(item.image)} size={32} />}>
+    <PictureRow
+      picture={
+        <ItemSprite
+          art={
+            item.icon
+              ? { cell: item.image, icon: item.icon }
+              : itemArt(item.image)
+          }
+          size={32}
+        />
+      }
+    >
       <ObjectSection
         title={itemTitle(item)}
         note={item.enchantment ? `Enchanted with ${item.enchantment}.` : null}

@@ -32,7 +32,10 @@ export function ItemDetail({ item }: { item: ReportItem }) {
     <div className="flex flex-col gap-2">
       <div className="flex items-start gap-3">
         <div className="shrink-0">
-          <ItemSprite art={itemArt(item.spriteIndex)} size={32} />
+          <ItemSprite
+            art={itemArt(item.spriteIndex, undefined, item.icon)}
+            size={32}
+          />
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">

@@ -1,15 +1,8 @@
 import { isBossFloor, regionOf } from '@seed-seeker/design/lib/regions'
-import { Sprite } from '@seed-seeker/design/spd/sprite'
 import { cn } from '@seed-seeker/design/utils'
 import type { ReactNode } from 'react'
-import { useFilmFrame } from '../../../shared/ui/use-film-frame'
-import { BOSS_FILMS, REGION_STRIPS, type SpriteFilm } from './art'
-
-function FilmSprite({ film }: { film: SpriteFilm }) {
-  const frame = useFilmFrame(film.frames.length, film.frameDurationMs)
-  const sprite = film.frames[frame] ?? film.frames[0]
-  return sprite ? <Sprite sprite={sprite} scale={2} /> : null
-}
+import { BOSS_FILMS, REGION_STRIPS } from './art'
+import { FilmSprite } from './FilmSprite'
 
 /** Bosses are fixed by depth in v4.0.2 (`Dungeon.bossLevel`). */
 const BOSSES: Record<number, string> = {
@@ -43,7 +36,10 @@ export function FloorBanner({
   /** Defaults to `Floor {depth}`. */
   title?: string
   headingLevel?: 3 | 4
-  /** The depth block and the boss. Off for quest banners inside a floor. */
+  /**
+   * The depth block, which shows the boss's film on boss floors. Off for
+   * quest banners inside a floor.
+   */
   showDepth?: boolean
   /** Before the title, such as the quest giver. */
   leading?: ReactNode
@@ -58,18 +54,15 @@ export function FloorBanner({
   const boss = showDepth ? bossOf(depth) : undefined
   const bossFilm = boss ? BOSS_FILMS[depth] : undefined
   const Heading = headingLevel === 4 ? 'h4' : 'h3'
-  const metaText =
-    meta === undefined
-      ? boss
-        ? `${region.name}, boss: ${boss}`
-        : region.name
-      : meta
+  const metaText = meta === undefined ? region.name : meta
+  const bossLabel = boss ? `Boss: ${boss}` : undefined
 
   return (
     <div className="border-border flex h-14 w-full items-stretch overflow-hidden border-y bg-black">
       {showDepth ? (
         <div
-          aria-hidden
+          aria-hidden={bossFilm ? undefined : true}
+          title={bossLabel}
           data-boss={boss}
           className={cn(
             'text-region-foreground inset-shadow-raised relative grid w-14 shrink-0 place-items-center',
@@ -77,7 +70,7 @@ export function FloorBanner({
           )}
         >
           {bossFilm ? (
-            <FilmSprite film={bossFilm} />
+            <FilmSprite film={bossFilm} label={bossLabel} />
           ) : (
             <span className="font-pixel text-px-2">{depth}</span>
           )}

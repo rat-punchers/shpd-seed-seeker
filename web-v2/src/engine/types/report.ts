@@ -65,6 +65,8 @@ export interface ReportIdentity {
   name: string
   appearance: string
   spriteIndex: number
+  /** The class's type glyph in `item_icons.png` (x, y, w, h). */
+  icon?: [number, number, number, number]
 }
 
 export interface ReportItemRef {
@@ -114,6 +116,8 @@ export interface ReportItem {
   /** The game's examine text; absent from older engines. */
   description?: string
   spriteIndex: number
+  /** Potions and scrolls: the type glyph's `item_icons.png` rectangle (x, y, w, h). */
+  icon?: [number, number, number, number]
   upgrade: number
   effect: { name: string; kind: 'enchantment' | 'curse' } | null
   cursed: boolean

@@ -1,5 +1,4 @@
 import { InfoIcon } from '@phosphor-icons/react'
-import { Sprite } from '@seed-seeker/design/spd/sprite'
 import { Button } from '@seed-seeker/design/ui/button'
 import {
   Popover,
@@ -17,7 +16,8 @@ import type {
 import type { RingGems } from '../../../shared/sprites/sprites'
 import { itemArt } from '../../../shared/sprites/sprites'
 import { ItemSprite } from '../../../shared/ui/ItemSprite'
-import { QUEST_NPCS } from './art'
+import { GHOST_TARGET_FILMS, QUEST_NPC_FILMS } from './art'
+import { FilmSprite } from './FilmSprite'
 import { FloorBanner } from './FloorBanner'
 import { ItemList } from './FloorItemSections'
 import { BranchMapButton } from './FloorMapButton'
@@ -70,6 +70,15 @@ function QuestTarget({ quest }: { quest: ReportQuest }) {
     quest.quest === 'wandmaker'
       ? itemName(quest.variant)
       : humanize(quest.variant)
+  const mob =
+    quest.quest === 'ghost' ? GHOST_TARGET_FILMS[quest.variant] : undefined
+  if (mob) {
+    return (
+      <span data-quest-target={quest.variant} title={label} className="flex">
+        <FilmSprite film={mob} label={label} />
+      </span>
+    )
+  }
   const sprite =
     quest.quest === 'wandmaker' ? WANDMAKER_ITEMS[quest.variant] : undefined
   return (
@@ -151,7 +160,7 @@ export function QuestCard({
         title={questTitle(quest.quest)}
         headingLevel={4}
         showDepth={false}
-        leading={<Sprite sprite={QUEST_NPCS[quest.quest]} scale={2} />}
+        leading={<FilmSprite film={QUEST_NPC_FILMS[quest.quest]} />}
         meta={null}
         action={
           branch ? (

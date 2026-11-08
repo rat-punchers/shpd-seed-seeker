@@ -1,6 +1,8 @@
-import { FlaskIcon } from '@phosphor-icons/react'
+import { regionOf } from '@seed-seeker/design/lib/regions'
+import { Sprite } from '@seed-seeker/design/spd/sprite'
 import type { ReportFloor, SeedReport } from '../../../engine/types/report'
 import { AlchemyBubbles } from './AlchemyBubbles'
+import { alchemyPotSprite } from './art'
 import { FloorBanner } from './FloorBanner'
 import { FloorItemSections } from './FloorItemSections'
 import { FloorMapButton } from './FloorMapButton'
@@ -10,7 +12,11 @@ import { hasSection, humanize } from './report-text'
 import { TrinketChoiceBand } from './TrinketChoiceBand'
 import { HeldTrinketChip, type TrinketChoice } from './trinket'
 
+/** Source pixels from the pot sprite's bottom edge up to its open rim. */
+const POT_RIM = 16
+
 function AlchemyPots({ floor }: { floor: ReportFloor }) {
+  const pot = alchemyPotSprite(regionOf(floor.depth).id)
   return (floor.appearances ?? [])
     .filter((appearance) => appearance.kind === 'alchemy_pot')
     .map((appearance, index) => {
@@ -27,8 +33,8 @@ function AlchemyPots({ floor }: { floor: ReportFloor }) {
           data-alchemy-pot
           className="relative inline-flex"
         >
-          <AlchemyBubbles scale={2} />
-          <FlaskIcon weight="fill" className="size-8 text-white" />
+          <Sprite sprite={pot} scale={2} />
+          <AlchemyBubbles scale={2} origin={POT_RIM} />
         </span>
       )
     })

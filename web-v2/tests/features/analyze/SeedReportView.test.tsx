@@ -118,7 +118,13 @@ describe('a real report', () => {
     expect(floor2?.querySelector('[data-feeling]')?.textContent).toBe('Chasm')
     expect(floor2?.querySelector('[data-boss]')).toBeNull()
     const floor5 = container.querySelector('[data-floor-depth="5"]')
-    expect(floor5?.textContent).toContain('Sewers, boss: Goo')
+    expect(floor5?.textContent).toContain('Sewers')
+    expect(floor5?.textContent).not.toContain('boss')
+    expect(
+      floor5
+        ?.querySelector('[data-boss] [role="img"]')
+        ?.getAttribute('aria-label')
+    ).toBe('Boss: Goo')
     expect(
       all('[data-boss]').map((block) => block.getAttribute('data-boss'))
     ).toEqual(['Goo', 'Tengu', 'DM-300', 'Dwarf King'])

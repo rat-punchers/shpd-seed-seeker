@@ -15,21 +15,28 @@ interface Bubble {
   life: number
 }
 
-function spawn(): Bubble {
+function spawn(origin: number): Bubble {
   return {
     x: PAD_X + 3 + Math.random() * (TILE - 6),
-    y: RISE + TILE - 6,
+    y: RISE + TILE - origin,
     speed: 8 + Math.random() * 8,
     life: 1,
   }
 }
 
 /**
- * Bubbles rising from an alchemy pot icon, like the map's `Alchemy` blob.
- * Sits on the icon's bottom edge; `scale` matches the icon's pixel scale.
+ * Bubbles rising from an alchemy pot, like the map's `Alchemy` blob. Sits
+ * on the pot's bottom edge; `scale` matches the pot's pixel scale and
+ * `origin` is how many source pixels above that edge the bubbles start.
  * Paused off-screen and absent under reduced motion.
  */
-export function AlchemyBubbles({ scale }: { scale: number }) {
+export function AlchemyBubbles({
+  scale,
+  origin = 6,
+}: {
+  scale: number
+  origin?: number
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -49,7 +56,7 @@ export function AlchemyBubbles({ scale }: { scale: number }) {
       sinceSpawn += step
       if (sinceSpawn > 0.35) {
         sinceSpawn = 0
-        bubbles.push(spawn())
+        bubbles.push(spawn(origin))
       }
       context.clearRect(0, 0, canvas.width, canvas.height)
       context.fillStyle = COLOR
@@ -82,7 +89,7 @@ export function AlchemyBubbles({ scale }: { scale: number }) {
       observer.disconnect()
       cancelAnimationFrame(frame)
     }
-  }, [scale])
+  }, [scale, origin])
 
   const width = (TILE + PAD_X * 2) * scale
   const height = (TILE + RISE) * scale

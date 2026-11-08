@@ -37,6 +37,9 @@ The theme switch in the top bar flips between Limestone (light) and Torchlit
 
 `public/sprites/`, `public/interfaces/` (`icons.png`, `chrome.png` from
 v4.0.2) and `src/theme/fonts/pixel_font.ttf` are copies of Shattered Pixel
-Dungeon assets (GPL-3.0 game, Apache-2.0 font).
+Dungeon assets (GPL-3.0 game, Apache-2.0 font). `public/textures/` holds
+crops of the game's region tilesets: the floor strips, and
+`alchemy_pots.png`, the raised alchemy pot (tile 232 over tile 120, rows
+12–31) of the sewers, prison, caves, city and halls in that order.
 `public/textures/` holds 128×32 floor strips cut from each region's
 `tiles_*.png` (floor tile plus its two decorated variants).

@@ -42,21 +42,36 @@ const RING_ICON_SIZES: [number, number][] = [
 /** The gem each ring class is drawn with in one run, in catalog ring order. */
 export type RingGems = readonly number[]
 
-/** How to draw one item: its `items.png` cell and, for a ring, its glyph. */
+/** A source rectangle in `item_icons.png`: x, y, width, height. */
+export type IconRect = readonly [number, number, number, number]
+
+/**
+ * How to draw one item: its `items.png` cell and, for a ring, potion or
+ * scroll, its type glyph (`ringGlyph` by ring class, or an `icon` rectangle).
+ */
 export interface ItemArt {
   cell: number
   ringGlyph?: number
+  icon?: IconRect
 }
 
 /**
  * The art for a catalog sprite index. Pass a run's `ringGems` when the item
  * belongs to a seed, so a ring shows the gem that run gave its class; omit
- * them on seedless surfaces, which keep the catalog's per-class cell.
+ * them on seedless surfaces, which keep the catalog's per-class cell. Pass
+ * the engine's `icon` for potions and scrolls, whose cell is the run's
+ * appearance.
  */
-export function itemArt(catalogSpriteIndex: number, gems?: RingGems): ItemArt {
+export function itemArt(
+  catalogSpriteIndex: number,
+  gems?: RingGems,
+  icon?: IconRect | null
+): ItemArt {
   const glyph = catalogSpriteIndex - RING_SPRITE_BASE
   if (glyph < 0 || glyph >= RING_ICON_SIZES.length)
-    return { cell: catalogSpriteIndex }
+    return icon
+      ? { cell: catalogSpriteIndex, icon }
+      : { cell: catalogSpriteIndex }
   const gem = gems?.[glyph]
   return {
     cell: gem === undefined ? catalogSpriteIndex : RING_SPRITE_BASE + gem,
@@ -64,17 +79,23 @@ export function itemArt(catalogSpriteIndex: number, gems?: RingGems): ItemArt {
   }
 }
 
-/** Overlay CSS for a ring's type glyph, anchored top-right as the game draws it. */
-export function ringIconCss(
-  ringGlyph: number | undefined,
-  size: number
-): CSSProperties | undefined {
+function ringIconRect(ringGlyph: number | undefined): IconRect | undefined {
   const art = ringGlyph === undefined ? undefined : RING_ICON_SIZES[ringGlyph]
   if (ringGlyph === undefined || !art) return undefined
-  const [width, height] = art
-  const scale = size / CELL
   const col = ringGlyph % ICON_COLUMNS
   const row = Math.floor(ringGlyph / ICON_COLUMNS)
+  return [col * ICON_CELL, row * ICON_CELL, art[0], art[1]]
+}
+
+/** Overlay CSS for an item's type glyph, anchored top-right as the game draws it. */
+export function typeIconCss(
+  art: ItemArt,
+  size: number
+): CSSProperties | undefined {
+  const rect = art.icon ?? ringIconRect(art.ringGlyph)
+  if (!rect) return undefined
+  const [x, y, width, height] = rect
+  const scale = size / CELL
   return {
     position: 'absolute',
     top: 0,
@@ -82,7 +103,7 @@ export function ringIconCss(
     width: `${width * scale}px`,
     height: `${height * scale}px`,
     backgroundImage: `url(${ICON_SHEET_URL})`,
-    backgroundPosition: `${-col * ICON_CELL * scale}px ${-row * ICON_CELL * scale}px`,
+    backgroundPosition: `${-x * scale}px ${-y * scale}px`,
     backgroundSize: `${ICON_COLUMNS * ICON_CELL * scale}px auto`,
     imageRendering: 'pixelated',
     pointerEvents: 'none',
