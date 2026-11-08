@@ -30,6 +30,18 @@ The script:
    and verifies it. A value that fails verification can still be stored; the
    summary marks it unverified.
 5. Stores each value with `gh secret set --app actions`, the value on stdin.
+6. Writes the account id and the token into `web-v2/.env` (gitignored, mode
+   600), replacing those keys and keeping any other lines. `bun run deploy`
+   in `web-v2/` and wrangler both load it, so a manual deploy works:
+
+   ```bash
+   bun run build:wasm && bun run build
+   cd web-v2 && bun run deploy
+   ```
+
+   A token already in `web-v2/.env` is offered for reuse. When the token is
+   kept on GitHub but missing locally, the script suggests re-entering it,
+   since GitHub cannot hand it back.
 
 Values already in the repository secrets are kept unless you choose to re-enter
 them. GitHub never returns a stored secret, so a kept value is not verified.

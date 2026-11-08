@@ -62,6 +62,7 @@ node_modules/
 *.tsbuildinfo
 /web-v2/dist/
 /web-v2/.wrangler/
+/web-v2/.env
 /web-v2/src/engine/pkg/
 /web-v2/src/engine/editor-pkg/
 /web-v2/src/generated/

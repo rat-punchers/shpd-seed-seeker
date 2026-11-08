@@ -219,7 +219,8 @@ On a push to `main` it then deploys `web-v2/dist` as the Cloudflare Worker
 [seedseeker.nerdcoder.xyz](https://seedseeker.nerdcoder.xyz). The deploy reads
 `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from the repository's
 GitHub Actions secrets; `bun run deploy:setup` creates the token and stores both
-([tooling/web-deploy/README.md](tooling/web-deploy/README.md)).
+there and in the gitignored `web-v2/.env`, which a manual `bun run deploy` in
+`web-v2/` reads ([tooling/web-deploy/README.md](tooling/web-deploy/README.md)).
 
 ### Android
 

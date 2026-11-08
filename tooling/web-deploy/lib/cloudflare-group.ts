@@ -136,21 +136,37 @@ export type TokenChoice =
 /** Gets a deploy token and checks it against the API the deploy uses. */
 export async function tokenGroup(
   accountId: string,
-  alreadySet: boolean
+  alreadySet: boolean,
+  local: { path: string; token?: string }
 ): Promise<TokenChoice> {
   printBrief(TOKEN_BRIEF)
-  if (
-    alreadySet &&
-    !(await confirm('CLOUDFLARE_API_TOKEN is already set. Re-enter it?'))
-  ) {
-    return { kind: 'keep' }
+  if (alreadySet) {
+    const reenter = local.token
+      ? await confirm('CLOUDFLARE_API_TOKEN is already set. Re-enter it?')
+      : await confirm(
+          `CLOUDFLARE_API_TOKEN is set on GitHub but not in ${local.path}. Re-enter it to deploy manually?`,
+          true
+        )
+    if (!reenter) return { kind: 'keep' }
   }
-  const fromEnv = process.env.CLOUDFLARE_API_TOKEN?.trim()
-  let token =
-    fromEnv &&
-    (await confirm(`Use the token in ${bold('$CLOUDFLARE_API_TOKEN')}?`))
-      ? fromEnv
-      : await enterToken()
+  const candidates = [
+    {
+      source: '$CLOUDFLARE_API_TOKEN',
+      token: process.env.CLOUDFLARE_API_TOKEN?.trim(),
+    },
+    { source: local.path, token: local.token?.trim() },
+  ]
+  let token: string | undefined
+  for (const candidate of candidates) {
+    if (
+      candidate.token &&
+      (await confirm(`Use the token in ${bold(candidate.source)}?`))
+    ) {
+      token = candidate.token
+      break
+    }
+  }
+  token ??= await enterToken()
   for (;;) {
     if (!token) return { kind: 'skip' }
     if (!accountId) return { kind: 'store', token, verified: false }

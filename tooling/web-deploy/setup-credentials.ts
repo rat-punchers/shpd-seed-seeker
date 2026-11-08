@@ -1,14 +1,20 @@
 #!/usr/bin/env bun
 // Guided setup of the web-v2 deploy credentials: finds what the local `gh`
 // and `wrangler` logins know, verifies each value against the API that will
-// consume it, and stores it as a GitHub repository Actions secret.
+// consume it, and stores it as a GitHub repository Actions secret and in
+// `web-v2/.env` for a manual `bun run deploy`.
 //
 // Run from the repository root: `bun run deploy:setup`.
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { accountGroup, tokenGroup } from './lib/cloudflare-group'
+import {
+  accountGroup,
+  type TokenChoice,
+  tokenGroup,
+} from './lib/cloudflare-group'
 import { OWNER, REPO, storeSecret } from './lib/github'
 import { githubGroup } from './lib/github-group'
+import { LOCAL_ENV_NAME, readLocalEnv, writeLocalEnv } from './lib/local-env'
 import { printSummary, type Result } from './lib/outcome'
 import { releaseStdin } from './lib/prompt'
 import { run } from './lib/shell'
@@ -54,6 +60,30 @@ async function store(
   return { name, outcome: verified ? 'stored' : 'unverified' }
 }
 
+/** Writes the known values to `web-v2/.env` for a manual `bun run deploy`. */
+async function storeLocal(
+  accountId: string,
+  token: TokenChoice
+): Promise<Result> {
+  const name = LOCAL_ENV_NAME
+  const values: Record<string, string> = {}
+  if (accountId) values.CLOUDFLARE_ACCOUNT_ID = accountId
+  if (token.kind === 'store') values.CLOUDFLARE_API_TOKEN = token.token
+  if (Object.keys(values).length === 0) return { name, outcome: 'skipped' }
+  const saved = await withSpinner(`Writing ${name}`, () =>
+    writeLocalEnv(values)
+  )
+  if (!saved.ok) return { name, outcome: 'failed', note: saved.message }
+  if (!(await readLocalEnv()).CLOUDFLARE_API_TOKEN)
+    return {
+      name,
+      outcome: 'stored',
+      note: 'no CLOUDFLARE_API_TOKEN; re-run and re-enter it to deploy manually',
+    }
+  const verified = token.kind !== 'store' || token.verified
+  return { name, outcome: verified ? 'stored' : 'unverified' }
+}
+
 async function main(): Promise<void> {
   console.log(
     bold(`🔐 web-v2 deploy credentials → ${OWNER}/${REPO} repository secrets`)
@@ -64,6 +94,7 @@ async function main(): Promise<void> {
 
   heading(1, '🧰 Preflight')
   const { wrangler } = await preflight()
+  const local = await readLocalEnv()
 
   heading(2, '🐙 GitHub access (required)')
   const github = await githubGroup()
@@ -77,7 +108,8 @@ async function main(): Promise<void> {
   heading(4, '🔑 Cloudflare API token (required)')
   const token = await tokenGroup(
     account.accountId,
-    github.existing.includes('CLOUDFLARE_API_TOKEN')
+    github.existing.includes('CLOUDFLARE_API_TOKEN'),
+    { path: LOCAL_ENV_NAME, token: local.CLOUDFLARE_API_TOKEN }
   )
 
   heading(5, '💾 Store')
@@ -123,6 +155,7 @@ async function main(): Promise<void> {
       )
     )
 
+  results.push(await storeLocal(account.accountId, token))
   printSummary(results)
 }
 
