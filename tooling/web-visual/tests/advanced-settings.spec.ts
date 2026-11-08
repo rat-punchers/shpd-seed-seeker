@@ -157,9 +157,10 @@ test('results export to a file and import back, and a pasted query replaces the 
   })
   await expect(exportButton).toBeDisabled()
   await page.getByRole('button', { name: 'Find', exact: true }).click()
+  // Filling 1,024 results takes over 15 s on a 4-core CI runner.
   await expect(
     page.getByText('Result limit reached (1,024 seeds).')
-  ).toBeVisible()
+  ).toBeVisible({ timeout: 60_000 })
   const first = await page
     .getByTestId('result-card')
     .first()

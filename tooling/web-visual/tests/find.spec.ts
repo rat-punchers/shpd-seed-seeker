@@ -32,10 +32,11 @@ test('a query every seed matches finds its first seed and hands it to Analyze', 
   const code = (await first.getByRole('heading').textContent()) ?? ''
   expect(code).toMatch(SEED_CODE)
   await expect(first).toContainText('Result 1')
-  // A query every seed matches stops at the result limit.
+  // A query every seed matches stops at the result limit. Filling 1,024
+  // results takes over 15 s on a 4-core CI runner.
   await expect(
     page.getByText('Result limit reached (1,024 seeds).')
-  ).toBeVisible()
+  ).toBeVisible({ timeout: 60_000 })
   await expect(
     page.getByRole('button', { name: 'Find', exact: true })
   ).toBeEnabled()
