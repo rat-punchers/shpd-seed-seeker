@@ -3,12 +3,13 @@ import { Button } from '@seed-seeker/design/ui/button'
 import { cn } from '@seed-seeker/design/utils'
 import { useEffect, useState } from 'react'
 import type { SeedReport } from '../../../engine/types/report'
+import { GameWindow } from '../../../shared/ui/GameWindow'
 import { IdentitiesPanel } from './IdentitiesPanel'
 import { hasSection } from './report-text'
 
 const COPIED_MS = 2000
 
-/** The seed in the game's pixel font, with a copy action. */
+/** The seed in the game's pixel font and window frame, with a copy action. */
 function SeedTitle({ report }: { report: SeedReport }) {
   const text = report.seed.code
   const [copied, setCopied] = useState(false)
@@ -32,43 +33,48 @@ function SeedTitle({ report }: { report: SeedReport }) {
 
   return (
     <div className="flex flex-col items-start gap-2">
-      <div className="bg-card shadow-window inset-shadow-raised flex max-w-full flex-wrap items-center gap-x-4 gap-y-2 border px-3 py-2">
-        <h2
-          data-seed-title
-          className="font-pixel text-px-2 lg:text-px-3 min-w-0 break-all select-all"
-        >
-          {text}
-        </h2>
-        {report.seed.daily ? (
-          <span className="text-muted-foreground text-sm">Daily run</span>
-        ) : null}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => void copy()}
-          aria-label={copied ? `Copied ${text}` : `Copy seed ${text}`}
-        >
-          {copied ? (
-            <CheckIcon data-icon="inline-start" weight="bold" />
-          ) : (
-            <CopyIcon data-icon="inline-start" />
-          )}
-          {/* Both labels share one cell so the button keeps the wider width. */}
-          <span className="grid">
-            <span
-              className={cn('col-start-1 row-start-1', copied && 'invisible')}
-            >
-              Copy seed
+      <GameWindow className="max-w-full">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-1.5 py-0.5">
+          <h2
+            data-seed-title
+            className="font-pixel text-px-2 lg:text-px-3 min-w-0 break-all select-all"
+          >
+            {text}
+          </h2>
+          {report.seed.daily ? (
+            <span className="text-muted-foreground text-sm">Daily run</span>
+          ) : null}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => void copy()}
+            aria-label={copied ? `Copied ${text}` : `Copy seed ${text}`}
+          >
+            {copied ? (
+              <CheckIcon data-icon="inline-start" weight="bold" />
+            ) : (
+              <CopyIcon data-icon="inline-start" />
+            )}
+            {/* Both labels share one cell so the button keeps the wider width. */}
+            <span className="grid">
+              <span
+                className={cn('col-start-1 row-start-1', copied && 'invisible')}
+              >
+                Copy seed
+              </span>
+              <span
+                className={cn(
+                  'col-start-1 row-start-1',
+                  !copied && 'invisible'
+                )}
+              >
+                Copied
+              </span>
             </span>
-            <span
-              className={cn('col-start-1 row-start-1', !copied && 'invisible')}
-            >
-              Copied
-            </span>
-          </span>
-        </Button>
-      </div>
+          </Button>
+        </div>
+      </GameWindow>
       <span className="sr-only" aria-live="polite">
         {copied ? `Copied ${text} to the clipboard` : ''}
       </span>

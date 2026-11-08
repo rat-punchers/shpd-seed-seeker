@@ -1,4 +1,6 @@
+import { Sprite } from '@seed-seeker/design/spd/sprite'
 import type { ReportIdentity, SeedReport } from '../../../engine/types/report'
+import { CATALOG_ICON } from '../../../shared/ui/game-icons'
 import { SpriteSlot } from './ItemSlot'
 
 /** Journal cell at scale 3: 17×3 + 8px padding. */
@@ -46,7 +48,8 @@ export function IdentitiesPanel({ report }: { report: SeedReport }) {
       aria-labelledby="identities-title"
       className="flex flex-col gap-3"
     >
-      <div className="flex items-baseline gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <Sprite sprite={CATALOG_ICON} />
         <h3 id="identities-title" className="font-pixel text-px-1">
           Identities
         </h3>

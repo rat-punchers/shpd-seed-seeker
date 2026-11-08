@@ -1,5 +1,6 @@
 import { Badge } from '@seed-seeker/design/ui/badge'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { createPortal } from 'react-dom'
 import type { ReportItem } from '../../../engine/types/report'
 import { itemArt } from '../../../shared/sprites/sprites'
 import { ItemSprite } from '../../../shared/ui/ItemSprite'
@@ -129,7 +130,9 @@ export function ItemDetailLayer() {
 
   if (!current) return null
   const place = panelPosition(current.anchor.getBoundingClientRect())
-  return (
+  // Portaled: inside the report it would add a spaced child to the page and
+  // shift the scroll position the moment it opens.
+  return createPortal(
     <div
       ref={layerRef}
       data-slot="item-detail"
@@ -152,6 +155,7 @@ export function ItemDetailLayer() {
           note={current.subject.note}
         />
       )}
-    </div>
+    </div>,
+    document.body
   )
 }

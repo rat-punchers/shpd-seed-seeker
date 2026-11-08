@@ -1,6 +1,8 @@
+import { Sprite } from '@seed-seeker/design/spd/sprite'
 import { useMemo, useRef } from 'react'
 import type { ChallengeName } from '../../../engine/types'
 import type { SeedReport } from '../../../engine/types/report'
+import { STAIRS_ICON } from '../../../shared/ui/game-icons'
 import { AutomaticOutcomes } from './AutomaticOutcomes'
 import { DescentRail } from './DescentRail'
 import { ReportMapContext, type ReportMapRun } from './FloorMapButton'
@@ -60,7 +62,8 @@ export function SeedReportView({
         <RunHeader report={report} />
         {report.floors.length > 0 ? (
           <>
-            <div className="flex items-baseline gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Sprite sprite={STAIRS_ICON} />
               <h2 id="floors-title" className="font-pixel text-px-1">
                 Floors
               </h2>
