@@ -2,7 +2,7 @@
   "name": "shpd-seed-seeker",
   "private": true,
   "type": "module",
-  "packageManager": "bun@latest",
+  "packageManager": "bun@1.4.4",
   "workspaces": [
     "web-v2",
     "packages/*",
@@ -15,7 +15,7 @@
     "build": "bun run --filter '*' --if-present build",
     "test": "bun run --filter '*' --if-present test",
     "dev": "conc -k --kill-timeout 3000 'bun:dev:*'",
-    "dev:design": "bun run --filter '@seed-seeker/design' dev",
+    "design": "bun run --filter '@seed-seeker/design' dev",
     "build:wasm": "./scripts/build-web-wasm.sh web-v2",
     "dev:web-v2": "bun run --filter '@seed-seeker/web-v2' dev",
     "test:visual": "bun run build && bun run test:visual:only",
