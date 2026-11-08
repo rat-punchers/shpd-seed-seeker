@@ -77,8 +77,10 @@ JavaScript error carrying the message.
 ### `trinkets`
 
 - `offers`: the four Catalyst offers. `transmutationOrder`: transmutation
-  results 1–13. Both hold `{id, name, spriteIndex, matched}`; `matched` marks
-  a transmutation the query uses.
+  results 1–13. Both hold `{id, name, description?, spriteIndex, matched}`;
+  `matched` marks a transmutation the query uses. `description` is the game's
+  examine text, which `scout` leaves out; the artifact decks' entries carry it
+  too.
 - `selected`: the selected offer id, or `null` for No Trinket.
 - `artifactDecks`: `{depth, order}` for depth 0 (before floor 1) through 24,
   the remaining artifact deck after that floor, as in `scout`.
@@ -100,7 +102,9 @@ JavaScript error carrying the message.
   `curse`, or `null`), `cursed`, `secret`, `depth`, `source`, `accessibility`
   (`{type: "independent"}`, `{type: "choice", group, option}` or `{type:
   "scenarios", group, mask}`, `mask` as `0x…` hex), `matched`, `resinDonor`,
-  `excluded`. With `allItems` ([seed-report-items.md](seed-report-items.md)):
+  `excluded`. Optional `description` is the game's examine text, the same
+  text the level map's item tooltips show; it is not a `scout` field. With
+  `allItems` ([seed-report-items.md](seed-report-items.md)):
   - `prediction`: `exact`, `constrained` or `variable`.
   - `conditions`: any of `{type: "challenge", challenge, enabled}`,
     `{type: "trinket", events}`, `{type: "artifact", events}`,

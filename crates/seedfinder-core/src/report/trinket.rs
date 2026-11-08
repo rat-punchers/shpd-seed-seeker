@@ -28,6 +28,9 @@ pub struct Trinkets {
 pub struct ItemRef {
     pub id: String,
     pub name: String,
+    /// The game's examine text; absent where the game has none.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
     pub sprite_index: u16,
     pub matched: bool,
 }
@@ -58,6 +61,7 @@ fn item_ref(id: ItemId, matched: bool) -> ItemRef {
     ItemRef {
         id: entry.stable_id.to_owned(),
         name: entry.name.to_owned(),
+        description: super::item::description(entry.stable_id),
         sprite_index: entry.sprite_index,
         matched,
     }

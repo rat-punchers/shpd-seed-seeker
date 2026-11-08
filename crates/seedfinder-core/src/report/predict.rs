@@ -121,9 +121,10 @@ fn runtime_state(item: &Item, deterministic: bool) -> Option<&'static str> {
     if deterministic {
         return None;
     }
-    Some(match item.id.as_str() {
-        "random_potion" | "random_scroll" => "unseeded_selection",
-        _ => "shop_bag",
+    Some(if item.source == "shop" {
+        "shop_bag"
+    } else {
+        "unseeded_selection"
     })
 }
 

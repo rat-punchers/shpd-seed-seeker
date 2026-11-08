@@ -56,7 +56,7 @@ impl FloorSource<'_> {
                 });
                 out.regular(&floor.regular_items.placements, a);
                 out.ebony_position(&p.level, &p.rooms, &floor.regular_items.isolated_streams);
-                out.mask_runtime_room_items(&p.level, &p.rooms);
+                out.flag_runtime_room_items(&p.level, &p.rooms);
                 for mob in &mut out.mobs {
                     if mob.kind.ends_with("Mimic") {
                         mob.stealthy |= stealthy;
@@ -354,7 +354,7 @@ impl MapContents {
         }
     }
 
-    fn mask_runtime_room_items(
+    fn flag_runtime_room_items(
         &mut self,
         level: &crate::level::Level,
         rooms: &[crate::room::Room],
@@ -365,17 +365,15 @@ impl MapContents {
                 .iter()
                 .find(|room| room.inside(level.map.cell_to_point(heap.cell)))
             {
-                let placeholder = match room.kind {
-                    RoomKind::Secret(SecretRoomKind::Laboratory) => {
-                        Some(("RuntimeLaboratoryPotion", 10))
-                    }
-                    RoomKind::Secret(SecretRoomKind::Library) => Some(("RuntimeLibraryScroll", 12)),
-                    _ => None,
-                };
-                if let Some((kind, image)) = placeholder {
+                // The pick follows the default runtime profile's HashMap order,
+                // which other Java/ART runtimes may not share.
+                if matches!(
+                    room.kind,
+                    RoomKind::Secret(SecretRoomKind::Laboratory | SecretRoomKind::Library)
+                ) {
                     for item in &mut heap.items {
                         if (304..336).contains(&item.image) || (352..384).contains(&item.image) {
-                            *item = MapItem::unknown(kind, image);
+                            item.deterministic = false;
                         }
                     }
                 }

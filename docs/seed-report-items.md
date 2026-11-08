@@ -25,9 +25,10 @@ Items other than equipment have:
 - `id`: the game class in snake case (`potion_of_healing`,
   `stone_of_blink`, `gold`, `iron_key`, `region_lore_page_halls`). Exotic
   potions and scrolls are `exotic_` plus their base (`exotic_scroll_of_upgrade`
-  is the Scroll of Enchantment). `random_potion` and `random_scroll` are the
-  secret laboratory's and library's picks, which the game makes without the
-  seed. `name`: the game's English name.
+  is the Scroll of Enchantment). The secret laboratory's
+  and library's potions and scrolls are the picks under the pinned Temurin
+  runtime's class order; other Java/ART runtimes may pick differently.
+  `name`: the game's English name.
 - `category`: `potion`, `scroll`, `stone`, `seed`, `food`, `gold`, `key`,
   `missile` (plain darts) or `other`.
 - `spriteIndex`: the sprite this run draws, so potions and scrolls show the
@@ -63,8 +64,8 @@ Items other than equipment have:
     carries `{type: "trinket", events: [{beforeDepth: <depth>, kind:
     "acquired", trinket, minUpgrades: 3}]}`. Other trinkets add nothing.
 - `variable`: play or unseeded runtime state picks the identity:
-  `{type: "runtime", state: "unseeded_selection"}` for `random_potion` and
-  `random_scroll`, `state: "shop_bag"` for the shop's bag (the listed bag
+  `{type: "runtime", state: "unseeded_selection"}` for the secret
+  laboratory's and library's picks, `state: "shop_bag"` for the shop's bag (the listed bag
   assumes the Scroll Holder, Potion Bandolier, Magical Holster purchase
   order).
 

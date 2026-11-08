@@ -99,18 +99,29 @@ fn modified_name(base: String, effect: Option<crate::catalog::Effect>) -> String
         .join(" ")
 }
 
+fn text_key(kind: &str) -> String {
+    kind.chars()
+        .filter(|c| c.is_ascii_alphanumeric() || *c == '$')
+        .map(|c| c.to_ascii_lowercase())
+        .collect()
+}
+
+fn item_text(key: &str) -> Option<(&'static str, &'static str, &'static str)> {
+    ITEM_TEXT
+        .binary_search_by_key(&key, |entry| entry.0)
+        .ok()
+        .map(|index| ITEM_TEXT[index])
+}
+
+/// The game's examine text for an item class name or stable id, if any.
+pub(crate) fn item_description(kind: &str) -> Option<&'static str> {
+    item_text(&text_key(kind)).map(|entry| entry.2)
+}
+
 impl MapTooltipItem {
     pub(crate) fn from_item(item: &MapItem) -> Self {
-        let key: String = item
-            .kind
-            .chars()
-            .filter(|c| c.is_ascii_alphanumeric() || *c == '$')
-            .map(|c| c.to_ascii_lowercase())
-            .collect();
-        let text = ITEM_TEXT
-            .binary_search_by_key(&key.as_str(), |entry| entry.0)
-            .ok()
-            .map(|index| ITEM_TEXT[index]);
+        let key = text_key(&item.kind);
+        let text = item_text(&key);
         Self {
             name: modified_name(
                 text.map_or_else(
@@ -335,7 +346,56 @@ mod tests {
                 .is_some_and(|text| text.starts_with("Mimics are magical creatures"))
         );
         assert_eq!(mimic["asset"], "mimic.png");
-        assert_eq!(mimic["frames"].as_array().map(Vec::len), Some(6));
+        assert_eq!(mimic["frames"].as_array().map(Vec::len), Some(5));
+    }
+
+    #[test]
+    fn every_plant_kind_has_examine_text() {
+        use crate::level_map::{MapPlant, generate_level_map};
+        use crate::{challenges::Challenges, seed::DungeonSeed};
+        let mut map = generate_level_map(
+            DungeonSeed::from_code("AAA-AAA-AAA").unwrap(),
+            1,
+            Challenges::NONE,
+            None,
+        )
+        .unwrap();
+        let kinds = [
+            "Rotberry",
+            "Firebloom",
+            "Swiftthistle",
+            "Sungrass",
+            "Icecap",
+            "Stormvine",
+            "Sorrowmoss",
+            "Fadeleaf",
+            "Earthroot",
+            "Starflower",
+            "Blindweed",
+            "Mageroyal",
+            "Blandfruit",
+            "BlandfruitBush",
+            "Seedpod",
+            "Dewcatcher",
+        ];
+        map.contents.plants = kinds
+            .iter()
+            .enumerate()
+            .map(|(cell, kind)| MapPlant {
+                cell,
+                kind: (*kind).into(),
+                image: 3,
+            })
+            .collect();
+        let document = crate::level_map::json::document(&map);
+        for kind in kinds {
+            let detail = &document["plantDetails"][kind];
+            assert!(detail["name"].is_string(), "{kind} has no name");
+            assert!(detail["description"].is_string(), "{kind} has no text");
+        }
+        let sungrass = &document["plantDetails"]["Sungrass"];
+        assert_eq!(sungrass["name"], "Sungrass");
+        assert_eq!(sungrass["asset"], "terrain_features.png");
     }
 
     #[test]

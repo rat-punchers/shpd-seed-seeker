@@ -427,9 +427,14 @@ window: `{name, description, asset, frameDurationMs, frames}`. Each frame is a
 `[x, y, width, height]` source rectangle on `asset`, one of the document's
 `assets`, forming the mob's idle film. It does not change scene rendering.
 Text comes from the same pinned English messages as item text; regenerate it
-with `python3 scripts/generate-mob-text.py`. A stealthy Ebony
-mimic is drawn at 20% opacity in `concealedLayers` and at full opacity in
-`layers`.
+with `python3 scripts/generate-mob-text.py`. Mimics play `MimicSprite.idle`
+rather than their hiding film so they read as mimics; a stealthy mimic keeps
+the closed chest of `advancedHiding`. A stealthy Ebony mimic is drawn at 20%
+opacity in `concealedLayers` and at full opacity in `layers`.
+
+The optional `plantDetails` object maps each generated plant `kind` to the
+same shape: the plant's examine text and a single frame of its map tile on
+`terrain_features.png`.
 
 Names and static descriptions come from the original English Java messages at
 v4.0.2 commit `57a4e06a4caf162446d1c28caa7983f0493fecf0`, under GPL-3.0-or-later

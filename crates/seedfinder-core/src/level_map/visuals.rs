@@ -618,8 +618,8 @@ mod tests {
                         if stealthy {
                             assert_eq!(sprite.frames.len(), 1);
                         } else {
-                            assert_eq!(sprite.frames.len(), 6);
-                            assert_eq!(sprite.frame_duration_ms, 1000);
+                            assert_eq!(sprite.frames.len(), 5);
+                            assert_eq!(sprite.frame_duration_ms, 200);
                         }
                         // A hidden Ebony mimic is faint until revealed.
                         let faint = kind == "EbonyMimic" && stealthy && !reveal;

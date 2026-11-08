@@ -89,11 +89,16 @@ fn predictions_follow_the_spawn_conditions() {
     let potion = first.iter().find(|item| item.category == "potion").unwrap();
     assert_eq!(potion.prediction, Some(Prediction::Exact));
     assert_eq!(potion.ranges.as_ref().unwrap().quantity.unwrap().min, 1);
-    for (id, state) in [
-        ("random_potion", "unseeded_selection"),
-        ("scroll_holder", "shop_bag"),
+    let laboratory = |item: &&Item| {
+        item.secret && item.category == "potion" && item.prediction == Some(Prediction::Variable)
+    };
+    let bag = |item: &&Item| item.id == "scroll_holder";
+    for (pick, state) in [
+        (&laboratory as &dyn Fn(&&Item) -> bool, "unseeded_selection"),
+        (&bag, "shop_bag"),
     ] {
-        let item = items(&report).find(|item| item.id == id).unwrap();
+        let item = items(&report).find(pick).unwrap();
+        assert!(item.id.starts_with("potion_of_") || item.id == "scroll_holder");
         assert_eq!(item.prediction, Some(Prediction::Variable));
         assert_eq!(
             item.conditions.as_deref().unwrap(),
@@ -102,6 +107,28 @@ fn predictions_follow_the_spawn_conditions() {
             }]
         );
     }
+}
+
+#[test]
+fn every_listed_item_carries_its_examine_text() {
+    let report = report(r#"{"seed":"AAA-AAA-AAA"}"#);
+    for item in items(&report) {
+        assert!(
+            item.description
+                .as_deref()
+                .is_some_and(|text| !text.is_empty()),
+            "{} has no description",
+            item.id
+        );
+    }
+    let frost = items(&report).find(|item| item.id == "wand_frost").unwrap();
+    assert!(
+        frost
+            .description
+            .as_deref()
+            .unwrap()
+            .contains("magical ice")
+    );
 }
 
 #[test]

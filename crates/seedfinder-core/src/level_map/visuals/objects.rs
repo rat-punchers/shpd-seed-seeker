@@ -138,7 +138,8 @@ pub(super) fn layers(
                 let offset = [0, 21, 32, 43, 54, 65][usize::from(tier.min(5))];
                 sprite.frames.iter().map(|frame| frame + offset).collect()
             } else if mob.stealthy && mob.kind.ends_with("Mimic") {
-                vec![sprite.frames[0] - 1]
+                // `MimicSprite.advancedHiding`: the closed chest, three frames before idle.
+                vec![sprite.frames[0] - 3]
             } else {
                 sprite.frames.to_vec()
             };

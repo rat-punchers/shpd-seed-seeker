@@ -116,6 +116,14 @@ fn seed_and_quest_basics() {
     assert_eq!(code.trinkets.offers.len(), 4);
     assert_eq!(code.trinkets.transmutation_order.len(), 13);
     assert_eq!(code.trinkets.artifact_decks.len(), 25);
+    for trinket in code
+        .trinkets
+        .offers
+        .iter()
+        .chain(&code.trinkets.transmutation_order)
+    {
+        assert!(trinket.description.is_some(), "{} has no text", trinket.id);
+    }
     for quest in &code.quests {
         let range = quest.spawn_depth_range;
         assert!((range.min..=range.max).contains(&quest.depth), "{quest:?}");

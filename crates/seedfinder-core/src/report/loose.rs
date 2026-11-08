@@ -91,18 +91,11 @@ impl Groups {
 
 pub(super) fn item(placed: &PlacedItem, floor: &ObservedFloor, groups: &mut Groups) -> Item {
     let kind = placed.item.kind.as_str();
-    let (id, name) = match kind {
-        "RuntimeLaboratoryPotion" => ("random_potion".to_owned(), "Random potion".to_owned()),
-        "RuntimeLibraryScroll" => ("random_scroll".to_owned(), "Random scroll".to_owned()),
-        _ => (
-            snake_case(kind),
-            crate::level_map::MapTooltipItem::from_item(&placed.item).name,
-        ),
-    };
     Item {
-        id,
-        name,
+        id: snake_case(kind),
+        name: crate::level_map::MapTooltipItem::from_item(&placed.item).name,
         category: category(kind).to_owned(),
+        description: super::item::description(kind),
         sprite_index: placed.item.image,
         upgrade: 0,
         effect: None,
@@ -141,8 +134,8 @@ pub(super) fn snake_case(kind: &str) -> String {
 
 pub(super) fn category(kind: &str) -> &'static str {
     match kind {
-        _ if kind.contains("PotionOf") || kind == "RuntimeLaboratoryPotion" => "potion",
-        _ if kind.contains("ScrollOf") || kind == "RuntimeLibraryScroll" => "scroll",
+        _ if kind.contains("PotionOf") => "potion",
+        _ if kind.contains("ScrollOf") => "scroll",
         _ if kind.starts_with("StoneOf") => "stone",
         _ if kind.ends_with("Seed") => "seed",
         "Ration" | "Pasty" | "MysteryMeat" | "SmallRation" | "ChargrilledMeat" | "Berry"

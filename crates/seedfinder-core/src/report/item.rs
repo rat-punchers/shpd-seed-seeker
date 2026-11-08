@@ -14,6 +14,9 @@ pub struct Item {
     pub id: String,
     pub name: String,
     pub category: String,
+    /// The game's examine text; absent where the game has none.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
     pub sprite_index: u16,
     pub upgrade: u8,
     pub effect: Option<ItemEffect>,
@@ -159,6 +162,7 @@ impl Item {
             id: definition.stable_id.to_owned(),
             name: definition.name.to_owned(),
             category: kind_name(definition.kind).to_owned(),
+            description: description(definition.stable_id),
             sprite_index: definition.sprite_index,
             upgrade: world_item.upgrade,
             effect: world_item.effect.map(effect),
@@ -175,6 +179,12 @@ impl Item {
             ranges: None,
         }
     }
+}
+
+pub(super) fn description(kind: &str) -> Option<String> {
+    crate::level_map::item_description(kind)
+        .filter(|text| !text.is_empty())
+        .map(str::to_owned)
 }
 
 fn effect(effect: Effect) -> ItemEffect {

@@ -33,6 +33,13 @@ mod tests {
         ("2026-01-01", "daily-2026-01-01.json"),
     ];
 
+    /// Report item references add the game's text, which `scout` leaves out.
+    fn without_description(entry: &Value) -> Value {
+        let mut entry = entry.clone();
+        entry.as_object_mut().unwrap().remove("description");
+        entry
+    }
+
     #[test]
     fn report_items_match_scout() {
         let requests = [
@@ -63,7 +70,7 @@ mod tests {
                     .iter()
                     .map(|item| {
                         let mut item = item.clone();
-                        for field in ["prediction", "conditions", "ranges"] {
+                        for field in ["description", "prediction", "conditions", "ranges"] {
                             item.as_object_mut().unwrap().remove(field);
                         }
                         item
@@ -86,10 +93,17 @@ mod tests {
                 .unwrap()
                 .iter()
                 .chain(report["trinkets"]["transmutationOrder"].as_array().unwrap())
+                .map(without_description)
                 .collect();
-            let order: Vec<_> = scout["trinketOrder"].as_array().unwrap().iter().collect();
+            let order: Vec<_> = scout["trinketOrder"].as_array().unwrap().clone();
             assert_eq!(offers, order, "{request}");
-            assert_eq!(report["trinkets"]["artifactDecks"], scout["artifactDecks"]);
+            let mut decks = report["trinkets"]["artifactDecks"].clone();
+            for deck in decks.as_array_mut().unwrap() {
+                for entry in deck["order"].as_array_mut().unwrap() {
+                    *entry = without_description(entry);
+                }
+            }
+            assert_eq!(decks, scout["artifactDecks"]);
             for (index, quest) in scout["quests"].as_array().unwrap().iter().enumerate() {
                 for field in ["quest", "variant", "depth"] {
                     assert_eq!(report["quests"][index][field], quest[field], "{request}");

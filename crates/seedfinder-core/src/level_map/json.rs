@@ -144,7 +144,43 @@ pub fn document(map: &LevelMap) -> Value {
         "contents": map.contents,
         "itemTooltips": map.item_tooltips(),
         "mobDetails": mob_details(map),
+        "plantDetails": plant_details(map),
     })
+}
+
+/// Each generated plant kind's examine text and map tile, keyed by kind.
+fn plant_details(map: &LevelMap) -> serde_json::Map<String, Value> {
+    let columns = assets::get("terrain_features.png")
+        .expect("embedded atlas")
+        .width
+        / 16;
+    map.contents
+        .plants
+        .iter()
+        .filter_map(|plant| {
+            let key = match plant.kind.as_str() {
+                "Blandfruit" | "BlandfruitBush" => "blandfruitbush".to_owned(),
+                "Seedpod" => "wandofregrowth$seedpod".to_owned(),
+                "Dewcatcher" => "wandofregrowth$dewcatcher".to_owned(),
+                kind => kind.to_ascii_lowercase(),
+            };
+            let text = super::item_text::ITEM_TEXT;
+            let (_, name, description) = text[text
+                .binary_search_by_key(&key.as_str(), |entry| entry.0)
+                .ok()?];
+            let tile = 112 + plant.image;
+            Some((
+                plant.kind.clone(),
+                json!({
+                    "name": name,
+                    "description": description,
+                    "asset": "terrain_features.png",
+                    "frameDurationMs": 1000,
+                    "frames": [[tile % columns * 16, tile / columns * 16, 16, 16]],
+                }),
+            ))
+        })
+        .collect()
 }
 
 /// Each generated mob kind's examine text and idle film, keyed by kind.

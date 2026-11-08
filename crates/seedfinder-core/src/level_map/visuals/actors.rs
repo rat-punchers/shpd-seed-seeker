@@ -61,7 +61,7 @@ pub(super) fn actor(kind: &str) -> Option<ActorSprite> {
         "CausticSlime" => ("slime.png", 14, 12, &[9, 10, 10, 9], 333, 6),
         "ChaosElemental" => ("elemental.png", 12, 14, &[56, 57, 58], 100, 6),
         "Crab" => ("crab.png", 16, 16, &[0, 1, 0, 2], 200, 6),
-        "CrystalMimic" => ("mimic.png", 16, 16, &[33, 33, 33, 33, 33, 34], 1000, 5),
+        "CrystalMimic" => ("mimic.png", 16, 16, &[35, 35, 35, 36, 36], 200, 5),
         "DemonSpawner" => (
             "spawner.png",
             16,
@@ -73,7 +73,7 @@ pub(super) fn actor(kind: &str) -> Option<ActorSprite> {
         "Dm100" => ("dm100.png", 16, 14, &[0, 1], 1000, 6),
         "Dm200" => ("dm200.png", 21, 18, &[0, 1], 100, 6),
         "Dm201" => ("dm200.png", 21, 18, &[12, 13], 500, 6),
-        "EbonyMimic" => ("mimic.png", 16, 16, &[49, 49, 49, 49, 49, 50], 1000, 5),
+        "EbonyMimic" => ("mimic.png", 16, 16, &[51, 51, 51, 52, 52], 200, 5),
         "Eye" => ("eye.png", 16, 18, &[0, 1, 2], 125, 6),
         "FireElemental" => ("elemental.png", 12, 14, &[0, 1, 2], 100, 6),
         "NewbornFireElemental" => ("elemental.png", 12, 14, &[14, 15, 16], 100, 6),
@@ -106,7 +106,7 @@ pub(super) fn actor(kind: &str) -> Option<ActorSprite> {
             500,
             6,
         ),
-        "GoldenMimic" => ("mimic.png", 16, 16, &[17, 17, 17, 17, 17, 18], 1000, 5),
+        "GoldenMimic" => ("mimic.png", 16, 16, &[19, 19, 19, 20, 20], 200, 5),
         "Golem" | "VaultGolem" => ("golem.png", 17, 19, &[0, 1], 250, 6),
         "Goo" => ("goo.png", 20, 14, &[2, 1, 0, 0, 1], 100, 6),
         "GreenCrystalGuardian" => (
@@ -132,7 +132,7 @@ pub(super) fn actor(kind: &str) -> Option<ActorSprite> {
             100,
             6,
         ),
-        "Mimic" => ("mimic.png", 16, 16, &[1, 1, 1, 1, 1, 2], 1000, 5),
+        "Mimic" => ("mimic.png", 16, 16, &[3, 3, 3, 4, 4], 200, 5),
         "Monk" => ("monk.png", 15, 14, &[1, 0, 1, 2], 166, 6),
         "Necromancer" => (
             "necromancer.png",
