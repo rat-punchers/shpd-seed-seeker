@@ -32,7 +32,8 @@ lints only those workspaces and the root config files.
   `bun run install:visual-browser` once, then `bun run test:visual` (build +
   run) or `bun run test:visual:only`. Playwright starts and stops
   `vite preview` on 46001 itself. Canvas output is compared pixel for pixel
-  with `tooling/web-visual/snapshots/`; everything else is asserted.
+  with `tooling/web-visual/snapshots/`, within 2 of 255 per channel so one
+  snapshot set passes on macOS and Linux; everything else is asserted.
   `bun run test:visual:update` rewrites snapshots on purpose only.
 - Deploy: the `web-v2` workflow deploys the Worker `shpd-seed-seeker-v2`
   (`web-v2/wrangler.toml`) to `seedseeker.nerdcoder.xyz` on every push to

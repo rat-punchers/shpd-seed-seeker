@@ -6,9 +6,12 @@ reproducible pixels: UTC, `en-US`, light color scheme, reduced motion, a
 1440×1200 viewport at device scale 1.
 
 - **Canvas snapshots** compare a canvas's backing bitmap with a committed PNG
-  in `snapshots/`, pixel for pixel (`maxDiffPixels: 0`, `threshold: 0`).
-  Reading the bitmap avoids viewport clipping when a map is taller than its
-  dialog.
+  in `snapshots/`, pixel for pixel. Each channel may differ by up to 2 of 255
+  (`MAX_CHANNEL_DELTA` in `tests/helpers/canvas.ts`): Chromium on macOS arm64
+  and on Linux x86-64 (CI) round alpha blending that much differently, so one
+  snapshot set serves both. A larger difference falls through to the exact
+  `toMatchSnapshot`, which fails and writes the diff. Reading the bitmap
+  avoids viewport clipping when a map is taller than its dialog.
 - **Everything else** (DOM, text, layout) is checked with assertions, not
   screenshots.
 
