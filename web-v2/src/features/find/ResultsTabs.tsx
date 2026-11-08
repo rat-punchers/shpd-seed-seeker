@@ -55,7 +55,7 @@ export function ResultsTabs() {
         <TabsList
           variant="line"
           aria-label="Results"
-          className="h-auto w-full flex-nowrap justify-start gap-1 overflow-x-auto lg:h-auto! lg:flex-wrap lg:overflow-x-visible"
+          className="h-auto w-full flex-nowrap border-b-0 justify-start gap-1 overflow-x-auto lg:h-auto! lg:flex-wrap lg:overflow-x-visible"
         >
           {tabs.map((tab) => {
             const label = resultsTabLabel(tab.id)

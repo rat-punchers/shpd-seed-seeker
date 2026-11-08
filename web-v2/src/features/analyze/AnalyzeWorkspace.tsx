@@ -82,7 +82,7 @@ export function AnalyzeWorkspace() {
         <TabsList
           variant="line"
           aria-label="Open seeds"
-          className="h-auto w-0 min-w-0 flex-1 flex-nowrap justify-start gap-1 overflow-x-auto lg:h-auto! lg:flex-wrap lg:overflow-x-visible"
+          className="h-auto w-0 min-w-0 flex-1 flex-nowrap border-b-0 justify-start gap-1 overflow-x-auto lg:h-auto! lg:flex-wrap lg:overflow-x-visible"
         >
           {sessions.map((session) => (
             <div
