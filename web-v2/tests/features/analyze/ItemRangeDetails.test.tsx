@@ -2,7 +2,7 @@ import { afterEach, expect, it } from 'bun:test'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import type { ReportItem } from '../../../src/engine/types'
-import { ItemConditionDetails } from '../../../src/features/analyze/report/ItemConditionDetails'
+import { ItemRangeDetails } from '../../../src/features/analyze/report/ItemRangeDetails'
 import { realReport } from './fixtures'
 
 let root: Root | undefined
@@ -18,15 +18,14 @@ function render(item: ReportItem): string {
   document.body.append(container)
   act(() => {
     root = createRoot(container)
-    root.render(<ItemConditionDetails item={item} />)
+    root.render(<ItemRangeDetails item={item} />)
   })
   return container.textContent ?? ''
 }
 
-// The engine reports exact ranges, and no challenge or inventory conditions,
-// for the committed seeds. This test widens a real item to cover the rest of
-// the format.
-it('lists ranges that are not fixed and every condition kind', async () => {
+// The engine reports exact ranges for the committed seeds. This test widens
+// a real item to cover the rest of the format.
+it('lists ranges that are not fixed and no conditions', async () => {
   const report = await realReport('aaa-aaa-aaa.json')
   const item = report.floors[0]?.items[0] as ReportItem
   const text = render({
@@ -56,11 +55,8 @@ it('lists ranges that are not fixed and every condition kind', async () => {
   expect(text).toContain('Starts between +0 to +2.')
   expect(text).toContain('Tier 2 to 3.')
   expect(text).not.toContain('Quantity')
-  expect(text).toContain('On Diet is disabled')
-  expect(text).toContain(
-    'Mimic Tooth is acquired at +3 or better before floor 2'
-  )
-  expect(text).toContain('you carry Wand of Frost')
+  expect(text).not.toContain('Conditions')
+  expect(text).not.toContain('On Diet')
 })
 
 it('renders nothing for an item the seed fixes outright', async () => {

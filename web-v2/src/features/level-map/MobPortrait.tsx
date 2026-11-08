@@ -5,7 +5,7 @@ import type { MapBundle, MapMobDetail } from './types'
 /** Largest portrait edge in CSS pixels; sprites scale by whole numbers. */
 const PORTRAIT = 36
 
-/** A mob's idle film, cut from the map's own atlas. */
+/** A mob's or plant's film, cut from the map's own atlas. */
 export function MobPortrait({
   bundle,
   detail,

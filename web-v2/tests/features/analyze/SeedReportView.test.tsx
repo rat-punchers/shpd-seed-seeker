@@ -47,11 +47,17 @@ describe('a real report', () => {
       expect(container.querySelector('[data-seed-title]')?.textContent).toBe(
         report.seed.code
       )
-      // Each item but gold and keys appears once: on its floor, or on its
-      // quest's card.
+      // Each item but gold, keys and quest items appears once: on its
+      // floor, or on its quest's card.
+      const unlisted = ['ceremonial_candle', 'corpse_dust', 'embers']
       const items = report.floors
         .flatMap((floor) => floor.items)
-        .filter((item) => item.category !== 'gold' && item.category !== 'key')
+        .filter(
+          (item) =>
+            item.category !== 'gold' &&
+            item.category !== 'key' &&
+            !unlisted.includes(item.id)
+        )
       expect(slots()).toHaveLength(items.length)
       expect(all('[data-rail-depth]')).toHaveLength(report.floors.length)
       expect(all('[data-floor-depth]')).toHaveLength(report.floors.length)
@@ -170,6 +176,34 @@ describe('the engine-filled sections of AAA-AAA-AAA', () => {
     expect(all('[aria-label^="Generated with "]')).toHaveLength(0)
   })
 
+  it('describes Catalyst offers and transmutations with their in-game text', async () => {
+    const report = await realReport('aaa-aaa-aaa.json')
+    render(report)
+    const detail = () =>
+      document.querySelector('[data-slot="item-detail"]')?.textContent ?? ''
+    const [offer] = report.trinkets.offers
+    const button = container.querySelector(
+      `[role="radio"][aria-label="${offer?.name}"]`
+    ) as HTMLElement
+    act(() => {
+      button.dispatchEvent(new MouseEvent('pointerover', { bubbles: true }))
+    })
+    expect(offer?.description).toBeTruthy()
+    expect(detail()).toContain(offer?.description ?? '')
+    expect(detail()).toContain('Offered by the Trinket Catalyst.')
+    act(() => hideItemDetail())
+
+    const third = report.trinkets.transmutationOrder[2]
+    const slot = container.querySelector(
+      '[data-transmutation-order] li:nth-child(3) button'
+    ) as HTMLButtonElement
+    act(() => slot.click())
+    expect(detail()).toContain(third?.description ?? '')
+    expect(detail()).toContain('Transmutation result 3.')
+    act(() => slot.click())
+    expect(document.querySelector('[data-slot="item-detail"]')).toBeNull()
+  })
+
   it('draws the alchemy pots on their floors', async () => {
     render(await realReport('aaa-aaa-aaa.json'))
     expect(
@@ -186,12 +220,20 @@ describe('the engine-filled sections of AAA-AAA-AAA', () => {
     ])
   })
 
-  it('leaves gold and keys out of the item lists', async () => {
-    render(await realReport('aaa-aaa-aaa.json'))
+  it('leaves gold, keys and quest items out of the item lists', async () => {
+    const report = await realReport('aaa-aaa-aaa.json')
+    expect(
+      report.floors.some((floor) =>
+        floor.items.some((item) => item.id === 'ceremonial_candle')
+      )
+    ).toBe(true)
+    render(report)
     const labels = slots().map((slot) => slot.getAttribute('aria-label') ?? '')
     expect(
       labels.some((label) =>
-        /^(Gold|Iron key|Golden key|Crystal key)\b/i.test(label)
+        /^(Gold|Iron key|Golden key|Crystal key|Ceremonial candle|Corpse dust)\b/i.test(
+          label
+        )
       )
     ).toBe(false)
   })
@@ -212,19 +254,31 @@ describe('the engine-filled sections of AAA-AAA-AAA', () => {
     expect(text()).not.toContain('matches the query')
   })
 
-  it('lists the conditions of a quest reward', async () => {
-    render(await realReport('aaa-aaa-aaa.json'))
+  it('describes an item with its in-game text, like the map', async () => {
+    const report = await realReport('aaa-aaa-aaa.json')
+    render(report)
+    const detail = () =>
+      document.querySelector('[data-slot="item-detail"]')?.textContent ?? ''
     const wand = container.querySelector(
       '[data-quest="wandmaker"] [data-prediction="constrained"]'
     ) as HTMLButtonElement
     act(() => wand.click())
-    const panel = document.querySelector(
-      '[data-slot="item-detail"]'
-    )?.textContent
-    expect(panel).toContain(
-      'the Old Wandmaker quest is completed before floor 9'
-    )
-    expect(panel).toContain('choose 1 of 2 Wandmaker Reward options')
+    const rewards = report.floors
+      .flatMap((floor) => floor.items)
+      .filter((item) => item.source === 'wandmaker_reward')
+      .map((item) => item.description ?? '')
+    expect(rewards.every(Boolean)).toBe(true)
+    expect(rewards.some((text) => detail().includes(text))).toBe(true)
+    expect(detail()).toContain('Where to find')
+    expect(detail()).not.toContain('Fixed by the seed')
+    expect(detail()).not.toContain('Conditions')
+    expect(detail()).not.toContain('Varies with play')
+
+    const variable = container.querySelector(
+      '[data-prediction="variable"]'
+    ) as HTMLButtonElement
+    act(() => variable.click())
+    expect(detail()).toContain('Varies with play')
   })
 
   it('offers the Wandmaker and Imp reward outlooks', async () => {

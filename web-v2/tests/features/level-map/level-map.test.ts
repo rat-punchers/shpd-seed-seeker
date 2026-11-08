@@ -134,6 +134,21 @@ describe('tile inspection', () => {
     expect(slime.frames.length).toBeGreaterThan(0)
   })
 
+  it('describes plants with their in-game examine text and tile', () => {
+    const level = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      .map((depth) => map('AAA-AAA-AAA', depth))
+      .find((entry) => (entry.contents?.plants.length ?? 0) > 0)
+    const plant = level?.contents?.plants[0]
+    if (!level || !plant) throw new Error('no plant on floors 1 to 9')
+    const detail = level.plantDetails?.[plant.kind]
+    expect(detail?.description.length).toBeGreaterThan(0)
+    expect(detail?.asset).toBe('terrain_features.png')
+    const tile = level.scene.tileSize
+    const x = (plant.cell % level.width) * tile + tile / 2
+    const y = Math.floor(plant.cell / level.width) * tile + tile / 2
+    expect(inspectPoint(level, x, y)?.plants).toContain(plant)
+  })
+
   it('shows a mimic once, as its secret tooltip, and leaves summoning traps out', () => {
     const level = JSON.parse(
       level_map(
@@ -154,7 +169,9 @@ describe('tile inspection', () => {
     const [left, top, width, height] = itemBounds(tip, level.width, tile)
     const inside = inspectPoint(level, left + width / 2, top + height / 2)
     expect(inside?.tip).toBe(tip)
+    expect(inside?.carrier?.kind).toBe('EbonyMimic')
     expect(inside?.mobs).toEqual([])
+    expect(level.mobDetails?.EbonyMimic?.frames).toHaveLength(5)
 
     const summoning = map('DDD-DDD-DDD', 13)
     const trap = summoning.contents?.traps.find(

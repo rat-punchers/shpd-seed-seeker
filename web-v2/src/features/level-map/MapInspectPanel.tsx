@@ -5,7 +5,13 @@ import { itemArt } from '../../shared/sprites/sprites'
 import { ItemSprite } from '../../shared/ui/ItemSprite'
 import { kindName, type MapInspection } from './item-inspection'
 import { MobPortrait } from './MobPortrait'
-import type { MapBundle, MapMob, MapTooltipItem, MapTrap } from './types'
+import type {
+  MapBundle,
+  MapMob,
+  MapPlant,
+  MapTooltipItem,
+  MapTrap,
+} from './types'
 
 function PictureRow({
   picture,
@@ -95,6 +101,26 @@ function MobSection({ mob, bundle }: { mob: MapMob; bundle: MapBundle }) {
   )
 }
 
+function PlantSection({
+  plant,
+  bundle,
+}: {
+  plant: MapPlant
+  bundle: MapBundle
+}) {
+  const detail = bundle.map.plantDetails?.[plant.kind]
+  return (
+    <PictureRow
+      picture={detail ? <MobPortrait bundle={bundle} detail={detail} /> : null}
+    >
+      <ObjectSection
+        title={detail?.name ?? kindName(plant.kind)}
+        desc={detail?.description}
+      />
+    </PictureRow>
+  )
+}
+
 function TrapSection({ trap }: { trap: MapTrap }) {
   return (
     <ObjectSection
@@ -115,8 +141,11 @@ export const MapInspectPanel = forwardRef<
     style?: CSSProperties
   }
 >(function MapInspectPanel({ inspection, bundle, pinned, style }, ref) {
-  const { tip, mobs, traps, plants } = inspection
+  const { tip, carrier, mobs, traps, plants } = inspection
   const sections: ReactNode[] = [
+    ...(carrier
+      ? [<MobSection key="carrier" mob={carrier} bundle={bundle} />]
+      : []),
     ...(tip?.items ?? []).map((item, index) => (
       <ItemSection key={`item-${index}`} item={item} />
     )),
@@ -127,7 +156,7 @@ export const MapInspectPanel = forwardRef<
       <TrapSection key={`trap-${index}`} trap={trap} />
     )),
     ...plants.map((plant, index) => (
-      <ObjectSection key={`plant-${index}`} title={kindName(plant.kind)} />
+      <PlantSection key={`plant-${index}`} plant={plant} bundle={bundle} />
     )),
   ]
   return (
@@ -148,7 +177,7 @@ export const MapInspectPanel = forwardRef<
           <Badge variant="secondary">Secret</Badge>
         </div>
       ) : null}
-      {tip?.label ? (
+      {tip?.label && !carrier ? (
         <p className="text-muted-foreground text-xs font-semibold">
           {tip.label}
         </p>

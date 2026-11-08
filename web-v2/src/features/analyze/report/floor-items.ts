@@ -50,15 +50,16 @@ export interface FloorItemGroups {
   shop: ReportItem[]
 }
 
-/** Gold piles and dungeon keys are not listed. */
+/** Gold piles, dungeon keys and quest items are not listed; the map shows them. */
 const HIDDEN_CATEGORIES = new Set(['gold', 'key'])
+const QUEST_ITEMS = new Set(['ceremonial_candle', 'corpse_dust', 'embers'])
 
 export function isListed(item: ReportItem): boolean {
-  return !HIDDEN_CATEGORIES.has(item.category)
+  return !HIDDEN_CATEGORIES.has(item.category) && !QUEST_ITEMS.has(item.id)
 }
 
 /**
- * The floor's item lists, without gold and keys. Quest rewards are left out
+ * The floor's item lists, without gold, keys and quest items. Quest rewards are left out
  * when the report lists quests, because each quest card shows its own.
  */
 export function floorItemGroups(

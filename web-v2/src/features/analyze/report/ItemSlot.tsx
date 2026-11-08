@@ -111,9 +111,13 @@ export function ItemSlot({
         borderColor: border ?? undefined,
         borderWidth: border ? 2 : undefined,
       }}
-      onPointerEnter={() => ref.current && showItemDetail(ref.current, item)}
+      onPointerEnter={() =>
+        ref.current && showItemDetail(ref.current, { kind: 'item', item })
+      }
       onPointerLeave={() => ref.current && scheduleHideItemDetail(ref.current)}
-      onClick={() => ref.current && togglePinItemDetail(ref.current, item)}
+      onClick={() =>
+        ref.current && togglePinItemDetail(ref.current, { kind: 'item', item })
+      }
     >
       <ItemSprite art={itemArt(item.spriteIndex, ringGems)} size={16 * scale} />
       {item.upgrade !== 0 ? (

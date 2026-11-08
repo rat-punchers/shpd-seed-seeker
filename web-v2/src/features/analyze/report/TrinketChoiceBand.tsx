@@ -2,10 +2,19 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@seed-seeker/design/ui/toggle-group'
-import type { ReportTrinkets } from '../../../engine/types/report'
+import { useRef } from 'react'
+import type {
+  ReportItemRef,
+  ReportTrinkets,
+} from '../../../engine/types/report'
 import { itemArt } from '../../../shared/sprites/sprites'
 import { ItemSprite } from '../../../shared/ui/ItemSprite'
-import { SpriteSlot } from './ItemSlot'
+import {
+  type DetailSubject,
+  scheduleHideItemDetail,
+  showItemDetail,
+  togglePinItemDetail,
+} from './item-detail-store'
 import {
   type TrinketChoice,
   trinketEffect,
@@ -27,6 +36,36 @@ function selectedNote(trinkets: ReportTrinkets): string {
     default:
       return `${floors} are generated with ${selected.name}.`
   }
+}
+
+/** A transmutation result: hover shows the game's text, a click pins it. */
+function TransmutationSlot({
+  trinket,
+  step,
+}: {
+  trinket: ReportItemRef
+  step: number
+}) {
+  const ref = useRef<HTMLButtonElement>(null)
+  const subject: DetailSubject = {
+    kind: 'trinket',
+    trinket,
+    note: `Transmutation result ${step}.`,
+  }
+  return (
+    <button
+      ref={ref}
+      type="button"
+      data-slot="trinket-box"
+      aria-label={`${step}. ${trinket.name}${trinket.matched ? ', used by the query' : ''}`}
+      className="bg-muted inset-shadow-recessed grid size-[42px] shrink-0 cursor-pointer place-items-center border p-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+      onPointerEnter={() => ref.current && showItemDetail(ref.current, subject)}
+      onPointerLeave={() => ref.current && scheduleHideItemDetail(ref.current)}
+      onClick={() => ref.current && togglePinItemDetail(ref.current, subject)}
+    >
+      <ItemSprite art={itemArt(trinket.spriteIndex)} size={32} />
+    </button>
+  )
 }
 
 /**
@@ -79,6 +118,18 @@ export function TrinketChoiceBand({
               value={offer.id}
               aria-label={offer.name}
               className="h-auto w-32 cursor-pointer flex-col justify-start gap-1 px-2 py-2 whitespace-normal"
+              onPointerEnter={(event) =>
+                showItemDetail(event.currentTarget, {
+                  kind: 'trinket',
+                  trinket: offer,
+                  note: effect
+                    ? `Offered by the Trinket Catalyst. ${trinketEffectLabel(effect)}.`
+                    : 'Offered by the Trinket Catalyst.',
+                })
+              }
+              onPointerLeave={(event) =>
+                scheduleHideItemDetail(event.currentTarget)
+              }
             >
               <ItemSprite art={itemArt(offer.spriteIndex)} size={48} />
               <span className="text-foreground text-center leading-tight">
@@ -104,10 +155,7 @@ export function TrinketChoiceBand({
           <ol className="flex flex-wrap gap-px">
             {trinkets.transmutationOrder.map((item, index) => (
               <li key={`${index}-${item.id}`}>
-                <SpriteSlot
-                  art={itemArt(item.spriteIndex)}
-                  label={`${index + 1}. ${item.name}${item.matched ? ', used by the query' : ''}`}
-                />
+                <TransmutationSlot trinket={item} step={index + 1} />
               </li>
             ))}
           </ol>

@@ -3,6 +3,15 @@
 @import "shadcn/tailwind.css";
 @import "@seed-seeker/design/theme.css";
 
+/* Lightness of enchantment names in item titles (`effectTextColor`). */
+:root {
+  --effect-text-l: 0.5;
+}
+
+.dark {
+  --effect-text-l: 0.78;
+}
+
 /* An enchantment glow over an item sprite (`spriteGlowCss`). */
 @keyframes sprite-glow-pulse {
   0%,

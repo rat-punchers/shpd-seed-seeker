@@ -49,6 +49,8 @@ export interface MapInspection {
   /** The cell under the point. */
   cell: number
   tip?: MapItemTooltip
+  /** The disguised mimic whose loot the tooltip lists. */
+  carrier?: MapMob
   mobs: MapMob[]
   traps: MapTrap[]
   plants: MapPlant[]
@@ -73,9 +75,13 @@ export function inspectPoint(
   const disguised = (mob: MapMob) =>
     mob.kind.endsWith('Mimic') &&
     (map.itemTooltips ?? []).some((entry) => entry.cell === mob.cell)
+  const carrier = tip
+    ? contents?.mobs.find((mob) => mob.cell === tip.cell && disguised(mob))
+    : undefined
   return {
     cell: tip?.cell ?? cell,
     tip,
+    ...(carrier ? { carrier } : {}),
     mobs: (contents?.mobs ?? []).filter(
       (mob) => mob.cell === cell && !disguised(mob)
     ),

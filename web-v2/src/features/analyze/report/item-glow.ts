@@ -95,3 +95,22 @@ export function effectBorderColor(
   if (lum > 0.85) return mix(glow, 0x22, 0.45)
   return glow
 }
+
+/**
+ * Title text for an effect: red for curses, else the glow's hue at a
+ * lightness each theme can read (`--effect-text-l`). Black, white and grey
+ * glows carry no hue, so they read in the info color.
+ */
+export function effectTextColor(
+  effect: { name: string; kind: 'enchantment' | 'curse' } | null | undefined
+): string | null {
+  if (!effect) return null
+  if (effect.kind === 'curse') return 'var(--color-destructive)'
+  const glow = EFFECT_COLOR[effect.name]
+  if (!glow) return null
+  const channels = [1, 3, 5].map((index) => channel(glow, index))
+  if (Math.max(...channels) - Math.min(...channels) < 48) {
+    return 'var(--color-info)'
+  }
+  return `oklch(from ${glow} var(--effect-text-l) clamp(0.1, c, 0.17) h)`
+}

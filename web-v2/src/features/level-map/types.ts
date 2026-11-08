@@ -113,7 +113,7 @@ export interface MapItemTooltip {
   items: MapTooltipItem[]
 }
 
-/** A mob kind's examine window: in-game name, description and idle film. */
+/** A mob or plant kind's examine window: in-game name, description and film. */
 export interface MapMobDetail {
   name: string
   description: string
@@ -138,6 +138,8 @@ export interface LevelMapDocument {
   itemTooltips?: MapItemTooltip[]
   /** Keyed by mob kind; absent from older engines. */
   mobDetails?: Record<string, MapMobDetail>
+  /** Keyed by plant kind; absent from older engines. */
+  plantDetails?: Record<string, MapMobDetail>
   format: 'seed-seeker-level-map'
   schemaVersion: 2 | 3
   seed: string

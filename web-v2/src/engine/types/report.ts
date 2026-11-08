@@ -70,6 +70,8 @@ export interface ReportIdentity {
 export interface ReportItemRef {
   id: string
   name: string
+  /** The game's examine text; absent from older engines. */
+  description?: string
   spriteIndex: number
   matched: boolean
 }
@@ -109,6 +111,8 @@ export interface ReportItem {
   id: string
   name: string
   category: string
+  /** The game's examine text; absent from older engines. */
+  description?: string
   spriteIndex: number
   upgrade: number
   effect: { name: string; kind: 'enchantment' | 'curse' } | null

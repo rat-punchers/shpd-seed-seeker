@@ -1,14 +1,11 @@
 // Player-facing words for report values.
 import type { ItemSource, QuestName } from '../../../engine/types'
 import type {
-  ArtifactEvent,
   ReportBranch,
-  ReportCondition,
   ReportItem,
   SeedReport,
-  TrinketEvent,
 } from '../../../engine/types/report'
-import { challenges, getItem, sourceLabel } from '../../../shared/game/catalog'
+import { getItem, sourceLabel } from '../../../shared/game/catalog'
 
 /** `elemental_embers` → `Elemental Embers`. */
 export function humanize(value: string): string {
@@ -60,12 +57,46 @@ export function itemLocation(item: ReportItem): string {
   return item.secret ? `${where}, in a secret room` : where
 }
 
-/** The item's name as a slot reads it: upgrade, effect and curse included. */
+export interface ItemTitleParts {
+  /** A weapon effect, which the game's templates put before the name. */
+  prefix: string | null
+  name: string
+  /** An armor glyph or curse: ` of thorns`. */
+  suffix: string | null
+  /** `+4` or `-1`; null at +0. */
+  upgrade: string | null
+}
+
+/** The game's title order: `Shocking assassin's blade +4`, `Plate armor of thorns +3`. */
+export function itemTitleParts(item: ReportItem): ItemTitleParts {
+  const upgrade =
+    item.upgrade > 0
+      ? `+${item.upgrade}`
+      : item.upgrade < 0
+        ? String(item.upgrade)
+        : null
+  const effect = item.effect?.name
+  if (!effect) return { prefix: null, name: item.name, suffix: null, upgrade }
+  if (item.category === 'armor') {
+    return {
+      prefix: null,
+      name: item.name,
+      suffix: ` of ${effect.toLowerCase()}`,
+      upgrade,
+    }
+  }
+  return {
+    prefix: `${effect} `,
+    name: item.name.charAt(0).toLowerCase() + item.name.slice(1),
+    suffix: null,
+    upgrade,
+  }
+}
+
+/** The item's name as the game titles it: effect and upgrade included. */
 export function itemTitle(item: ReportItem): string {
-  const upgrade = item.upgrade > 0 ? ` +${item.upgrade}` : ''
-  const upgraded =
-    item.upgrade < 0 ? `${item.name} ${item.upgrade}` : `${item.name}${upgrade}`
-  return item.effect ? `${upgraded}, ${item.effect.name}` : upgraded
+  const { prefix, name, suffix, upgrade } = itemTitleParts(item)
+  return `${prefix ?? ''}${name}${suffix ?? ''}${upgrade ? ` ${upgrade}` : ''}`
 }
 
 /** Whether a report lists a section, so its fields can be read. */
@@ -74,81 +105,4 @@ export function hasSection(
   section: SeedReport['sections'][number]
 ): boolean {
   return report.sections.includes(section)
-}
-
-export function challengeName(name: string): string {
-  return (
-    challenges.find((entry) => entry.value === name)?.label ?? humanize(name)
-  )
-}
-
-function trinketEvents(events: TrinketEvent[]): string {
-  if (events.length === 0) return 'no generation-affecting trinket is held'
-  let level = 0
-  return events
-    .map((event) => {
-      if (event.kind === 'upgraded') {
-        level += 1
-        return `the held trinket reaches +${level} before floor ${event.beforeDepth}`
-      }
-      level = 0
-      const trinket = event.trinket ? itemName(event.trinket) : 'a trinket'
-      const atLeast = event.minUpgrades
-        ? ` at +${event.minUpgrades} or better`
-        : ''
-      return `${trinket} is ${event.kind}${atLeast} before floor ${event.beforeDepth}`
-    })
-    .join(' and ')
-}
-
-function artifactEvents(events: ArtifactEvent[]): string {
-  if (events.length === 0) return 'no artifact history changes the result'
-  return events
-    .map(
-      (event) =>
-        `${itemName(event.artifact)} is ${event.kind} before floor ${event.beforeDepth}`
-    )
-    .join(' and ')
-}
-
-/** One condition an item depends on, as a sentence fragment. */
-export function conditionDescription(condition: ReportCondition): string {
-  switch (condition.type) {
-    case 'challenge':
-      return `${challengeName(condition.challenge)} is ${condition.enabled ? 'enabled' : 'disabled'}`
-    case 'trinket':
-      return trinketEvents(condition.events)
-    case 'artifact':
-      return artifactEvents(condition.events)
-    case 'quest': {
-      const when = condition.depth ? ` before floor ${condition.depth}` : ''
-      if (condition.quest === 'imp') {
-        return `the Ambitious Imp vault is completed with a score above 2000${when}`
-      }
-      return `the ${questTitle(condition.quest)} quest is completed${when}`
-    }
-    case 'choice': {
-      const favor = condition.favorRequirement
-        ? ` with ${condition.favorRequirement} favor`
-        : ''
-      return `choose ${condition.selectedCount} of ${condition.optionCount} ${humanize(condition.group)} options${favor}`
-    }
-    case 'inventory':
-      return `you carry ${itemName(condition.requirement)}`
-    case 'runtime':
-      return `${humanize(condition.state)} applies during play`
-  }
-}
-
-export function predictionLabel(prediction: ReportItem['prediction']): string {
-  switch (prediction) {
-    case 'exact':
-      return 'Fixed by the seed'
-    case 'constrained':
-      return 'Fixed by the seed when its conditions hold'
-    case 'variable':
-      return 'Varies with gameplay'
-    default:
-      return ''
-  }
 }

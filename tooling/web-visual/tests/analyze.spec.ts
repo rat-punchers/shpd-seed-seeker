@@ -49,6 +49,20 @@ test('a typed seed opens a tab with the engine report', async ({ page }) => {
   await expect(detail).toContainText('Floor 1, Heap')
   await page.keyboard.press('Escape')
   await expect(detail).toHaveCount(0)
+
+  // Titles follow the game, with the effect in its glow's hue.
+  await page
+    .locator('[data-floor-depth="7"]')
+    .getByRole('button', { name: /^Blazing assassin's blade/ })
+    .click()
+  await expect(detail).toContainText("Blazing assassin's blade")
+  const effect = detail.locator('[data-item-effect]')
+  const colors = await effect.evaluate((node) => ({
+    effect: getComputedStyle(node).color,
+    title: getComputedStyle(node.parentElement as Element).color,
+  }))
+  expect(colors.effect).not.toBe(colors.title)
+  await page.keyboard.press('Escape')
   expectNoBrowserErrors(errors)
 })
 
@@ -167,6 +181,15 @@ test('the engine times the Catalyst and fills pots and reward outlooks', async (
   const floor5 = page.locator('[data-floor-depth="5"]')
   const band = floor4.locator('[data-trinket-choice]')
   await expect(band).toContainText('Floors 5+ are generated with no trinket.')
+  // Offers and transmutations describe themselves like floor items.
+  const trinketDetail = page.locator('[data-slot="item-detail"]')
+  await band.getByRole('radio', { name: 'Mimic Tooth' }).hover()
+  await expect(trinketDetail).toContainText('Offered by the Trinket Catalyst.')
+  await page.mouse.move(0, 0)
+  await band.locator('[data-transmutation-order] button').first().click()
+  await expect(trinketDetail).toContainText('Transmutation result 1.')
+  await page.keyboard.press('Escape')
+  await expect(trinketDetail).toHaveCount(0)
   await expect(
     floor4.getByRole('img', { name: 'Alchemy pot, laboratory' })
   ).toBeVisible()
@@ -214,9 +237,10 @@ test('the engine times the Catalyst and fills pots and reward outlooks', async (
     .locator('[data-floor-depth="6"] [data-prediction="constrained"]')
     .first()
     .click()
-  await expect(page.locator('[data-slot="item-detail"]')).toContainText(
-    'Mimic Tooth is acquired at +3 or better before floor 6'
-  )
+  const detail = page.locator('[data-slot="item-detail"]')
+  await expect(detail).toContainText('Where to find')
+  await expect(detail).not.toContainText('Fixed by the seed')
+  await expect(detail).not.toContainText('Conditions')
   await page.keyboard.press('Escape')
   expectNoBrowserErrors(errors)
 })

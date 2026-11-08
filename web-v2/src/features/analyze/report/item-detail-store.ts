@@ -2,13 +2,18 @@
  * The one item description panel. Hovering a slot points it there; a click
  * pins it until the same slot is clicked again, Escape, or a click outside.
  */
-import type { ReportItem } from '../../../engine/types/report'
+import type { ReportItem, ReportItemRef } from '../../../engine/types/report'
 
 const HIDE_MS = 160
 
+/** What the panel describes: a floor item, or a trinket with its role. */
+export type DetailSubject =
+  | { kind: 'item'; item: ReportItem }
+  | { kind: 'trinket'; trinket: ReportItemRef; note: string }
+
 export interface ItemDetailPanel {
   anchor: HTMLElement
-  item: ReportItem
+  subject: DetailSubject
   pinned: boolean
 }
 
@@ -35,23 +40,26 @@ export function getItemDetail(): ItemDetailPanel | null {
 }
 
 /** Points the panel at this slot unless another one is pinned. */
-export function showItemDetail(anchor: HTMLElement, item: ReportItem): void {
+export function showItemDetail(
+  anchor: HTMLElement,
+  subject: DetailSubject
+): void {
   clearHideTimer()
   if (panel?.pinned || panel?.anchor === anchor) return
-  panel = { anchor, item, pinned: false }
+  panel = { anchor, subject, pinned: false }
   emit()
 }
 
 /** Pins the panel on this slot, or closes it when it is pinned here. */
 export function togglePinItemDetail(
   anchor: HTMLElement,
-  item: ReportItem
+  subject: DetailSubject
 ): void {
   clearHideTimer()
   panel =
     panel?.pinned && panel.anchor === anchor
       ? null
-      : { anchor, item, pinned: true }
+      : { anchor, subject, pinned: true }
   emit()
 }
 

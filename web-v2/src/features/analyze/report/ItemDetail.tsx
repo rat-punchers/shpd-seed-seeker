@@ -1,7 +1,10 @@
 import { Badge } from '@seed-seeker/design/ui/badge'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { ReportItem } from '../../../engine/types/report'
-import { ItemConditionDetails } from './ItemConditionDetails'
+import { itemArt } from '../../../shared/sprites/sprites'
+import { ItemSprite } from '../../../shared/ui/ItemSprite'
+import { ItemName } from './ItemName'
+import { ItemRangeDetails } from './ItemRangeDetails'
 import {
   cancelHideItemDetail,
   getItemDetail,
@@ -9,12 +12,8 @@ import {
   scheduleHideItemDetail,
   subscribeItemDetail,
 } from './item-detail-store'
-import {
-  humanize,
-  itemLocation,
-  itemTitle,
-  predictionLabel,
-} from './report-text'
+import { itemLocation, itemTitle } from './report-text'
+import { TrinketDetail } from './TrinketDetail'
 
 const PANEL_WIDTH = 320
 const PANEL_GAP = 6
@@ -30,30 +29,37 @@ function accessText(item: ReportItem): string | null {
   }
 }
 
-/** Everything the report says about one item. */
+/** Everything the report says about one item, laid out like the map's tooltip. */
 export function ItemDetail({ item }: { item: ReportItem }) {
   const access = accessText(item)
-  const prediction = predictionLabel(item.prediction)
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <p className="text-popover-foreground font-semibold">
-          {itemTitle(item)}
-        </p>
-        {item.cursed ? <Badge variant="destructive">Cursed</Badge> : null}
-        {item.matched ? <Badge>Matches the query</Badge> : null}
-        {item.resinDonor ? (
-          <Badge variant="secondary">Resin donor</Badge>
-        ) : null}
-        {item.excluded ? <Badge variant="outline">Excluded</Badge> : null}
+      <div className="flex items-start gap-3">
+        <div className="shrink-0">
+          <ItemSprite art={itemArt(item.spriteIndex)} size={32} />
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <p className="text-popover-foreground font-semibold">
+              <ItemName item={item} />
+            </p>
+            {item.cursed ? <Badge variant="destructive">Cursed</Badge> : null}
+            {item.prediction === 'variable' ? (
+              <Badge variant="warning">Varies with play</Badge>
+            ) : null}
+            {item.matched ? <Badge>Matches the query</Badge> : null}
+            {item.resinDonor ? (
+              <Badge variant="secondary">Resin donor</Badge>
+            ) : null}
+            {item.excluded ? <Badge variant="outline">Excluded</Badge> : null}
+          </div>
+          {item.description ? (
+            <p className="text-muted-foreground text-sm whitespace-pre-wrap">
+              {item.description}
+            </p>
+          ) : null}
+        </div>
       </div>
-      <p className="text-muted-foreground text-sm">
-        {humanize(item.category)}
-        {item.effect
-          ? `, ${item.effect.kind === 'curse' ? 'cursed with' : 'enchanted with'} ${item.effect.name}`
-          : null}
-        {prediction ? `. ${prediction}.` : '.'}
-      </p>
       <div className="flex flex-col gap-1 border-t pt-2">
         <p className="text-popover-foreground text-sm font-semibold">
           Where to find
@@ -65,7 +71,7 @@ export function ItemDetail({ item }: { item: ReportItem }) {
           <p className="text-muted-foreground text-sm">{access}</p>
         ) : null}
       </div>
-      <ItemConditionDetails item={item} />
+      <ItemRangeDetails item={item} />
     </div>
   )
 }
@@ -110,7 +116,8 @@ export function ItemDetailLayer() {
       if (!(target instanceof Element)) return
       if (current.anchor.contains(target)) return
       if (layerRef.current?.contains(target)) return
-      if (target.closest('[data-slot="item-box"]')) return
+      if (target.closest('[data-slot="item-box"], [data-slot="trinket-box"]'))
+        return
       hideItemDetail()
     }
     window.addEventListener('scroll', follow, true)
@@ -132,13 +139,24 @@ export function ItemDetailLayer() {
       ref={layerRef}
       data-slot="item-detail"
       role="dialog"
-      aria-label={itemTitle(current.item)}
+      aria-label={
+        current.subject.kind === 'item'
+          ? itemTitle(current.subject.item)
+          : current.subject.trinket.name
+      }
       className="bg-popover text-popover-foreground shadow-window inset-shadow-raised fixed z-50 max-h-80 overflow-y-auto rounded-lg border p-3.5 text-sm"
       style={{ width: PANEL_WIDTH, ...place }}
       onPointerEnter={cancelHideItemDetail}
       onPointerLeave={() => scheduleHideItemDetail(current.anchor)}
     >
-      <ItemDetail item={current.item} />
+      {current.subject.kind === 'item' ? (
+        <ItemDetail item={current.subject.item} />
+      ) : (
+        <TrinketDetail
+          trinket={current.subject.trinket}
+          note={current.subject.note}
+        />
+      )}
     </div>
   )
 }
