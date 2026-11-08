@@ -1,40 +1,33 @@
-// The GitHub step: a token that can write the `web-v2` environment's
-// secrets, and the environment itself.
+// The GitHub step: a token that can write the repository's Actions secrets.
 import {
   CLASSIC_TOKEN_URL,
-  createEnvironment,
-  ENVIRONMENT,
   FINE_GRAINED_TOKEN_URL,
   inferToken,
   OWNER,
-  probeEnvironment,
   probeRepo,
+  probeSecrets,
   REPO,
 } from './github'
 import { askSecret, confirm } from './prompt'
 import { openUrl } from './shell'
 import { withSpinner } from './spinner'
-import { type Brief, bold, green, printBrief, red, yellow } from './style'
+import { type Brief, bold, green, printBrief, red } from './style'
 
 export const GITHUB_BRIEF: Brief = {
-  usedFor: `Writing the deploy secrets into the ${ENVIRONMENT} environment of ${OWNER}/${REPO}. It is used on this machine only and is not stored.`,
+  usedFor: `Writing the deploy secrets into the Actions secrets of ${OWNER}/${REPO}. It is used on this machine only and is not stored.`,
   needs: [
     {
-      name: 'Classic PAT `repo` scope, or fine-grained Environments: write on this repository',
-      why: 'reads and writes the environment secrets',
-    },
-    {
-      name: 'Administration: write (only if the environment does not exist yet)',
-      why: `creates the ${ENVIRONMENT} environment; Environments access alone cannot`,
+      name: 'Classic PAT `repo` scope, or fine-grained Secrets: write on this repository',
+      why: 'reads and writes the repository secrets',
     },
   ],
   inferHint:
-    'The gh login often lacks the repo scope, or for fine-grained tokens, Environments access to this repository.',
+    'The gh login often lacks the repo scope, or for fine-grained tokens, Secrets access to this repository.',
 }
 
 export interface GithubAccess {
   token: string
-  /** Secret names already in the environment, when it could be read. */
+  /** Secret names already in the repository, when they could be read. */
   existing: string[]
   ready: boolean
 }
@@ -44,7 +37,7 @@ async function offerUrls(): Promise<void> {
     { label: '🎫 Classic PAT', hint: 'scope repo', url: CLASSIC_TOKEN_URL },
     {
       label: '🔑 Fine-grained',
-      hint: `this repository, Environments: write (and Administration: write to create ${ENVIRONMENT})`,
+      hint: 'this repository, Secrets: write',
       url: FINE_GRAINED_TOKEN_URL,
     },
   ]
@@ -61,7 +54,7 @@ async function enterToken(): Promise<string> {
   return askSecret('GitHub token:')
 }
 
-/** Finds a token that reaches the environment, creating it when allowed. */
+/** Finds a token that can read and write the repository's secrets. */
 export async function githubGroup(): Promise<GithubAccess> {
   printBrief(GITHUB_BRIEF)
   const inferred = await withSpinner('Looking for a local GitHub token', () =>
@@ -78,40 +71,20 @@ export async function githubGroup(): Promise<GithubAccess> {
       probeRepo(token)
     )
     if (repo === 'ok') {
-      let environment = await withSpinner(
-        `Checking the ${ENVIRONMENT} environment`,
-        () => probeEnvironment(token)
+      const secrets = await withSpinner('Checking the repository secrets', () =>
+        probeSecrets(token)
       )
-      if (environment.access === 'missing') {
-        console.log(
-          `   ${yellow(`The ${ENVIRONMENT} environment does not exist, or this token cannot see it.`)}`
-        )
-        if (
-          await confirm(
-            `Create ${ENVIRONMENT} now? (needs Administration: write)`
-          )
-        ) {
-          const created = await withSpinner(`Creating ${ENVIRONMENT}`, () =>
-            createEnvironment(token)
-          )
-          if (created.ok) {
-            environment = await probeEnvironment(token)
-          } else {
-            console.log(
-              `   ${red(`GitHub answered ${created.status}.`)} A repository admin must create it.`
-            )
-          }
-        }
+      if (secrets.access === 'ok') {
+        console.log(`   ${green('✓')} Repository secrets are writable`)
+        return { token, existing: secrets.secrets, ready: true }
       }
-      if (environment.access === 'ok') {
-        console.log(`   ${green('✓')} Environment ${ENVIRONMENT} is writable`)
-        return { token, existing: environment.secrets, ready: true }
-      }
-      if (environment.access === 'forbidden') {
-        console.log(
-          `   ${red('The token cannot read the environment secrets (needs Environments: write).')}`
-        )
-      }
+      console.log(
+        `   ${red(
+          secrets.access === 'forbidden'
+            ? 'The token cannot read the repository secrets (needs Secrets: write).'
+            : 'GitHub could not list the repository secrets.'
+        )}`
+      )
     } else {
       const reason =
         repo === 'invalid'

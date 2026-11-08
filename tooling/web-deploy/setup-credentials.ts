@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 // Guided setup of the web-v2 deploy credentials: finds what the local `gh`
 // and `wrangler` logins know, verifies each value against the API that will
-// consume it, and stores it in the GitHub `web-v2` environment.
+// consume it, and stores it as a GitHub repository Actions secret.
 //
 // Run from the repository root: `bun run deploy:setup`.
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { accountGroup, tokenGroup } from './lib/cloudflare-group'
-import { ENVIRONMENT, OWNER, REPO, storeSecret } from './lib/github'
+import { OWNER, REPO, storeSecret } from './lib/github'
 import { githubGroup } from './lib/github-group'
 import { printSummary, type Result } from './lib/outcome'
 import { releaseStdin } from './lib/prompt'
@@ -56,9 +56,7 @@ async function store(
 
 async function main(): Promise<void> {
   console.log(
-    bold(
-      `🔐 web-v2 deploy credentials → ${OWNER}/${REPO}, environment ${ENVIRONMENT}`
-    )
+    bold(`🔐 web-v2 deploy credentials → ${OWNER}/${REPO} repository secrets`)
   )
   console.log(
     dim('   Values are verified before they are stored. Press Ctrl-C to stop.')
@@ -87,7 +85,7 @@ async function main(): Promise<void> {
   const canStore = github.ready
   if (!canStore)
     console.log(
-      `   ${red(`The ${ENVIRONMENT} environment is not writable; nothing is stored.`)}`
+      `   ${red('The repository secrets are not writable; nothing is stored.')}`
     )
 
   if (account.keep)

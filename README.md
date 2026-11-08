@@ -217,8 +217,8 @@ The `web-v2` workflow runs those checks on pull requests and pushes to `main`.
 On a push to `main` it then deploys `web-v2/dist` as the Cloudflare Worker
 `shpd-seed-seeker-v2` (`web-v2/wrangler.toml`) to
 [seedseeker.nerdcoder.xyz](https://seedseeker.nerdcoder.xyz). The deploy reads
-`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from the GitHub environment
-`web-v2`; `bun run deploy:setup` creates the token and stores both
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from the repository's
+GitHub Actions secrets; `bun run deploy:setup` creates the token and stores both
 ([tooling/web-deploy/README.md](tooling/web-deploy/README.md)).
 
 ### Android

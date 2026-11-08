@@ -90,9 +90,6 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment:
-      name: web-v2
-      url: https://seedseeker.nerdcoder.xyz
     # One deploy at a time, in push order; never cancel one midway.
     concurrency:
       group: web-v2-deploy

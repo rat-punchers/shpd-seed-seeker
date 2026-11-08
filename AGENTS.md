@@ -37,7 +37,7 @@ lints only those workspaces and the root config files.
 - Deploy: the `web-v2` workflow deploys the Worker `shpd-seed-seeker-v2`
   (`web-v2/wrangler.toml`) to `seedseeker.nerdcoder.xyz` on every push to
   `main` after its checks pass. `bun run deploy:setup` stores the Cloudflare
-  credentials in the GitHub `web-v2` environment. Do not run it, or deploy,
+  credentials as GitHub repository Actions secrets. Do not run it, or deploy,
   without being asked.
 - Definition of Done, in order: `bun run check` → `bun run check:types` →
   `bun run build` → `bun run test`. All four must pass. Changes to web-v2's

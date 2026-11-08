@@ -1,14 +1,13 @@
-// GitHub: the token that stores the secrets, the `web-v2` environment, and
-// storing secrets through `gh` over stdin.
+// GitHub: the token that stores the secrets, the repository's Actions
+// secrets, and storing secrets through `gh` over stdin.
 import { envWithout, run } from './shell'
 
 export const OWNER = 'rat-punchers'
 export const REPO = 'shpd-seed-seeker'
-export const ENVIRONMENT = 'web-v2'
 const API = 'https://api.github.com'
 
 export const CLASSIC_TOKEN_URL = `https://github.com/settings/tokens/new?description=${encodeURIComponent(
-  `${REPO} ${ENVIRONMENT} secrets`
+  `${REPO} deploy secrets`
 )}&scopes=repo`
 export const FINE_GRAINED_TOKEN_URL =
   'https://github.com/settings/personal-access-tokens/new'
@@ -30,12 +29,10 @@ export async function inferToken(
 
 export type RepoAccess = 'ok' | 'invalid' | 'no-repo' | 'error'
 
-export type EnvironmentAccess =
-  /** The environment exists and the token can read its secrets. */
+export type SecretsAccess =
+  /** The token can read the repository's Actions secrets. */
   | 'ok'
-  /** No such environment, or the token cannot see it: it must be created. */
-  | 'missing'
-  /** The environment exists but the token lacks Environments access. */
+  /** The token sees the repository but lacks Secrets access. */
   | 'forbidden'
   | 'invalid'
   | 'error'
@@ -48,13 +45,12 @@ export function classifyRepo(status: number): RepoAccess {
 }
 
 /**
- * Reads `GET …/environments/{name}/secrets`. A 404 means the environment
- * does not exist (or is hidden from the token), not success.
+ * Reads `GET …/actions/secrets`. Once the repository is visible, a 403 or
+ * 404 there means the token lacks Secrets access, not success.
  */
-export function classifyEnvironment(status: number): EnvironmentAccess {
+export function classifySecrets(status: number): SecretsAccess {
   if (status === 200) return 'ok'
-  if (status === 404) return 'missing'
-  if (status === 403) return 'forbidden'
+  if (status === 403 || status === 404) return 'forbidden'
   if (status === 401) return 'invalid'
   return 'error'
 }
@@ -86,17 +82,17 @@ export async function probeRepo(token: string, fetcher: typeof fetch = fetch) {
   return classifyRepo(answer.status)
 }
 
-/** The environment's access, and the names of the secrets it already holds. */
-export async function probeEnvironment(
+/** Access to the repository's Actions secrets, and the names already set. */
+export async function probeSecrets(
   token: string,
   fetcher: typeof fetch = fetch
-): Promise<{ access: EnvironmentAccess; secrets: string[] }> {
+): Promise<{ access: SecretsAccess; secrets: string[] }> {
   const answer = await status(
     fetcher,
-    `${API}/repos/${OWNER}/${REPO}/environments/${ENVIRONMENT}/secrets`,
+    `${API}/repos/${OWNER}/${REPO}/actions/secrets?per_page=100`,
     { headers: headers(token) }
   )
-  const access = classifyEnvironment(answer.status)
+  const access = classifySecrets(answer.status)
   const list =
     (answer.body as { secrets?: { name: string }[] } | null)?.secrets ?? []
   return {
@@ -105,27 +101,7 @@ export async function probeEnvironment(
   }
 }
 
-/** Creates the environment. Needs repository Administration: write. */
-export async function createEnvironment(
-  token: string,
-  fetcher: typeof fetch = fetch
-): Promise<{ ok: boolean; status: number }> {
-  const answer = await status(
-    fetcher,
-    `${API}/repos/${OWNER}/${REPO}/environments/${ENVIRONMENT}`,
-    {
-      method: 'PUT',
-      headers: { ...headers(token), 'Content-Type': 'application/json' },
-      body: '{}',
-    }
-  )
-  return {
-    ok: answer.status === 200 || answer.status === 201,
-    status: answer.status,
-  }
-}
-
-/** Stores one environment secret with `gh secret set`, the value on stdin. */
+/** Stores one repository Actions secret with `gh secret set`, value on stdin. */
 export async function storeSecret(
   token: string,
   name: string,
@@ -137,8 +113,8 @@ export async function storeSecret(
       'secret',
       'set',
       name,
-      '--env',
-      ENVIRONMENT,
+      '--app',
+      'actions',
       '--repo',
       `${OWNER}/${REPO}`,
     ],

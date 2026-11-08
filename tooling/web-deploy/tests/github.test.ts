@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'bun:test'
 import {
   CLASSIC_TOKEN_URL,
-  classifyEnvironment,
   classifyRepo,
-  createEnvironment,
-  probeEnvironment,
+  classifySecrets,
   probeRepo,
+  probeSecrets,
 } from '../lib/github'
 
 function mockFetch(
@@ -39,7 +38,7 @@ function mockFetch(
 }
 
 const SECRETS =
-  'GET /repos/rat-punchers/shpd-seed-seeker/environments/web-v2/secrets'
+  'GET /repos/rat-punchers/shpd-seed-seeker/actions/secrets?per_page=100'
 
 describe('classification', () => {
   it('reads the repository probe', () => {
@@ -49,10 +48,11 @@ describe('classification', () => {
     expect(classifyRepo(500)).toBe('error')
   })
 
-  it('reads a 404 on the environment secrets as a missing environment, not success', () => {
-    expect(classifyEnvironment(404)).toBe('missing')
-    expect(classifyEnvironment(403)).toBe('forbidden')
-    expect(classifyEnvironment(200)).toBe('ok')
+  it('reads a 403 or 404 on the repository secrets as no access, not success', () => {
+    expect(classifySecrets(404)).toBe('forbidden')
+    expect(classifySecrets(403)).toBe('forbidden')
+    expect(classifySecrets(401)).toBe('invalid')
+    expect(classifySecrets(200)).toBe('ok')
   })
 })
 
@@ -65,50 +65,24 @@ describe('probes', () => {
     expect(calls[0]?.auth).toBe('Bearer ghp_x')
   })
 
-  it('lists the secrets already in the environment', async () => {
+  it('lists the secrets already in the repository', async () => {
     const { fetcher } = mockFetch({
       [SECRETS]: {
         status: 200,
         body: { total_count: 1, secrets: [{ name: 'CLOUDFLARE_API_TOKEN' }] },
       },
     })
-    expect(await probeEnvironment('t', fetcher)).toEqual({
+    expect(await probeSecrets('t', fetcher)).toEqual({
       access: 'ok',
       secrets: ['CLOUDFLARE_API_TOKEN'],
     })
   })
 
-  it('reports a missing environment with no secrets', async () => {
+  it('reports unreadable secrets with no names', async () => {
     const { fetcher } = mockFetch({})
-    expect(await probeEnvironment('t', fetcher)).toEqual({
-      access: 'missing',
+    expect(await probeSecrets('t', fetcher)).toEqual({
+      access: 'forbidden',
       secrets: [],
-    })
-  })
-
-  it('creates the environment with PUT', async () => {
-    const { fetcher, calls } = mockFetch({
-      'PUT /repos/rat-punchers/shpd-seed-seeker/environments/web-v2': {
-        status: 200,
-        body: {},
-      },
-    })
-    expect(await createEnvironment('t', fetcher)).toEqual({
-      ok: true,
-      status: 200,
-    })
-    expect(calls[0]?.method).toBe('PUT')
-  })
-
-  it('reports a refused environment creation', async () => {
-    const { fetcher } = mockFetch({
-      'PUT /repos/rat-punchers/shpd-seed-seeker/environments/web-v2': {
-        status: 403,
-      },
-    })
-    expect(await createEnvironment('t', fetcher)).toEqual({
-      ok: false,
-      status: 403,
     })
   })
 })
