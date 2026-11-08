@@ -19,14 +19,9 @@ const PANEL_WIDTH = 320
 const PANEL_GAP = 6
 
 function accessText(item: ReportItem): string | null {
-  switch (item.accessibility.type) {
-    case 'choice':
-      return `One option of choice ${item.accessibility.group + 1}; taking it rules out the others.`
-    case 'scenarios':
-      return 'Reachable only in some of the run’s choice scenarios.'
-    default:
-      return null
-  }
+  return item.accessibility.type === 'scenarios'
+    ? 'Reachable only in some of the run’s choice scenarios.'
+    : null
 }
 
 /** Everything the report says about one item, laid out like the map's tooltip. */

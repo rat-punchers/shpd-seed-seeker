@@ -9,6 +9,7 @@ import {
 import { FloorMapCanvas } from './FloorMapCanvas'
 import {
   hasInspection,
+  inspectionKey,
   inspectPoint,
   itemBounds,
   type MapInspection,
@@ -104,7 +105,9 @@ export function InteractiveFloorMap({
       return
     }
     const next = focusAt(event.clientX, event.clientY)
-    if (inspect(next)?.cell !== inspect(hover)?.cell) setHover(next)
+    if (inspectionKey(inspect(next)) !== inspectionKey(inspect(hover))) {
+      setHover(next)
+    }
   }
 
   function onClick(event: ReactMouseEvent<HTMLElement>) {
@@ -128,7 +131,9 @@ export function InteractiveFloorMap({
       onPin(null)
       return
     }
-    onPin(inspect(pinned)?.cell === target?.cell ? null : next)
+    onPin(
+      inspectionKey(inspect(pinned)) === inspectionKey(target) ? null : next
+    )
   }
 
   const panelFocus = pinned ?? hover

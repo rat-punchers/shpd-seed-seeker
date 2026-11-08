@@ -9,6 +9,7 @@ import {
 } from '../../../src/features/level-map/client'
 import {
   hasInspection,
+  inspectionKey,
   inspectPoint,
   itemBounds,
   kindName,
@@ -132,6 +133,28 @@ describe('tile inspection', () => {
     expect(slime.description).toStartWith('Slimes are')
     expect(level.assets.map((asset) => asset.id)).toContain(slime.asset)
     expect(slime.frames.length).toBeGreaterThan(0)
+  })
+
+  it('tells a raised sprite from the bare part of its own cell', () => {
+    const level = map('AAA-AAA-AAA', 1)
+    const tile = level.scene.tileSize
+    const tip = level.itemTooltips?.find((entry) => {
+      const [, top, , height] = itemBounds(entry, level.width, tile)
+      const cellBottom = (Math.floor(entry.cell / level.width) + 1) * tile
+      return top + height < cellBottom
+    })
+    if (!tip) throw new Error('no raised sprite on floor 1')
+    const [left, top, width, height] = itemBounds(tip, level.width, tile)
+    const x = left + width / 2
+    const bare = inspectPoint(
+      level,
+      x,
+      (Math.floor(tip.cell / level.width) + 1) * tile - 1
+    )
+    const sprite = inspectPoint(level, x, top + height / 2)
+    expect(bare?.cell).toBe(sprite?.cell)
+    expect(bare?.tip).toBeUndefined()
+    expect(inspectionKey(bare)).not.toBe(inspectionKey(sprite))
   })
 
   it('describes plants with their in-game examine text and tile', () => {

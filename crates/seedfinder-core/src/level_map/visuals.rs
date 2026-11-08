@@ -242,8 +242,11 @@ fn build_layers(
         room_terrain,
         boss_terrain,
     ];
-    layers.extend(objects::layers(scene, level, contents, &mut walls, reveal));
-    layers.extend([raised, walls, room_walls, boss_walls, effects]);
+    let (objects, door_actors) = objects::layers(scene, level, contents, &mut walls, reveal);
+    layers.extend(objects);
+    layers.extend([raised, walls, room_walls, boss_walls]);
+    layers.extend(door_actors);
+    layers.push(effects);
     layers.push(darkness);
     layers
 }
@@ -336,6 +339,43 @@ mod occlusion_tests {
                     .position(|layer| layer.name == "actors" && layer.cells[cell].is_some())
                     .unwrap();
                 assert_eq!(wall < actor, behind, "occlusion at cell {cell}");
+            }
+        }
+    }
+
+    #[test]
+    fn a_mimic_in_a_doorway_draws_over_the_door_frame() {
+        let mut level = Level::new(6, Feeling::None);
+        level.set_size(5, 5);
+        level.map.cells.fill(t::EMPTY);
+        for x in 0..5 {
+            level.map.cells[2 * 5 + x] = t::WALL;
+        }
+        let door = 2 * 5 + 2;
+        level.map.cells[door] = t::DOOR;
+        for (kind, above) in [("EbonyMimic", true), ("Rat", false)] {
+            let contents = MapContents {
+                mobs: vec![MapMob {
+                    cell: door,
+                    kind: kind.into(),
+                    stealthy: kind == "EbonyMimic",
+                    sleeping: true,
+                    approximate: false,
+                    items: vec![],
+                }],
+                ..MapContents::default()
+            };
+            let scene = scene(DungeonSeed::MIN, &level, &[], MapKind::Regular, &contents);
+            for layers in [&scene.layers, &scene.concealed_layers] {
+                let walls = layers
+                    .iter()
+                    .rposition(|layer| layer.name == "walls")
+                    .unwrap();
+                let actor = layers
+                    .iter()
+                    .position(|layer| layer.name == "actors" && layer.cells[door].is_some())
+                    .unwrap();
+                assert_eq!(actor > walls, above, "{kind}");
             }
         }
     }

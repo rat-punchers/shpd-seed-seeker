@@ -41,9 +41,11 @@ pub(super) fn layers(
     contents: &MapContents,
     walls: &mut MapLayer,
     reveal: bool,
-) -> Vec<MapLayer> {
+) -> (Vec<MapLayer>, Vec<MapLayer>) {
     let mut heaps = layer("heaps", level.len());
     let mut actors: Vec<MapLayer> = vec![];
+    // A mimic disguised in a doorway reads on top of the door frame.
+    let mut door_actors: Vec<MapLayer> = vec![];
     for heap in &contents.heaps {
         if !visible(level, heap.cell) {
             continue;
@@ -210,31 +212,46 @@ pub(super) fn layers(
                 opacity,
                 None,
             );
-            // Overlapping actors must keep independent animation clocks. Pack
-            // disjoint sprites together, above any earlier overlapping actor.
-            let index = actors[actor_start..]
-                .iter()
-                .rposition(|layer| {
-                    layer
-                        .cells
-                        .iter()
-                        .zip(&target.cells)
-                        .any(|(a, b)| a.is_some() && b.is_some())
-                })
-                .map_or(actor_start, |index| actor_start + index + 1);
-            if index == actors.len() {
-                actors.push(layer("actors", level.len()));
-            }
-            for (dest, src) in actors[index].cells.iter_mut().zip(target.cells) {
-                if src.is_some() {
-                    *dest = src;
-                }
+            if mob.kind.ends_with("Mimic")
+                && matches!(
+                    level.map.cells[mob.cell],
+                    crate::geometry::terrain::DOOR
+                        | crate::geometry::terrain::OPEN_DOOR
+                        | crate::geometry::terrain::LOCKED_DOOR
+                )
+            {
+                pack(&mut door_actors, 0, target, level.len());
+            } else {
+                pack(&mut actors, actor_start, target, level.len());
             }
         }
     }
     let mut layers = vec![heaps];
     layers.extend(actors);
-    layers
+    (layers, door_actors)
+}
+
+/// Overlapping actors must keep independent animation clocks. Packs disjoint
+/// sprites together, above any earlier overlapping actor from `start` on.
+fn pack(actors: &mut Vec<MapLayer>, start: usize, target: MapLayer, len: usize) {
+    let index = actors[start..]
+        .iter()
+        .rposition(|layer| {
+            layer
+                .cells
+                .iter()
+                .zip(&target.cells)
+                .any(|(a, b)| a.is_some() && b.is_some())
+        })
+        .map_or(start, |index| start + index + 1);
+    if index == actors.len() {
+        actors.push(layer("actors", len));
+    }
+    for (dest, src) in actors[index].cells.iter_mut().zip(target.cells) {
+        if src.is_some() {
+            *dest = src;
+        }
+    }
 }
 
 pub(super) fn visible(level: &Level, cell: usize) -> bool {

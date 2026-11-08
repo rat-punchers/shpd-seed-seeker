@@ -429,7 +429,9 @@ window: `{name, description, asset, frameDurationMs, frames}`. Each frame is a
 Text comes from the same pinned English messages as item text; regenerate it
 with `python3 scripts/generate-mob-text.py`. Mimics play `MimicSprite.idle`
 rather than their hiding film so they read as mimics; a stealthy mimic keeps
-the closed chest of `advancedHiding`. A stealthy Ebony mimic is drawn at 20%
+the closed chest of `advancedHiding`. A mimic on a door cell is drawn in its
+own `actors` layers after the walls, so it reads over the door frame. A
+stealthy Ebony mimic is drawn at 20%
 opacity in `concealedLayers` and at full opacity in `layers`.
 
 The optional `plantDetails` object maps each generated plant `kind` to the

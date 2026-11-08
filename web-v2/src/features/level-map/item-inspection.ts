@@ -92,6 +92,15 @@ export function inspectPoint(
   }
 }
 
+/**
+ * Identifies what a point shows. A raised sprite does not cover its whole
+ * cell, so the same cell reads with and without its tooltip.
+ */
+export function inspectionKey(inspection: MapInspection | null): string {
+  if (!inspection) return ''
+  return `${inspection.cell}:${inspection.tip ? 'tip' : 'cell'}`
+}
+
 export function hasInspection(inspection: MapInspection | null): boolean {
   if (!inspection) return false
   return (
