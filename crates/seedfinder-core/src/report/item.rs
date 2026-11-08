@@ -18,6 +18,10 @@ pub struct Item {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub sprite_index: u16,
+    /// Type glyph source rectangle in `item_icons.png` (x, y, width, height),
+    /// drawn over the run's appearance; potions and scrolls only.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<[u16; 4]>,
     pub upgrade: u8,
     pub effect: Option<ItemEffect>,
     pub cursed: bool,
@@ -164,6 +168,7 @@ impl Item {
             category: kind_name(definition.kind).to_owned(),
             description: description(definition.stable_id),
             sprite_index: definition.sprite_index,
+            icon: None,
             upgrade: world_item.upgrade,
             effect: world_item.effect.map(effect),
             cursed: world_item.cursed,

@@ -68,7 +68,7 @@ JavaScript error carrying the message.
 | `sections` | string[] | Filled sections, in the order of the table above. |
 | `seed` | object | `code` (`XXX-XXX-XXX` or the daily date), `value` (the numeric seed), `daily`. |
 | `query` | object | Present only with a request query: `matchedRequirements`, `totalRequirements`. |
-| `identities` | object | `scrolls`, `potions`, `rings`: twelve `{name, appearance, spriteIndex}` each, in the game's class order. |
+| `identities` | object | `scrolls`, `potions`, `rings`: twelve `{name, appearance, spriteIndex, icon?}` each, in the game's class order. `icon` is the class's type glyph in `item_icons.png`, `[x, y, width, height]`, drawn over the appearance at its upper right. |
 | `ringGems` | number[12] | The gem each ring class is drawn with, in catalog ring order, as in `scout`. |
 | `trinkets` | object | See below. |
 | `floors` | object[] | Floors 1–24 in depth order. See below. |
@@ -103,7 +103,10 @@ JavaScript error carrying the message.
   (`{type: "independent"}`, `{type: "choice", group, option}` or `{type:
   "scenarios", group, mask}`, `mask` as `0x…` hex), `matched`, `resinDonor`,
   `excluded`. Optional `description` is the game's examine text, the same
-  text the level map's item tooltips show; it is not a `scout` field. With
+  text the level map's item tooltips show; it is not a `scout` field.
+  Optional `icon` is a potion's or scroll's type glyph in `item_icons.png`,
+  `[x, y, width, height]`. The Magical Catalyst is listed as
+  `trinket_catalyst`, not as its offers. With
   `allItems` ([seed-report-items.md](seed-report-items.md)):
   - `prediction`: `exact`, `constrained` or `variable`.
   - `conditions`: any of `{type: "challenge", challenge, enabled}`,

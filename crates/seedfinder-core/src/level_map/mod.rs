@@ -10,8 +10,8 @@ mod item_text;
 mod item_tooltips;
 #[cfg(feature = "json-query")]
 mod mob_text;
-pub(crate) use item_tooltips::item_description;
 pub use item_tooltips::{MapItemTooltip, MapTooltipItem};
+pub(crate) use item_tooltips::{item_description, item_icon};
 mod glow;
 pub use contents::{MapContents, MapEffect, MapFeature, MapHeap, MapItem, MapMob, MapPlant};
 pub use glow::MapGlow;

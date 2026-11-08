@@ -44,7 +44,7 @@ pub use trinket::{ArtifactDeck, ItemRef, TrinketTiming, Trinkets};
 use std::collections::BTreeMap;
 
 use crate::catalog::ItemId;
-use crate::model::{self, GeneratedWorld, WorldItem};
+use crate::model::{GeneratedWorld, WorldItem};
 use crate::query::{ScoutMatches, SearchQuery, scout_matches};
 use observe::{Observed, PlacedItem};
 
@@ -159,6 +159,9 @@ pub struct Identity {
     pub name: String,
     pub appearance: String,
     pub sprite_index: u16,
+    /// The class's type glyph in `item_icons.png` (x, y, width, height).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<[u16; 4]>,
 }
 
 /// Builds the report from a scout-profile replay. `selected` is the trinket
@@ -177,7 +180,7 @@ fn build(observed: &Observed, selected: Option<ItemId>, query: Option<&SearchQue
             .filter(|floor| floor.trinket_active)
             .map(|floor| floor.depth)
             .collect(),
-        group_options: group_options(&world.items),
+        group_options: predict::group_options(&world.items),
     };
     let mut stacks: BTreeMap<u8, Vec<&PlacedItem>> = BTreeMap::new();
     for floor in &observed.floors {
@@ -190,8 +193,13 @@ fn build(observed: &Observed, selected: Option<ItemId>, query: Option<&SearchQue
     }
     let mut items = Vec::new();
     for (index, world_item) in world.items.iter().enumerate() {
-        let mut item = item::Item::from_world(world_item, item_marks(marks.as_ref(), index));
-        let quantity = stack_size(&mut stacks, world_item);
+        let item_marks = item_marks(marks.as_ref(), index);
+        let Some(world_item) = trinket::listed_world_item(world_item, item_marks, &mut items)
+        else {
+            continue;
+        };
+        let mut item = item::Item::from_world(&world_item, item_marks);
+        let quantity = stack_size(&mut stacks, &world_item);
         predict::annotate(&mut item, true, quantity, &context);
         items.push(item);
     }
@@ -239,20 +247,8 @@ fn build(observed: &Observed, selected: Option<ItemId>, query: Option<&SearchQue
     }
 }
 
-/// Options per choice group: one more than its largest option number.
-fn group_options(items: &[WorldItem]) -> BTreeMap<u16, u8> {
-    let mut options = BTreeMap::new();
-    for item in items {
-        if let model::Accessibility::Choice { group, option } = item.accessibility {
-            let count = options.entry(group).or_insert(0_u8);
-            *count = (*count).max(option.saturating_add(1));
-        }
-    }
-    options
-}
-
 /// The stack size of a world item's heap or carried copy on its floor. Items
-/// that lie in no heap (quest rewards, sacrificial prizes, trinket offers,
+/// that lie in no heap (quest rewards, sacrificial prizes, the Catalyst,
 /// vault treasure, the depth-20 shop) count one, except thrown weapons,
 /// whose stack size is then unknown.
 fn stack_size(stacks: &mut BTreeMap<u8, Vec<&PlacedItem>>, world_item: &WorldItem) -> Option<u32> {
@@ -289,6 +285,7 @@ fn identities(world: &GeneratedWorld) -> Identities {
                 name: entry.name.to_owned(),
                 appearance: entry.appearance.to_owned(),
                 sprite_index: entry.sprite_index,
+                icon: crate::level_map::item_icon(entry.name),
             })
             .collect()
     };

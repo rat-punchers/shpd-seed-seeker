@@ -15,8 +15,10 @@ hourglass is taken, so its later shops can differ). It covers:
   `PrisonBossLevel` always drops on floor 10;
 - the depth-20 Imp shop stock, which the game generates with that floor;
 - equipment that lies in no heap, as in `scout`: quest rewards, sacrificial
-  fire prizes, the Trinket Catalyst's four offers (the catalyst itself is not
-  listed again) and the Imp's vault treasure.
+  fire prizes, the Magical Catalyst (`trinket_catalyst`, category `trinket`,
+  listed once in place of its four offers, which are in `trinkets.offers`;
+  its `matched`, `resinDonor` and `excluded` marks join those of the offers)
+  and the Imp's vault treasure.
 
 The Blacksmith mines and the rest of the Imp's vault are not listed.
 
@@ -32,7 +34,10 @@ Items other than equipment have:
 - `category`: `potion`, `scroll`, `stone`, `seed`, `food`, `gold`, `key`,
   `missile` (plain darts) or `other`.
 - `spriteIndex`: the sprite this run draws, so potions and scrolls show the
-  run's appearance. `upgrade` 0, `effect` `null`, `cursed` false.
+  run's appearance. `icon` (potions and scrolls, exotic ones included):
+  the class's type glyph as `[x, y, width, height]` in `item_icons.png`,
+  drawn over the appearance at its upper right, as the level map's `icon`.
+  `upgrade` 0, `effect` `null`, `cursed` false.
 - `source`: the heap (`heap`, `chest`, `locked_chest`, `crystal_chest`,
   `tomb`, `skeleton`, `shop`) or carrier (`mimic`, `golden_mimic`,
   `crystal_mimic`, `statue`, `armored_statue`). `secret`: inside a secret
@@ -55,8 +60,6 @@ Items other than equipment have:
     vault. Vault treasure carries the Imp's quest and choice too.
   - The depth-20 shop: `{type: "quest", quest: "imp"}`; it opens when the
     Imp quest is done.
-  - The Catalyst's offers: `{type: "choice", group: "trinket_catalyst",
-    optionCount: 4, selectedCount: 1}`.
   - Sacrificial fire prizes: `{type: "runtime", state: "sacrificial_fire"}`.
   - With a selected trinket this engine models in generation (Parchment
     Scrap, Mimic Tooth, Rat Skull, Cracked Spyglass, Exotic Crystals, Trap

@@ -9,6 +9,7 @@ use std::collections::BTreeMap;
 use super::item::{Accessibility, Condition, Item, Prediction, Range, Ranges, TrinketEvent};
 use super::quest::Quest;
 use crate::catalog::{ItemId, ItemKind, item_by_stable_id};
+use crate::model::{self, WorldItem};
 
 /// Trinkets this engine models in floor generation. Any other trinket leaves
 /// the generated floors unchanged here.
@@ -31,6 +32,18 @@ pub(super) struct Context<'a> {
     pub trinket_depths: Vec<u8>,
     /// Options per choice group, from the largest option number.
     pub group_options: BTreeMap<u16, u8>,
+}
+
+/// Options per choice group: one more than its largest option number.
+pub(super) fn group_options(items: &[WorldItem]) -> BTreeMap<u16, u8> {
+    let mut options = BTreeMap::new();
+    for item in items {
+        if let model::Accessibility::Choice { group, option } = item.accessibility {
+            let count = options.entry(group).or_insert(0_u8);
+            *count = (*count).max(option.saturating_add(1));
+        }
+    }
+    options
 }
 
 /// Fills the `allItems` fields. `deterministic` is false when play or
@@ -56,14 +69,6 @@ pub(super) fn annotate(
         });
     }
     quest_conditions(item, context, &mut conditions);
-    if item.category == "trinket" {
-        conditions.push(Condition::Choice {
-            group: "trinket_catalyst".to_owned(),
-            option_count: u8::try_from(crate::trinkets::INITIAL_OFFER_COUNT).unwrap_or(u8::MAX),
-            selected_count: 1,
-            favor_requirement: None,
-        });
-    }
     if let Some(state) = runtime_state(item, deterministic) {
         conditions.push(Condition::Runtime {
             state: state.to_owned(),

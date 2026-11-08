@@ -34,186 +34,402 @@
       {
         "name": "Scroll of upgrade",
         "appearance": "KAUNAN",
-        "spriteIndex": 304
+        "spriteIndex": 304,
+        "icon": [
+          0,
+          16,
+          7,
+          7
+        ]
       },
       {
         "name": "Scroll of identify",
         "appearance": "LAGUZ",
-        "spriteIndex": 306
+        "spriteIndex": 306,
+        "icon": [
+          8,
+          16,
+          4,
+          7
+        ]
       },
       {
         "name": "Scroll of remove curse",
         "appearance": "ISAZ",
-        "spriteIndex": 310
+        "spriteIndex": 310,
+        "icon": [
+          16,
+          16,
+          7,
+          7
+        ]
       },
       {
         "name": "Scroll of mirror image",
         "appearance": "MANNAZ",
-        "spriteIndex": 311
+        "spriteIndex": 311,
+        "icon": [
+          24,
+          16,
+          7,
+          5
+        ]
       },
       {
         "name": "Scroll of recharging",
         "appearance": "NAUDIZ",
-        "spriteIndex": 312
+        "spriteIndex": 312,
+        "icon": [
+          32,
+          16,
+          7,
+          5
+        ]
       },
       {
         "name": "Scroll of teleportation",
         "appearance": "TIWAZ",
-        "spriteIndex": 315
+        "spriteIndex": 315,
+        "icon": [
+          40,
+          16,
+          7,
+          7
+        ]
       },
       {
         "name": "Scroll of lullaby",
         "appearance": "RAIDO",
-        "spriteIndex": 309
+        "spriteIndex": 309,
+        "icon": [
+          48,
+          16,
+          7,
+          6
+        ]
       },
       {
         "name": "Scroll of magic mapping",
         "appearance": "BERKANAN",
-        "spriteIndex": 313
+        "spriteIndex": 313,
+        "icon": [
+          56,
+          16,
+          7,
+          7
+        ]
       },
       {
         "name": "Scroll of rage",
         "appearance": "YNGVI",
-        "spriteIndex": 307
+        "spriteIndex": 307,
+        "icon": [
+          64,
+          16,
+          6,
+          6
+        ]
       },
       {
         "name": "Scroll of retribution",
         "appearance": "SOWILO",
-        "spriteIndex": 305
+        "spriteIndex": 305,
+        "icon": [
+          72,
+          16,
+          5,
+          6
+        ]
       },
       {
         "name": "Scroll of terror",
         "appearance": "ODAL",
-        "spriteIndex": 314
+        "spriteIndex": 314,
+        "icon": [
+          80,
+          16,
+          5,
+          7
+        ]
       },
       {
         "name": "Scroll of transmutation",
         "appearance": "GYFU",
-        "spriteIndex": 308
+        "spriteIndex": 308,
+        "icon": [
+          88,
+          16,
+          7,
+          7
+        ]
       }
     ],
     "potions": [
       {
         "name": "Potion of strength",
         "appearance": "Crimson",
-        "spriteIndex": 352
+        "spriteIndex": 352,
+        "icon": [
+          0,
+          40,
+          7,
+          7
+        ]
       },
       {
         "name": "Potion of healing",
         "appearance": "Indigo",
-        "spriteIndex": 358
+        "spriteIndex": 358,
+        "icon": [
+          8,
+          40,
+          6,
+          7
+        ]
       },
       {
         "name": "Potion of mind vision",
         "appearance": "Turquoise",
-        "spriteIndex": 356
+        "spriteIndex": 356,
+        "icon": [
+          16,
+          40,
+          7,
+          5
+        ]
       },
       {
         "name": "Potion of frost",
         "appearance": "Charcoal",
-        "spriteIndex": 361
+        "spriteIndex": 361,
+        "icon": [
+          24,
+          40,
+          7,
+          7
+        ]
       },
       {
         "name": "Potion of liquid flame",
         "appearance": "Magenta",
-        "spriteIndex": 359
+        "spriteIndex": 359,
+        "icon": [
+          32,
+          40,
+          5,
+          7
+        ]
       },
       {
         "name": "Potion of toxic gas",
         "appearance": "Amber",
-        "spriteIndex": 353
+        "spriteIndex": 353,
+        "icon": [
+          40,
+          40,
+          7,
+          7
+        ]
       },
       {
         "name": "Potion of haste",
         "appearance": "Ivory",
-        "spriteIndex": 363
+        "spriteIndex": 363,
+        "icon": [
+          48,
+          40,
+          6,
+          6
+        ]
       },
       {
         "name": "Potion of invisibility",
         "appearance": "Golden",
-        "spriteIndex": 354
+        "spriteIndex": 354,
+        "icon": [
+          56,
+          40,
+          5,
+          7
+        ]
       },
       {
         "name": "Potion of levitation",
         "appearance": "Silver",
-        "spriteIndex": 362
+        "spriteIndex": 362,
+        "icon": [
+          64,
+          40,
+          6,
+          7
+        ]
       },
       {
         "name": "Potion of paralytic gas",
         "appearance": "Azure",
-        "spriteIndex": 357
+        "spriteIndex": 357,
+        "icon": [
+          72,
+          40,
+          7,
+          7
+        ]
       },
       {
         "name": "Potion of purity",
         "appearance": "Jade",
-        "spriteIndex": 355
+        "spriteIndex": 355,
+        "icon": [
+          80,
+          40,
+          5,
+          7
+        ]
       },
       {
         "name": "Potion of experience",
         "appearance": "Bistre",
-        "spriteIndex": 360
+        "spriteIndex": 360,
+        "icon": [
+          88,
+          40,
+          7,
+          7
+        ]
       }
     ],
     "rings": [
       {
         "name": "Ring of accuracy",
         "appearance": "Ruby",
-        "spriteIndex": 225
+        "spriteIndex": 225,
+        "icon": [
+          0,
+          0,
+          7,
+          7
+        ]
       },
       {
         "name": "Ring of arcana",
         "appearance": "Quartz",
-        "spriteIndex": 233
+        "spriteIndex": 233,
+        "icon": [
+          8,
+          0,
+          7,
+          7
+        ]
       },
       {
         "name": "Ring of elements",
         "appearance": "Tourmaline",
-        "spriteIndex": 230
+        "spriteIndex": 230,
+        "icon": [
+          16,
+          0,
+          7,
+          7
+        ]
       },
       {
         "name": "Ring of energy",
         "appearance": "Onyx",
-        "spriteIndex": 228
+        "spriteIndex": 228,
+        "icon": [
+          24,
+          0,
+          7,
+          5
+        ]
       },
       {
         "name": "Ring of evasion",
         "appearance": "Sapphire",
-        "spriteIndex": 231
+        "spriteIndex": 231,
+        "icon": [
+          32,
+          0,
+          7,
+          7
+        ]
       },
       {
         "name": "Ring of force",
         "appearance": "Garnet",
-        "spriteIndex": 224
+        "spriteIndex": 224,
+        "icon": [
+          40,
+          0,
+          5,
+          6
+        ]
       },
       {
         "name": "Ring of furor",
         "appearance": "Agate",
-        "spriteIndex": 234
+        "spriteIndex": 234,
+        "icon": [
+          48,
+          0,
+          7,
+          6
+        ]
       },
       {
         "name": "Ring of haste",
         "appearance": "Diamond",
-        "spriteIndex": 235
+        "spriteIndex": 235,
+        "icon": [
+          56,
+          0,
+          6,
+          6
+        ]
       },
       {
         "name": "Ring of might",
         "appearance": "Topaz",
-        "spriteIndex": 226
+        "spriteIndex": 226,
+        "icon": [
+          64,
+          0,
+          7,
+          7
+        ]
       },
       {
         "name": "Ring of sharpshooting",
         "appearance": "Amethyst",
-        "spriteIndex": 232
+        "spriteIndex": 232,
+        "icon": [
+          72,
+          0,
+          7,
+          7
+        ]
       },
       {
         "name": "Ring of tenacity",
         "appearance": "Opal",
-        "spriteIndex": 229
+        "spriteIndex": 229,
+        "icon": [
+          80,
+          0,
+          6,
+          6
+        ]
       },
       {
         "name": "Ring of wealth",
         "appearance": "Emerald",
-        "spriteIndex": 227
+        "spriteIndex": 227,
+        "icon": [
+          88,
+          0,
+          7,
+          6
+        ]
       }
     ]
   },
@@ -2460,6 +2676,12 @@
           "category": "scroll",
           "description": "When read aloud, this scroll will unleash a great roar that draws all enemies to the reader, and enrages nearby ones.",
           "spriteIndex": 307,
+          "icon": [
+            64,
+            16,
+            6,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -2514,6 +2736,12 @@
           "category": "potion",
           "description": "Drinking this potion will render you temporarily invisible. While invisible, enemies will be unable to see you. Physical attacks and magical effects (such as scrolls and wands) will immediately cancel invisibility.",
           "spriteIndex": 354,
+          "icon": [
+            56,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -2771,6 +2999,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -2798,6 +3032,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -2879,6 +3119,12 @@
           "category": "potion",
           "description": "After drinking this, your mind will become attuned to the psychic signature of distant creatures, enabling you to sense biological presences through walls. Also this potion will permit you to see through nearby walls and doors.",
           "spriteIndex": 356,
+          "icon": [
+            16,
+            40,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3068,6 +3314,12 @@
           "category": "scroll",
           "description": "The raw magical power bound up in this parchment will charge up all the user's wands over time when released.",
           "spriteIndex": 312,
+          "icon": [
+            32,
+            16,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3095,6 +3347,12 @@
           "category": "potion",
           "description": "Uncorking or shattering this pressurized glass will cause its contents to explode into a deadly cloud of toxic green gas. You might choose to fling this potion at distant enemies instead of uncorking it by hand.",
           "spriteIndex": 353,
+          "icon": [
+            40,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3122,6 +3380,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3176,6 +3440,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3230,6 +3500,12 @@
           "category": "potion",
           "description": "The chemical contained in this potion will evaporate into a freezing cloud upon exposure to open air.",
           "spriteIndex": 361,
+          "icon": [
+            24,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3257,6 +3533,12 @@
           "category": "potion",
           "description": "Drinking this curious liquid will cause you to hover in the air, able to drift effortlessly over traps and pits. Throwing this potion will create a cloud of unrefined gas, disorienting anything caught in it.",
           "spriteIndex": 362,
+          "icon": [
+            64,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3588,11 +3870,11 @@
           }
         },
         {
-          "id": "dimensional_sundial",
-          "name": "Dimensional Sundial",
+          "id": "trinket_catalyst",
+          "name": "Magical catalyst",
           "category": "trinket",
-          "description": "This small handheld sundial is somehow able to cast a shadow in the depths of the dungeon, even if you aren't holding it upright. Even more strangely, the shadow's position seems to have no relation to the sun in this world. When no shadow is cast, the sundial seems to attract danger.",
-          "spriteIndex": 277,
+          "description": "This ball of magical golden dust glimmers in the darkness of the dungeon. This catalyst can be used at an alchemy pot with a little alchemical energy to produce a unique trinket item.\n\nTrinkets provide various different effects that slightly alter the dungeon or its inhabitants. Trinkets can be upgraded with more energy to make their effect more powerful, or dropped to forego the effect entirely.",
+          "spriteIndex": 70,
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3605,117 +3887,8 @@
           "matched": false,
           "resinDonor": false,
           "excluded": false,
-          "prediction": "constrained",
-          "conditions": [
-            {
-              "type": "choice",
-              "group": "trinket_catalyst",
-              "optionCount": 4,
-              "selectedCount": 1
-            }
-          ],
-          "ranges": {
-            "quantity": {
-              "min": 1,
-              "max": 1
-            }
-          }
-        },
-        {
-          "id": "mimic_tooth",
-          "name": "Mimic Tooth",
-          "category": "trinket",
-          "description": "This large sharp tooth must have been pulled from a very unhappy mimic. It seems to be influencing the mimics of the dungeon, making them more frequent and dangerous.",
-          "spriteIndex": 280,
-          "upgrade": 0,
-          "effect": null,
-          "cursed": false,
-          "secret": false,
-          "depth": 3,
-          "source": "locked_chest",
-          "accessibility": {
-            "type": "independent"
-          },
-          "matched": false,
-          "resinDonor": false,
-          "excluded": false,
-          "prediction": "constrained",
-          "conditions": [
-            {
-              "type": "choice",
-              "group": "trinket_catalyst",
-              "optionCount": 4,
-              "selectedCount": 1
-            }
-          ],
-          "ranges": {
-            "quantity": {
-              "min": 1,
-              "max": 1
-            }
-          }
-        },
-        {
-          "id": "parchment_scrap",
-          "name": "Parchment Scrap",
-          "category": "trinket",
-          "description": "This little scrap of parchment looks like it came from a scroll. It has retained some of its magic, and it seems to be influencing weapons and armor found in the dungeon.",
-          "spriteIndex": 273,
-          "upgrade": 0,
-          "effect": null,
-          "cursed": false,
-          "secret": false,
-          "depth": 3,
-          "source": "locked_chest",
-          "accessibility": {
-            "type": "independent"
-          },
-          "matched": false,
-          "resinDonor": false,
-          "excluded": false,
-          "prediction": "constrained",
-          "conditions": [
-            {
-              "type": "choice",
-              "group": "trinket_catalyst",
-              "optionCount": 4,
-              "selectedCount": 1
-            }
-          ],
-          "ranges": {
-            "quantity": {
-              "min": 1,
-              "max": 1
-            }
-          }
-        },
-        {
-          "id": "thirteen_leaf_clover",
-          "name": "Thirteen Leaf Clover",
-          "category": "trinket",
-          "description": "Somehow stewing in the alchemy pot has caused this clover to grow a bunch of extra leaves! It's not really clear if this trinket is lucky or unlucky, perhaps this trinket will make your luck more chaotic?",
-          "spriteIndex": 278,
-          "upgrade": 0,
-          "effect": null,
-          "cursed": false,
-          "secret": false,
-          "depth": 3,
-          "source": "locked_chest",
-          "accessibility": {
-            "type": "independent"
-          },
-          "matched": false,
-          "resinDonor": false,
-          "excluded": false,
-          "prediction": "constrained",
-          "conditions": [
-            {
-              "type": "choice",
-              "group": "trinket_catalyst",
-              "optionCount": 4,
-              "selectedCount": 1
-            }
-          ],
+          "prediction": "exact",
+          "conditions": [],
           "ranges": {
             "quantity": {
               "min": 1,
@@ -3810,6 +3983,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3864,6 +4043,12 @@
           "category": "potion",
           "description": "Drinking this curious liquid will cause you to hover in the air, able to drift effortlessly over traps and pits. Throwing this potion will create a cloud of unrefined gas, disorienting anything caught in it.",
           "spriteIndex": 362,
+          "icon": [
+            64,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3935,6 +4120,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -3989,6 +4180,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -4016,6 +4213,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -4070,6 +4273,12 @@
           "category": "potion",
           "description": "This flask contains an unstable compound which will burst violently into flame upon exposure to open air.",
           "spriteIndex": 359,
+          "icon": [
+            32,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -4232,6 +4441,12 @@
           "category": "potion",
           "description": "Upon exposure to open air, the liquid in this flask will vaporize into a numbing yellow haze. Anyone who inhales the cloud will be paralyzed instantly, unable to move for some time after the cloud dissipates. This item can be thrown at distant enemies to catch them within the effect of the gas.",
           "spriteIndex": 357,
+          "icon": [
+            72,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -4259,6 +4474,12 @@
           "category": "potion",
           "description": "This flask contains an unstable compound which will burst violently into flame upon exposure to open air.",
           "spriteIndex": 359,
+          "icon": [
+            32,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5101,6 +5322,12 @@
           "category": "potion",
           "description": "Drinking this potion will render you temporarily invisible. While invisible, enemies will be unable to see you. Physical attacks and magical effects (such as scrolls and wands) will immediately cancel invisibility.",
           "spriteIndex": 354,
+          "icon": [
+            56,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5128,6 +5355,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5182,6 +5415,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5209,6 +5448,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5403,6 +5648,12 @@
           "category": "scroll",
           "description": "When this scroll is read, an image of crystal clarity will be etched into your memory, alerting you to the precise layout of the level and revealing all hidden secrets. The locations of items and creatures will remain unknown.",
           "spriteIndex": 313,
+          "icon": [
+            56,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5430,6 +5681,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5457,6 +5714,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5484,6 +5747,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will create two illusory twins of the reader. These mirror images act as weaker clones of the reader, and will chase down their enemies. They have no durability however, and will fade upon taking damage.",
           "spriteIndex": 311,
+          "icon": [
+            24,
+            16,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5781,6 +6050,12 @@
           "category": "scroll",
           "description": "Reading this scroll emits a soothing melody which will lull all who hear it into a deep magical sleep. For the reader and their allies the sleep is restorative.",
           "spriteIndex": 309,
+          "icon": [
+            48,
+            16,
+            7,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5862,6 +6137,12 @@
           "category": "potion",
           "description": "The storied experiences of multitudes of battles reduced to liquid form, this draught will instantly raise your experience level.",
           "spriteIndex": 360,
+          "icon": [
+            88,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5916,6 +6197,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -5997,6 +6284,12 @@
           "category": "potion",
           "description": "Drinking this oddly sweet liquid will imbue you with tremendous energy for a short time, allowing you to run at high speeds.",
           "spriteIndex": 363,
+          "icon": [
+            48,
+            40,
+            6,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -6374,6 +6667,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -6401,6 +6700,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -6428,6 +6733,12 @@
           "category": "scroll",
           "description": "This scroll contains powerful transmutation magic. When used on an eligible item it will transform it into a different item of the same type. The magic will even preserve upgrades, enchantments, and glyphs. Scrolls and potions will be transmuted into their exotic equivalent, and vice-versa.",
           "spriteIndex": 308,
+          "icon": [
+            88,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -6509,6 +6820,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -6563,6 +6880,12 @@
           "category": "scroll",
           "description": "When this scroll is read, an image of crystal clarity will be etched into your memory, alerting you to the precise layout of the level and revealing all hidden secrets. The locations of items and creatures will remain unknown.",
           "spriteIndex": 313,
+          "icon": [
+            56,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -6590,6 +6913,12 @@
           "category": "potion",
           "description": "Drinking this oddly sweet liquid will imbue you with tremendous energy for a short time, allowing you to run at high speeds.",
           "spriteIndex": 363,
+          "icon": [
+            48,
+            40,
+            6,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -6644,6 +6973,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -6725,6 +7060,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -6971,6 +7312,12 @@
           "category": "scroll",
           "description": "This scroll contains destructive energy which channels the reader's suffering outward into a blast of power. The weaker the reader is, the more damage they will deal. At very low health this scroll can kill most enemies instantly.\n\nUsing the scroll takes a toll on the user however, blinding and weakening them.",
           "spriteIndex": 305,
+          "icon": [
+            72,
+            16,
+            5,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -7000,6 +7347,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will create two illusory twins of the reader. These mirror images act as weaker clones of the reader, and will chase down their enemies. They have no durability however, and will fade upon taking damage.",
           "spriteIndex": 311,
+          "icon": [
+            24,
+            16,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -7029,6 +7382,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -7112,6 +7471,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -7139,6 +7504,12 @@
           "category": "potion",
           "description": "The chemical contained in this potion will evaporate into a freezing cloud upon exposure to open air.",
           "spriteIndex": 361,
+          "icon": [
+            24,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -7193,6 +7564,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -7443,6 +7820,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -7470,6 +7853,12 @@
           "category": "potion",
           "description": "This magical reagent will quickly neutralize all harmful area-bound effects in a large area. Drinking it will give you temporary immunity to such effects.",
           "spriteIndex": 355,
+          "icon": [
+            80,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -7497,6 +7886,12 @@
           "category": "potion",
           "description": "This flask contains an unstable compound which will burst violently into flame upon exposure to open air.",
           "spriteIndex": 359,
+          "icon": [
+            32,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -7551,6 +7946,12 @@
           "category": "potion",
           "description": "After drinking this, your mind will become attuned to the psychic signature of distant creatures, enabling you to sense biological presences through walls. Also this potion will permit you to see through nearby walls and doors.",
           "spriteIndex": 356,
+          "icon": [
+            16,
+            40,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8053,6 +8454,12 @@
           "category": "scroll",
           "description": "When this scroll is read, an image of crystal clarity will be etched into your memory, alerting you to the precise layout of the level and revealing all hidden secrets. The locations of items and creatures will remain unknown.",
           "spriteIndex": 313,
+          "icon": [
+            56,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8161,6 +8568,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8188,6 +8601,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8215,6 +8634,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8301,6 +8726,12 @@
           "category": "potion",
           "description": "This flask contains an unstable compound which will burst violently into flame upon exposure to open air.",
           "spriteIndex": 359,
+          "icon": [
+            32,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8355,6 +8786,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8382,6 +8819,12 @@
           "category": "potion",
           "description": "Drinking this oddly sweet liquid will imbue you with tremendous energy for a short time, allowing you to run at high speeds.",
           "spriteIndex": 363,
+          "icon": [
+            48,
+            40,
+            6,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8409,6 +8852,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8436,6 +8885,12 @@
           "category": "potion",
           "description": "Drinking this curious liquid will cause you to hover in the air, able to drift effortlessly over traps and pits. Throwing this potion will create a cloud of unrefined gas, disorienting anything caught in it.",
           "spriteIndex": 362,
+          "icon": [
+            64,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8463,6 +8918,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8492,6 +8953,12 @@
           "category": "scroll",
           "description": "The raw magical power bound up in this parchment will charge up all the user's wands over time when released.",
           "spriteIndex": 312,
+          "icon": [
+            32,
+            16,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8521,6 +8988,12 @@
           "category": "potion",
           "description": "Drinking this potion will render you temporarily invisible. While invisible, enemies will be unable to see you. Physical attacks and magical effects (such as scrolls and wands) will immediately cancel invisibility.",
           "spriteIndex": 354,
+          "icon": [
+            56,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8550,6 +9023,12 @@
           "category": "scroll",
           "description": "The spell on this parchment instantly transports the reader to a different location on the dungeon level. The scroll prioritizes areas the reader hasn't been to before, though it is not able to teleport past locked doors or barricades. It can, however, reveal hidden doors that lead to new areas.",
           "spriteIndex": 315,
+          "icon": [
+            40,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8579,6 +9058,12 @@
           "category": "potion",
           "description": "The storied experiences of multitudes of battles reduced to liquid form, this draught will instantly raise your experience level.",
           "spriteIndex": 360,
+          "icon": [
+            88,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8608,6 +9093,12 @@
           "category": "scroll",
           "description": "When read, this scroll will emit a flash of red light that will overwhelm all enemies in your field of view with terror, and they will turn and flee. Attacking a fleeing enemy will shorten the effect.",
           "spriteIndex": 314,
+          "icon": [
+            80,
+            16,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8664,6 +9155,12 @@
           "category": "potion",
           "description": "After drinking this, your mind will become attuned to the psychic signature of distant creatures, enabling you to sense biological presences through walls. Also this potion will permit you to see through nearby walls and doors.",
           "spriteIndex": 356,
+          "icon": [
+            16,
+            40,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8907,6 +9404,12 @@
           "category": "scroll",
           "description": "The spell on this parchment instantly transports the reader to a different location on the dungeon level. The scroll prioritizes areas the reader hasn't been to before, though it is not able to teleport past locked doors or barricades. It can, however, reveal hidden doors that lead to new areas.",
           "spriteIndex": 315,
+          "icon": [
+            40,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -8934,6 +9437,12 @@
           "category": "potion",
           "description": "This magical reagent will quickly neutralize all harmful area-bound effects in a large area. Drinking it will give you temporary immunity to such effects.",
           "spriteIndex": 355,
+          "icon": [
+            80,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -9015,6 +9524,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -9042,6 +9557,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -9586,6 +10107,12 @@
           "category": "potion",
           "description": "After drinking this, your mind will become attuned to the psychic signature of distant creatures, enabling you to sense biological presences through walls. Also this potion will permit you to see through nearby walls and doors.",
           "spriteIndex": 356,
+          "icon": [
+            16,
+            40,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -9640,6 +10167,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -9721,6 +10254,12 @@
           "category": "potion",
           "description": "Drinking this potion will render you temporarily invisible. While invisible, enemies will be unable to see you. Physical attacks and magical effects (such as scrolls and wands) will immediately cancel invisibility.",
           "spriteIndex": 354,
+          "icon": [
+            56,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -9748,6 +10287,12 @@
           "category": "potion",
           "description": "This flask contains an unstable compound which will burst violently into flame upon exposure to open air.",
           "spriteIndex": 359,
+          "icon": [
+            32,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -10151,6 +10696,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -10178,6 +10729,12 @@
           "category": "potion",
           "description": "After drinking this, your mind will become attuned to the psychic signature of distant creatures, enabling you to sense biological presences through walls. Also this potion will permit you to see through nearby walls and doors.",
           "spriteIndex": 356,
+          "icon": [
+            16,
+            40,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -10205,6 +10762,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -10394,6 +10957,12 @@
           "category": "scroll",
           "description": "When read aloud, this scroll will unleash a great roar that draws all enemies to the reader, and enrages nearby ones.",
           "spriteIndex": 307,
+          "icon": [
+            64,
+            16,
+            6,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -10421,6 +10990,12 @@
           "category": "potion",
           "description": "Drinking this oddly sweet liquid will imbue you with tremendous energy for a short time, allowing you to run at high speeds.",
           "spriteIndex": 363,
+          "icon": [
+            48,
+            40,
+            6,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -10502,6 +11077,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -10529,6 +11110,12 @@
           "category": "potion",
           "description": "The chemical contained in this potion will evaporate into a freezing cloud upon exposure to open air.",
           "spriteIndex": 361,
+          "icon": [
+            24,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -10760,6 +11347,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -10895,6 +11488,12 @@
           "category": "potion",
           "description": "This magical reagent will quickly neutralize all harmful area-bound effects in a large area. Drinking it will give you temporary immunity to such effects.",
           "spriteIndex": 355,
+          "icon": [
+            80,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11287,6 +11886,12 @@
           "category": "potion",
           "description": "After drinking this, your mind will become attuned to the psychic signature of distant creatures, enabling you to sense biological presences through walls. Also this potion will permit you to see through nearby walls and doors.",
           "spriteIndex": 356,
+          "icon": [
+            16,
+            40,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11314,6 +11919,12 @@
           "category": "scroll",
           "description": "The spell on this parchment instantly transports the reader to a different location on the dungeon level. The scroll prioritizes areas the reader hasn't been to before, though it is not able to teleport past locked doors or barricades. It can, however, reveal hidden doors that lead to new areas.",
           "spriteIndex": 315,
+          "icon": [
+            40,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11368,6 +11979,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11395,6 +12012,12 @@
           "category": "scroll",
           "description": "When this scroll is read, an image of crystal clarity will be etched into your memory, alerting you to the precise layout of the level and revealing all hidden secrets. The locations of items and creatures will remain unknown.",
           "spriteIndex": 313,
+          "icon": [
+            56,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11422,6 +12045,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11530,6 +12159,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11611,6 +12246,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11670,6 +12311,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11778,6 +12425,12 @@
           "category": "potion",
           "description": "The chemical contained in this potion will evaporate into a freezing cloud upon exposure to open air.",
           "spriteIndex": 361,
+          "icon": [
+            24,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11832,6 +12485,12 @@
           "category": "scroll",
           "description": "When read, this scroll will emit a flash of red light that will overwhelm all enemies in your field of view with terror, and they will turn and flee. Attacking a fleeing enemy will shorten the effect.",
           "spriteIndex": 314,
+          "icon": [
+            80,
+            16,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11886,6 +12545,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -11940,6 +12605,12 @@
           "category": "potion",
           "description": "Drinking this curious liquid will cause you to hover in the air, able to drift effortlessly over traps and pits. Throwing this potion will create a cloud of unrefined gas, disorienting anything caught in it.",
           "spriteIndex": 362,
+          "icon": [
+            64,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12153,6 +12824,12 @@
           "category": "potion",
           "description": "After drinking this, your mind will become attuned to the psychic signature of distant creatures, enabling you to sense biological presences through walls. Also this potion will permit you to see through nearby walls and doors.",
           "spriteIndex": 356,
+          "icon": [
+            16,
+            40,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12185,6 +12862,12 @@
           "category": "potion",
           "description": "The storied experiences of multitudes of battles reduced to liquid form, this draught will instantly raise your experience level.",
           "spriteIndex": 360,
+          "icon": [
+            88,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12244,6 +12927,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12325,6 +13014,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will create two illusory twins of the reader. These mirror images act as weaker clones of the reader, and will chase down their enemies. They have no durability however, and will fade upon taking damage.",
           "spriteIndex": 311,
+          "icon": [
+            24,
+            16,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12352,6 +13047,12 @@
           "category": "potion",
           "description": "This flask contains an unstable compound which will burst violently into flame upon exposure to open air.",
           "spriteIndex": 359,
+          "icon": [
+            32,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12689,6 +13390,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12743,6 +13450,12 @@
           "category": "potion",
           "description": "Upon exposure to open air, the liquid in this flask will vaporize into a numbing yellow haze. Anyone who inhales the cloud will be paralyzed instantly, unable to move for some time after the cloud dissipates. This item can be thrown at distant enemies to catch them within the effect of the gas.",
           "spriteIndex": 357,
+          "icon": [
+            72,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12797,6 +13510,12 @@
           "category": "scroll",
           "description": "The raw magical power bound up in this parchment will charge up all the user's wands over time when released.",
           "spriteIndex": 312,
+          "icon": [
+            32,
+            16,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12824,6 +13543,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12878,6 +13603,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12905,6 +13636,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -12959,6 +13696,12 @@
           "category": "potion",
           "description": "Drinking this oddly sweet liquid will imbue you with tremendous energy for a short time, allowing you to run at high speeds.",
           "spriteIndex": 363,
+          "icon": [
+            48,
+            40,
+            6,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14155,6 +14898,12 @@
           "category": "potion",
           "description": "This flask contains an unstable compound which will burst violently into flame upon exposure to open air.",
           "spriteIndex": 359,
+          "icon": [
+            32,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14182,6 +14931,12 @@
           "category": "potion",
           "description": "Drinking this curious liquid will cause you to hover in the air, able to drift effortlessly over traps and pits. Throwing this potion will create a cloud of unrefined gas, disorienting anything caught in it.",
           "spriteIndex": 362,
+          "icon": [
+            64,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14209,6 +14964,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14236,6 +14997,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14290,6 +15057,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14623,6 +15396,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14689,6 +15468,12 @@
           "category": "potion",
           "description": "Uncorking or shattering this pressurized glass will cause its contents to explode into a deadly cloud of toxic green gas. You might choose to fling this potion at distant enemies instead of uncorking it by hand.",
           "spriteIndex": 353,
+          "icon": [
+            40,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14755,6 +15540,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14854,6 +15645,12 @@
           "category": "potion",
           "description": "This magical reagent will quickly neutralize all harmful area-bound effects in a large area. Drinking it will give you temporary immunity to such effects.",
           "spriteIndex": 355,
+          "icon": [
+            80,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14920,6 +15717,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -14986,6 +15789,12 @@
           "category": "potion",
           "description": "Drinking this curious liquid will cause you to hover in the air, able to drift effortlessly over traps and pits. Throwing this potion will create a cloud of unrefined gas, disorienting anything caught in it.",
           "spriteIndex": 362,
+          "icon": [
+            64,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -15019,6 +15828,12 @@
           "category": "scroll",
           "description": "When this scroll is read, an image of crystal clarity will be etched into your memory, alerting you to the precise layout of the level and revealing all hidden secrets. The locations of items and creatures will remain unknown.",
           "spriteIndex": 313,
+          "icon": [
+            56,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -15052,6 +15867,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -15388,6 +16209,12 @@
           "category": "potion",
           "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
           "spriteIndex": 358,
+          "icon": [
+            8,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -15415,6 +16242,12 @@
           "category": "potion",
           "description": "Uncorking or shattering this pressurized glass will cause its contents to explode into a deadly cloud of toxic green gas. You might choose to fling this potion at distant enemies instead of uncorking it by hand.",
           "spriteIndex": 353,
+          "icon": [
+            40,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -15469,6 +16302,12 @@
           "category": "scroll",
           "description": "The spell on this parchment instantly transports the reader to a different location on the dungeon level. The scroll prioritizes areas the reader hasn't been to before, though it is not able to teleport past locked doors or barricades. It can, however, reveal hidden doors that lead to new areas.",
           "spriteIndex": 315,
+          "icon": [
+            40,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -15784,6 +16623,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -15813,6 +16658,12 @@
           "category": "potion",
           "description": "The chemical contained in this potion will evaporate into a freezing cloud upon exposure to open air.",
           "spriteIndex": 361,
+          "icon": [
+            24,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -15842,6 +16693,12 @@
           "category": "scroll",
           "description": "When this scroll is read, an image of crystal clarity will be etched into your memory, alerting you to the precise layout of the level and revealing all hidden secrets. The locations of items and creatures will remain unknown.",
           "spriteIndex": 313,
+          "icon": [
+            56,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -15871,6 +16728,12 @@
           "category": "potion",
           "description": "Uncorking or shattering this pressurized glass will cause its contents to explode into a deadly cloud of toxic green gas. You might choose to fling this potion at distant enemies instead of uncorking it by hand.",
           "spriteIndex": 353,
+          "icon": [
+            40,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16116,6 +16979,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16143,6 +17012,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16170,6 +17045,12 @@
           "category": "potion",
           "description": "Drinking this potion will render you temporarily invisible. While invisible, enemies will be unable to see you. Physical attacks and magical effects (such as scrolls and wands) will immediately cancel invisibility.",
           "spriteIndex": 354,
+          "icon": [
+            56,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16381,6 +17262,12 @@
           "category": "scroll",
           "description": "Reading this scroll emits a soothing melody which will lull all who hear it into a deep magical sleep. For the reader and their allies the sleep is restorative.",
           "spriteIndex": 309,
+          "icon": [
+            48,
+            16,
+            7,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16489,6 +17376,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will create two illusory twins of the reader. These mirror images act as weaker clones of the reader, and will chase down their enemies. They have no durability however, and will fade upon taking damage.",
           "spriteIndex": 311,
+          "icon": [
+            24,
+            16,
+            7,
+            5
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16516,6 +17409,12 @@
           "category": "scroll",
           "description": "This scroll contains destructive energy which channels the reader's suffering outward into a blast of power. The weaker the reader is, the more damage they will deal. At very low health this scroll can kill most enemies instantly.\n\nUsing the scroll takes a toll on the user however, blinding and weakening them.",
           "spriteIndex": 305,
+          "icon": [
+            72,
+            16,
+            5,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16624,6 +17523,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16831,6 +17736,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16858,6 +17769,12 @@
           "category": "potion",
           "description": "This flask contains an unstable compound which will burst violently into flame upon exposure to open air.",
           "spriteIndex": 359,
+          "icon": [
+            32,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -16885,6 +17802,12 @@
           "category": "scroll",
           "description": "This scroll contains destructive energy which channels the reader's suffering outward into a blast of power. The weaker the reader is, the more damage they will deal. At very low health this scroll can kill most enemies instantly.\n\nUsing the scroll takes a toll on the user however, blinding and weakening them.",
           "spriteIndex": 305,
+          "icon": [
+            72,
+            16,
+            5,
+            6
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17020,6 +17943,12 @@
           "category": "potion",
           "description": "The chemical contained in this potion will evaporate into a freezing cloud upon exposure to open air.",
           "spriteIndex": 361,
+          "icon": [
+            24,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17049,6 +17978,12 @@
           "category": "scroll",
           "description": "This scroll permanently reveals all of the secrets of a single item.",
           "spriteIndex": 306,
+          "icon": [
+            8,
+            16,
+            4,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17078,6 +18013,12 @@
           "category": "potion",
           "description": "Drinking this potion will render you temporarily invisible. While invisible, enemies will be unable to see you. Physical attacks and magical effects (such as scrolls and wands) will immediately cancel invisibility.",
           "spriteIndex": 354,
+          "icon": [
+            56,
+            40,
+            5,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17107,6 +18048,12 @@
           "category": "scroll",
           "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
           "spriteIndex": 310,
+          "icon": [
+            16,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17136,6 +18083,12 @@
           "category": "potion",
           "description": "The storied experiences of multitudes of battles reduced to liquid form, this draught will instantly raise your experience level.",
           "spriteIndex": 360,
+          "icon": [
+            88,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17165,6 +18118,12 @@
           "category": "scroll",
           "description": "This scroll contains powerful transmutation magic. When used on an eligible item it will transform it into a different item of the same type. The magic will even preserve upgrades, enchantments, and glyphs. Scrolls and potions will be transmuted into their exotic equivalent, and vice-versa.",
           "spriteIndex": 308,
+          "icon": [
+            88,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17194,6 +18153,12 @@
           "category": "potion",
           "description": "Drinking this curious liquid will cause you to hover in the air, able to drift effortlessly over traps and pits. Throwing this potion will create a cloud of unrefined gas, disorienting anything caught in it.",
           "spriteIndex": 362,
+          "icon": [
+            64,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17329,6 +18294,12 @@
           "category": "potion",
           "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
           "spriteIndex": 352,
+          "icon": [
+            0,
+            40,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17356,6 +18327,12 @@
           "category": "scroll",
           "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
           "spriteIndex": 304,
+          "icon": [
+            0,
+            16,
+            7,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,
@@ -17410,6 +18387,12 @@
           "category": "potion",
           "description": "Drinking this curious liquid will cause you to hover in the air, able to drift effortlessly over traps and pits. Throwing this potion will create a cloud of unrefined gas, disorienting anything caught in it.",
           "spriteIndex": 362,
+          "icon": [
+            64,
+            40,
+            6,
+            7
+          ],
           "upgrade": 0,
           "effect": null,
           "cursed": false,

@@ -1,9 +1,12 @@
 //! Trinket offers, transmutations and artifact decks of a seed report.
 
+use std::borrow::Cow;
+
 use serde::{Deserialize, Serialize};
 
-use crate::catalog::{ItemId, item};
-use crate::model::GeneratedWorld;
+use super::item::{Item, Marks};
+use crate::catalog::{ItemId, ItemKind, item};
+use crate::model::{GeneratedWorld, WorldItem};
 use crate::query::ScoutMatches;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -54,6 +57,31 @@ pub struct TrinketTiming {
     pub first_effective_depth: u8,
     /// Index-aligned with `offers`: `modeled`, `unmodeled` or `none`.
     pub option_effects: Vec<String>,
+}
+
+/// Floors list the Magical Catalyst itself; its four offers are in
+/// `trinkets.offers`. The world carries the offers in the Catalyst's place,
+/// so the first offer becomes the Catalyst and later offers return `None`
+/// after adding their query marks to it.
+pub(super) fn listed_world_item<'a>(
+    world_item: &'a WorldItem,
+    marks: Marks,
+    items: &mut [Item],
+) -> Option<Cow<'a, WorldItem>> {
+    if item(world_item.item).kind != ItemKind::Trinket {
+        return Some(Cow::Borrowed(world_item));
+    }
+    let catalyst_id = item(ItemId::TrinketCatalyst).stable_id;
+    if let Some(catalyst) = items.iter_mut().find(|entry| entry.id == catalyst_id) {
+        catalyst.matched |= marks.matched;
+        catalyst.resin_donor |= marks.resin_donor;
+        catalyst.excluded |= marks.excluded;
+        return None;
+    }
+    Some(Cow::Owned(WorldItem {
+        item: ItemId::TrinketCatalyst,
+        ..world_item.clone()
+    }))
 }
 
 fn item_ref(id: ItemId, matched: bool) -> ItemRef {

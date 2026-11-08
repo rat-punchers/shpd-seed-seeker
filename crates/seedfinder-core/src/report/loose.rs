@@ -91,12 +91,14 @@ impl Groups {
 
 pub(super) fn item(placed: &PlacedItem, floor: &ObservedFloor, groups: &mut Groups) -> Item {
     let kind = placed.item.kind.as_str();
+    let tooltip = crate::level_map::MapTooltipItem::from_item(&placed.item);
     Item {
         id: snake_case(kind),
-        name: crate::level_map::MapTooltipItem::from_item(&placed.item).name,
+        name: tooltip.name,
         category: category(kind).to_owned(),
         description: super::item::description(kind),
         sprite_index: placed.item.image,
+        icon: tooltip.icon,
         upgrade: 0,
         effect: None,
         cursed: false,

@@ -44,7 +44,13 @@ fn predictions_follow_the_spawn_conditions() {
         {
             assert_eq!(range.min, range.max, "{item:?}");
         }
-        assert_ne!(item.id, "trinket_catalyst", "listed as its four offers");
+        if item.category == "trinket" {
+            assert_eq!(
+                item.id, "trinket_catalyst",
+                "offers are listed as the Catalyst"
+            );
+            assert_eq!(item.prediction, Some(Prediction::Exact));
+        }
     }
     let ghost: Vec<&Item> = items(&report)
         .filter(|item| item.source == "ghost_reward")
@@ -107,6 +113,43 @@ fn predictions_follow_the_spawn_conditions() {
             }]
         );
     }
+}
+
+#[test]
+fn the_catalyst_floor_lists_the_catalyst_and_glyphs_mark_potions_and_scrolls() {
+    let report = report(r#"{"seed":"HTM-YYA-HCS"}"#);
+    let first = &report.floors[0].items;
+    let trinkets: Vec<&str> = first
+        .iter()
+        .filter(|item| item.category == "trinket")
+        .map(|item| item.id.as_str())
+        .collect();
+    assert_eq!(trinkets, ["trinket_catalyst"]);
+    let catalyst = first
+        .iter()
+        .find(|item| item.category == "trinket")
+        .unwrap();
+    assert_eq!(catalyst.name, "Magical catalyst");
+    assert_eq!(catalyst.sprite_index, 70);
+    assert_eq!(report.trinkets.offers.len(), 4);
+    for item in items(&report) {
+        let glyph = matches!(item.category.as_str(), "potion" | "scroll");
+        assert_eq!(item.icon.is_some(), glyph, "{item:?}");
+    }
+    let strength = items(&report)
+        .find(|item| item.id == "potion_of_strength")
+        .unwrap();
+    assert_eq!(strength.icon, Some([0, 40, 7, 7]));
+    let identities = &report.identities;
+    for identity in identities
+        .potions
+        .iter()
+        .chain(&identities.scrolls)
+        .chain(&identities.rings)
+    {
+        assert!(identity.icon.is_some(), "{} has no glyph", identity.name);
+    }
+    assert_eq!(identities.potions[0].icon, strength.icon);
 }
 
 #[test]

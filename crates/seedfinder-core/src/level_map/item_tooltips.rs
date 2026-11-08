@@ -118,6 +118,16 @@ pub(crate) fn item_description(kind: &str) -> Option<&'static str> {
     item_text(&text_key(kind)).map(|entry| entry.2)
 }
 
+/// The type glyph rectangle in `item_icons.png` for an item class name,
+/// stable id or English name (rings, potions and scrolls), if any.
+pub(crate) fn item_icon(kind: &str) -> Option<[u16; 4]> {
+    let key = text_key(kind);
+    ITEM_ICONS
+        .binary_search_by_key(&key.as_str(), |entry| entry.0)
+        .ok()
+        .map(|index| ITEM_ICONS[index].1)
+}
+
 impl MapTooltipItem {
     pub(crate) fn from_item(item: &MapItem) -> Self {
         let key = text_key(&item.kind);
@@ -136,10 +146,7 @@ impl MapTooltipItem {
             ),
             description: text.map_or("", |entry| entry.2),
             image: item.image,
-            icon: ITEM_ICONS
-                .binary_search_by_key(&key.as_str(), |entry| entry.0)
-                .ok()
-                .map(|index| ITEM_ICONS[index].1),
+            icon: item_icon(&item.kind),
             quantity: item.quantity,
             deterministic: item.deterministic,
             upgrade: item.roll.map(|roll| {

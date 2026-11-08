@@ -33,6 +33,31 @@ mod tests {
         ("2026-01-01", "daily-2026-01-01.json"),
     ];
 
+    /// Scout's items for one floor, with the Catalyst's four offers folded
+    /// into the one Magical Catalyst entry the report lists.
+    fn scout_floor_items(scout_items: &[Value], depth: &Value) -> Vec<Value> {
+        let mut items: Vec<Value> = Vec::new();
+        for item in scout_items.iter().filter(|item| item["depth"] == *depth) {
+            if item["category"] != "trinket" {
+                items.push(item.clone());
+                continue;
+            }
+            if let Some(catalyst) = items.iter_mut().find(|e| e["id"] == "trinket_catalyst") {
+                for mark in ["matched", "resinDonor", "excluded"] {
+                    let joined = catalyst[mark].as_bool().unwrap() || item[mark].as_bool().unwrap();
+                    catalyst[mark] = Value::Bool(joined);
+                }
+                continue;
+            }
+            let mut catalyst = item.clone();
+            catalyst["id"] = "trinket_catalyst".into();
+            catalyst["name"] = "Magical catalyst".into();
+            catalyst["spriteIndex"] = 70.into();
+            items.push(catalyst);
+        }
+        items
+    }
+
     /// Report item references add the game's text, which `scout` leaves out.
     fn without_description(entry: &Value) -> Value {
         let mut entry = entry.clone();
@@ -59,10 +84,8 @@ mod tests {
             let floors = report["floors"].as_array().unwrap();
             let scout_items = scout["items"].as_array().unwrap();
             for floor in floors {
-                let expected: Vec<&Value> = scout_items
-                    .iter()
-                    .filter(|item| item["depth"] == floor["depth"])
-                    .collect();
+                let expected = scout_floor_items(scout_items, &floor["depth"]);
+                let expected: Vec<&Value> = expected.iter().collect();
                 // Equipment comes first in scout order; the other categories follow.
                 let listed = floor["items"].as_array().unwrap();
                 let (equipment, others) = listed.split_at(expected.len().min(listed.len()));
@@ -127,8 +150,13 @@ mod tests {
                     scout["matchedRequirements"]
                 );
             }
-            let mappings = &scout["itemMappings"];
-            assert_eq!(report["identities"], *mappings, "{request}");
+            let mut identities = report["identities"].clone();
+            for category in identities.as_object_mut().unwrap().values_mut() {
+                for entry in category.as_array_mut().unwrap() {
+                    entry.as_object_mut().unwrap().remove("icon");
+                }
+            }
+            assert_eq!(identities, scout["itemMappings"], "{request}");
         }
     }
 
