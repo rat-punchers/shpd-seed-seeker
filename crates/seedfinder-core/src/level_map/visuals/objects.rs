@@ -40,6 +40,7 @@ pub(super) fn layers(
     level: &Level,
     contents: &MapContents,
     walls: &mut MapLayer,
+    reveal: bool,
 ) -> Vec<MapLayer> {
     let mut heaps = layer("heaps", level.len());
     let mut actors: Vec<MapLayer> = vec![];
@@ -153,8 +154,12 @@ pub(super) fn layers(
                 })
                 .collect();
             let mut target = layer("actors", level.len());
-            // Keep Ebony mimics discoverable in a scouting overview.
-            let opacity = if mob.kind == "EbonyMimic" { 153 } else { 255 };
+            // A hidden Ebony mimic stays faintly discoverable before searching.
+            let opacity = if mob.kind == "EbonyMimic" && mob.stealthy && !reveal {
+                51
+            } else {
+                255
+            };
             let offset = [
                 (17 - i32::from(sprite.width)).div_euclid(2),
                 16 - i32::from(sprite.height) - sprite.raise,

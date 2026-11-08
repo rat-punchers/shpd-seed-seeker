@@ -184,6 +184,7 @@ impl LevelMap {
                     label,
                     &heap.items,
                     super::visuals::heap_bounds(heap),
+                    false,
                 )
             })
             .chain(
@@ -197,10 +198,11 @@ impl LevelMap {
                             words(&mob.kind),
                             &mob.items,
                             super::visuals::mob_bounds(&mob.kind),
+                            mob.stealthy,
                         )
                     }),
             );
-        for (cell, label, items, bounds) in sources {
+        for (cell, label, items, bounds, stealthy) in sources {
             if items.is_empty() {
                 continue;
             }
@@ -215,6 +217,7 @@ impl LevelMap {
                     (x + w).max(bx + bw) - left,
                     (y + h).max(by + bh) - top,
                 ];
+                tip.hidden |= stealthy;
                 tip.items
                     .extend(items.iter().map(MapTooltipItem::from_item));
                 if !label.is_empty() {
@@ -232,9 +235,10 @@ impl LevelMap {
                 cell: usize::try_from(cell).expect("map cell is nonnegative"),
                 label,
                 bounds,
-                hidden: self.secret_rooms.iter().any(|&[left, top, right, bottom]| {
-                    x > left && x < right && y > top && y < bottom
-                }),
+                hidden: stealthy
+                    || self.secret_rooms.iter().any(|&[left, top, right, bottom]| {
+                        x > left && x < right && y > top && y < bottom
+                    }),
                 items: items.iter().map(MapTooltipItem::from_item).collect(),
             });
         }
@@ -288,6 +292,61 @@ mod tests {
             document["itemTooltips"][0]["items"][0]["name"],
             "Potion of healing"
         );
+    }
+
+    #[test]
+    fn a_stealthy_mimic_is_a_secret_until_found() {
+        use crate::level_map::{MapMob, generate_level_map};
+        use crate::{challenges::Challenges, seed::DungeonSeed};
+        let mut map = generate_level_map(
+            DungeonSeed::from_code("AAA-AAA-AAA").unwrap(),
+            1,
+            Challenges::NONE,
+            None,
+        )
+        .unwrap();
+        map.secret_rooms.clear();
+        map.contents.heaps.clear();
+        map.contents.mobs = [("EbonyMimic", true), ("Mimic", false)]
+            .into_iter()
+            .enumerate()
+            .map(|(index, (kind, stealthy))| MapMob {
+                cell: usize::try_from(map.width + 1).unwrap() + index * 2,
+                kind: kind.into(),
+                stealthy,
+                sleeping: false,
+                approximate: false,
+                items: vec![MapItem::new("Gold", 18, 40)],
+            })
+            .collect();
+        let tips = map.item_tooltips();
+        assert_eq!(
+            tips.iter()
+                .map(|tip| (tip.label.as_str(), tip.hidden))
+                .collect::<Vec<_>>(),
+            [("Ebony Mimic", true), ("Mimic", false)]
+        );
+        let document = crate::level_map::json::document(&map);
+        let mimic = &document["mobDetails"]["Mimic"];
+        assert_eq!(mimic["name"], "Mimic");
+        assert!(
+            mimic["description"]
+                .as_str()
+                .is_some_and(|text| text.starts_with("Mimics are magical creatures"))
+        );
+        assert_eq!(mimic["asset"], "mimic.png");
+        assert_eq!(mimic["frames"].as_array().map(Vec::len), Some(6));
+    }
+
+    #[test]
+    fn every_mob_text_kind_is_a_drawn_actor() {
+        for (kind, name, description) in crate::level_map::mob_text::MOB_TEXT {
+            assert!(
+                crate::level_map::visuals::mob_film(kind).is_some(),
+                "{kind}"
+            );
+            assert!(!name.is_empty() && !description.is_empty(), "{kind}");
+        }
     }
 
     #[test]

@@ -143,5 +143,30 @@ pub fn document(map: &LevelMap) -> Value {
         "scene": map.scene,
         "contents": map.contents,
         "itemTooltips": map.item_tooltips(),
+        "mobDetails": mob_details(map),
     })
+}
+
+/// Each generated mob kind's examine text and idle film, keyed by kind.
+fn mob_details(map: &LevelMap) -> serde_json::Map<String, Value> {
+    map.contents
+        .mobs
+        .iter()
+        .filter_map(|mob| {
+            let (asset, duration, frames) = super::visuals::mob_film(&mob.kind)?;
+            let (_, name, description) = super::mob_text::MOB_TEXT
+                .iter()
+                .find(|(kind, _, _)| *kind == mob.kind)?;
+            Some((
+                mob.kind.clone(),
+                json!({
+                    "name": name,
+                    "description": description,
+                    "asset": asset,
+                    "frameDurationMs": duration,
+                    "frames": frames,
+                }),
+            ))
+        })
+        .collect()
 }

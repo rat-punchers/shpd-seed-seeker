@@ -397,7 +397,8 @@ using `ItemFilmOracle`, including loop assignments and later overrides.
 The optional `itemTooltips` array is shared by web, Android, macOS, Windows, and
 GTK. It adds metadata to schema v3 without changing scene rendering. Each entry
 has `cell`, `bounds`, `label` (container/inventory owner, empty for loose items), `hidden`
-(inside a concealed secret room), and `items`. Each item has `name`,
+(inside a concealed secret room, or carried by a stealthy mob such as a hidden
+Ebony mimic), and `items`. Each item has `name`,
 `description`, `image` (the run's item atlas cell), `icon`, `quantity`, and `deterministic`.
 `bounds` is `[x, y, width, height]` relative to the cell in map pixels, using the
 same raised sprite placement as scene rendering. Use it for both hit testing and
@@ -420,6 +421,15 @@ hold at 30% tint when reduced motion is enabled. Wands never glow.
 Clients must suppress hidden entries while Secrets is off, invert the current
 map transform when hit testing, and clear inspection on navigation or gestures.
 Older documents without this array remain renderable without inspection.
+
+The optional `mobDetails` object maps each generated mob `kind` to its examine
+window: `{name, description, asset, frameDurationMs, frames}`. Each frame is a
+`[x, y, width, height]` source rectangle on `asset`, one of the document's
+`assets`, forming the mob's idle film. It does not change scene rendering.
+Text comes from the same pinned English messages as item text; regenerate it
+with `python3 scripts/generate-mob-text.py`. A stealthy Ebony
+mimic is drawn at 20% opacity in `concealedLayers` and at full opacity in
+`layers`.
 
 Names and static descriptions come from the original English Java messages at
 v4.0.2 commit `57a4e06a4caf162446d1c28caa7983f0493fecf0`, under GPL-3.0-or-later
