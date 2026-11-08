@@ -150,7 +150,10 @@ mod tests {
                 std::fs::create_dir_all(&directory).unwrap();
                 std::fs::write(&path, text).unwrap();
             } else {
-                let committed = std::fs::read_to_string(&path).unwrap_or_default();
+                // A Windows checkout may turn the fixtures' LF into CRLF.
+                let committed = std::fs::read_to_string(&path)
+                    .unwrap_or_default()
+                    .replace("\r\n", "\n");
                 assert!(
                     committed == text,
                     "{} is stale; run UPDATE_SEED_REPORT_FIXTURES=1 cargo test -p shpd-seedfinder-wasm seed_report",
