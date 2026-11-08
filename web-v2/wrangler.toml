@@ -3,6 +3,8 @@
 # every push to main). Credentials: `bun run deploy:setup` at the repo root.
 name = "shpd-seed-seeker-v2"
 compatibility_date = "2026-11-01"
+# Also served at shpd-seed-seeker-v2.nerdcoder.workers.dev.
+workers_dev = true
 
 [assets]
 directory = "./dist"
