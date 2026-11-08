@@ -1,6 +1,7 @@
 import type { ParsedSeed, QueryDocument } from '../../engine/types'
 import {
   applyProgress,
+  type CoordinatorState,
   initialCoordinatorState,
   markWorkerDone,
   type RefineSummary,
@@ -14,6 +15,7 @@ import {
   filterChunkCount,
   poolBySource,
 } from './filter'
+import { WorkerPool } from './pool'
 import type { SearchWorkerRequest, SearchWorkerResponse } from './protocol'
 import {
   distributeSegments,
@@ -21,7 +23,15 @@ import {
   resumedRunState,
   segmentsLength,
 } from './refine'
-import { searchStore } from './store'
+import {
+  activeResultsTabId,
+  latestSessionId,
+  resultsTabsStore,
+  searchingTabId,
+  setResultsTotal,
+  tabSearch,
+  updateTabSearch,
+} from './tabs'
 import {
   advanceTraversalStart,
   partitionRotated,
@@ -36,16 +46,18 @@ export { clearResults, loadImportedResults, searchStore } from './store'
  * normally; the timeout only covers a worker that died or never started. */
 const STOP_ACK_TIMEOUT_MS = 2_000
 
-/** Runs searches on a pool of scan workers: each start re-verifies the
- * retained pool, then scans on, resuming coverage for an unchanged query. */
 type FilterRestore = {
   sessionId: number
   state: SearchStatus
   refined?: RefineSummary
 }
 
+/** Runs searches on a pool of scan workers: each start re-verifies the
+ * retained pool, then scans on, resuming coverage for an unchanged query. */
 export class SearchCoordinator {
-  private workers: Worker[] = []
+  private pool = new WorkerPool((workerId, message) =>
+    this.onMessage(workerId, message)
+  )
   private sessionId = 0
   private totalSeeds = 0
   private nextTraversalStart: number | undefined
@@ -53,27 +65,27 @@ export class SearchCoordinator {
   /** Present while a refine's filter phase runs: how to restore the previous
    * finished state if the filter is cancelled or fails. */
   private filterRestore: FilterRestore | undefined
+  /** The results tab the current or last search writes to. */
+  private runTab = activeResultsTabId()
 
   constructor(totalSeeds: number) {
     this.totalSeeds = totalSeeds
-    searchStore.setState(() => initialCoordinatorState(totalSeeds))
+    setResultsTotal(totalSeeds)
+    // Restored tabs keep their session ids; new sessions must not reuse one.
+    this.sessionId = latestSessionId()
   }
 
-  private ensureWorkers(count: number): Worker[] {
-    const target = Math.max(1, Math.floor(count) || 1)
-    while (this.workers.length < target) {
-      const workerId = this.workers.length
-      const worker = new Worker(new URL('./worker.ts', import.meta.url), {
-        type: 'module',
-      })
-      worker.addEventListener(
-        'message',
-        (event: MessageEvent<SearchWorkerResponse>) =>
-          this.onMessage(workerId, event.data)
-      )
-      this.workers.push(worker)
-    }
-    return this.workers.slice(0, target)
+  private search(): CoordinatorState {
+    return tabSearch(this.runTab) ?? initialCoordinatorState(this.totalSeeds)
+  }
+
+  private update(change: (state: CoordinatorState) => CoordinatorState): void {
+    updateTabSearch(this.runTab, change)
+  }
+
+  /** Starts the workers and their engines before the first search needs them. */
+  warm(workerCount: number): void {
+    this.pool.ensure(workerCount)
   }
 
   /** Every search rechecks the entire retained pool, then scans for more. */
@@ -81,8 +93,10 @@ export class SearchCoordinator {
     query: QueryDocument,
     workerCount = Math.max(1, navigator.hardwareConcurrency ?? 4)
   ): void {
-    const previous = searchStore.state
-    if (previous.state === 'running' || previous.state === 'stopping') return
+    // One search at a time: the workers are shared by every tab.
+    if (searchingTabId(resultsTabsStore.state) !== undefined) return
+    this.runTab = activeResultsTabId()
+    const previous = this.search()
     const sessionId = ++this.sessionId
     const pool = previous.target
     const seeds = pool?.matches ?? []
@@ -98,7 +112,7 @@ export class SearchCoordinator {
       state: previous.state,
       refined: previous.refined,
     }
-    searchStore.setState((state) => ({
+    this.update((state) => ({
       ...state,
       sessionId,
       state: 'running',
@@ -109,7 +123,7 @@ export class SearchCoordinator {
     void Promise.all(
       [...poolBySource(pool, query)].map(([source, entries]) =>
         fanOutFilter(
-          this.ensureWorkers(filterChunkCount(entries.length, workerCount)),
+          this.pool.ensure(filterChunkCount(entries.length, workerCount)),
           JSON.stringify(query),
           entries,
           source
@@ -136,7 +150,7 @@ export class SearchCoordinator {
     const restore = this.filterRestore
     if (restore?.sessionId !== sessionId) return
     this.filterRestore = undefined
-    searchStore.setState((state) => ({
+    this.update((state) => ({
       ...state,
       state: restore.state,
       filtering: false,
@@ -157,7 +171,7 @@ export class SearchCoordinator {
     const run = resumedRunState(query, remainder, kept, previousCount)
     // An unchanged query can have exhausted its scan range.
     if (segmentsLength(remainder) === 0) {
-      searchStore.setState((state) =>
+      this.update((state) =>
         settleRun({
           ...state,
           ...run,
@@ -168,9 +182,9 @@ export class SearchCoordinator {
       )
       return
     }
-    const workers = this.ensureWorkers(workerCount)
+    const workers = this.pool.ensure(workerCount)
     const segments = distributeSegments(remainder, workers.length)
-    searchStore.setState((state) => ({
+    this.update((state) => ({
       ...state,
       ...run,
       state: 'running',
@@ -198,15 +212,11 @@ export class SearchCoordinator {
   }
 
   private stopWorkers(sessionId: number): void {
-    for (const worker of this.workers)
-      worker.postMessage({
-        type: 'search:stop',
-        sessionId,
-      } satisfies SearchWorkerRequest)
+    this.pool.broadcast({ type: 'search:stop', sessionId })
   }
 
   cancel(): void {
-    const current = searchStore.state
+    const current = this.search()
     if (current.state !== 'running' && current.state !== 'stopping') return
     if (current.filtering) {
       // Still re-verifying for a refine: no worker owns this session yet, so
@@ -215,7 +225,7 @@ export class SearchCoordinator {
       return
     }
     if (this.startedWorkers === 0) {
-      searchStore.setState((state) =>
+      this.update((state) =>
         settleRun({
           ...state,
           state: 'cancelled',
@@ -231,16 +241,16 @@ export class SearchCoordinator {
     // Cancel stays available while stopping (it re-broadcasts), and a
     // watchdog finalizes the stop even if an acknowledgment never arrives.
     if (current.state === 'running') {
-      searchStore.setState((state) => ({
+      this.update((state) => ({
         ...state,
         state: 'stopping',
         elapsed: performance.now() - state.startedAt,
       }))
     }
     window.setTimeout(() => {
-      const state = searchStore.state
+      const state = this.search()
       if (state.sessionId === sessionId && state.state === 'stopping') {
-        searchStore.setState((stuck) =>
+        this.update((stuck) =>
           settleRun({
             ...stuck,
             state: runSaturated(stuck) ? 'completed' : 'cancelled',
@@ -256,17 +266,17 @@ export class SearchCoordinator {
       answerFilter(message)
       return
     }
-    if (message.sessionId !== searchStore.state.sessionId) return
+    if (message.sessionId !== this.search().sessionId) return
     const now = performance.now()
     if (message.type === 'search:progress') {
-      searchStore.setState((state) =>
+      this.update((state) =>
         applyProgress(state, { ...message, workerId, now })
       )
-      if (runSaturated(searchStore.state)) this.stopWorkers(message.sessionId)
+      if (runSaturated(this.search())) this.stopWorkers(message.sessionId)
     }
     if (message.type === 'search:done' || message.type === 'search:stopped') {
       const kind = message.type === 'search:done' ? 'done' : 'stopped'
-      searchStore.setState((state) =>
+      this.update((state) =>
         markWorkerDone(state, {
           sessionId: message.sessionId,
           workerId,
@@ -279,7 +289,7 @@ export class SearchCoordinator {
     if (message.type === 'search:error') {
       // A failed run cannot become a refine base: its coverage is unknown.
       this.stopWorkers(message.sessionId)
-      searchStore.setState((state) => ({
+      this.update((state) => ({
         ...state,
         state: 'failed',
         error: message.error,

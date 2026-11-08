@@ -73,13 +73,13 @@ describe('stepping the active tab through Find results', () => {
   })
 
   it('replaces the active result with its neighbour and the search context', async () => {
-    await openSeed({ seed: 'AAA-AAA-AAB' })
+    await openSeed({ seed: 'AAA-AAA-AAB', results: 1 })
     expect(stepActiveResult(-1)).toBe(false)
     expect(stepActiveResult(1)).toBe(true)
-    expect($sessions.get().map((session) => session.id)).toEqual([
-      'AAA-AAA-AAC',
-    ])
-    expect($activeSeedId.get()).toBe('AAA-AAA-AAC')
+    expect(
+      $sessions.get().map((session) => [session.id, session.seed])
+    ).toEqual([['results-1', 'AAA-AAA-AAC']])
+    expect($activeSeedId.get()).toBe('results-1')
     expect(requests.at(-1)).toEqual({
       seed: 'AAA-AAA-AAC',
       query: { requirements: [{ kind: 'ring' }] },
@@ -87,8 +87,22 @@ describe('stepping the active tab through Find results', () => {
     })
   })
 
-  it('does nothing for a seed that is not a result', async () => {
-    await openSeed({ seed: 'ZZZ-ZZZ-ZZZ' })
+  it('opens another seed of the same results in the same tab', async () => {
+    await openSeed({ seed: 'AAA-AAA-AAB', results: 1 })
+    await openSeed({ seed: 'AAA-AAA-AAD', results: 1 })
+    await openSeed({ seed: 'AAA-AAA-AAB' })
+    expect(
+      $sessions.get().map((session) => [session.id, session.seed])
+    ).toEqual([
+      ['results-1', 'AAA-AAA-AAD'],
+      ['AAA-AAA-AAB', 'AAA-AAA-AAB'],
+    ])
+  })
+
+  it('does nothing for a seed that is not a result or not from Find', async () => {
+    await openSeed({ seed: 'ZZZ-ZZZ-ZZZ', results: 1 })
+    expect(stepActiveResult(1)).toBe(false)
+    await openSeed({ seed: 'AAA-AAA-AAB' })
     expect(stepActiveResult(1)).toBe(false)
   })
 })

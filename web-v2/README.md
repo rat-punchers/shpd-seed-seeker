@@ -50,7 +50,7 @@ Run `bun run build:wasm` again after engine changes. The preview server
 - `src/features/query/`: the query document, its codec and share links,
   validation and limits.
 - `src/features/search/`: the search coordinator, its workers and the
-  search store.
+  search store, and the results tabs (`tabs.ts`), saved to localStorage.
 - `src/features/analyze/`: seed tabs, the seed field, `?scout=` links,
   result navigation (J/K, swipe), the report worker client, the report view
   (`report/`) and the screenshot reader (`screenshot/`).

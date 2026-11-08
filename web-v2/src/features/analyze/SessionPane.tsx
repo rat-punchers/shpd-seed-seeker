@@ -12,14 +12,27 @@ import { Button } from '@seed-seeker/design/ui/button'
 import { Kbd } from '@seed-seeker/design/ui/kbd'
 import { useStore } from '@tanstack/react-store'
 import type { ReactNode } from 'react'
-import { searchStore } from '../search/store'
+import type { ParsedSeed } from '../../engine/types'
+import { resultsTabsStore } from '../search/tabs'
 import { resultPosition, stepActiveResult } from './navigation'
 import { SeedReportView } from './report/SeedReportView'
 import { cancelReport, type SeedSession, selectTrinket } from './sessions'
 
+const NO_MATCHES: ParsedSeed[] = []
+
 /** "Result 3 of 120" with previous and next, when the tab shows a search result. */
-function ResultNavigator({ code }: { code: string }) {
-  const seeds = useStore(searchStore, (state) => state.matches)
+function ResultNavigator({
+  code,
+  results,
+}: {
+  code: string
+  results?: number
+}) {
+  const seeds = useStore(
+    resultsTabsStore,
+    (state) =>
+      state.tabs.find((tab) => tab.id === results)?.search.matches ?? NO_MATCHES
+  )
   const position = resultPosition(
     seeds.map((match) => match.code),
     code
@@ -116,7 +129,7 @@ export function SessionPane({ session }: { session: SeedSession }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <ResultNavigator code={code} />
+      <ResultNavigator code={code} results={session.results} />
       {body}
     </div>
   )

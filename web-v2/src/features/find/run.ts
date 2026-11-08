@@ -7,8 +7,8 @@ import { requestAnalyze } from '../analyze'
 import { toQueryDocument, toQueryJson } from '../query/query'
 import { hasRequirements, validateQuery } from '../query/validation'
 import { SearchCoordinator } from '../search/coordinator'
-import { isSearchActive } from '../search/coordinator-state'
 import { searchStore } from '../search/store'
+import { activeResultsTabId, anySearchActive } from '../search/tabs'
 
 /** The engine's estimate for the saved query, or none for an empty query. */
 export const $analysis = new AppStore<AnalysisResult | undefined>(undefined)
@@ -47,7 +47,7 @@ export async function refreshAnalysis(): Promise<AnalysisResult | undefined> {
  */
 export async function toggleSearch(): Promise<void> {
   const controller = await getCoordinator()
-  if (isSearchActive(searchStore.state)) {
+  if (anySearchActive()) {
     controller.cancel()
     return
   }
@@ -70,6 +70,7 @@ export function analyzeMatch(match: ParsedSeed): void {
     match.selectedTrinket === null ? 'none' : match.selectedTrinket
   requestAnalyze({
     seed: match.code,
+    results: activeResultsTabId(),
     ...(query ? { query } : {}),
     ...(trinket ? { trinket } : {}),
   })
@@ -85,7 +86,7 @@ function onKeyDown(event: KeyboardEvent): void {
 
 /** Leaving the page while a search runs asks first. */
 function onBeforeUnload(event: BeforeUnloadEvent): void {
-  if (isSearchActive(searchStore.state)) event.preventDefault()
+  if (anySearchActive()) event.preventDefault()
 }
 
 /**
@@ -95,6 +96,13 @@ function onBeforeUnload(event: BeforeUnloadEvent): void {
  */
 export function initFind(): () => void {
   void getCoordinator()
+  // Workers load their engine on start; Find starts them before the first search.
+  const warm = () => {
+    if ($mode.get() === 'find')
+      void getCoordinator().then((ready) => ready.warm($workerCount.get()))
+  }
+  warm()
+  const modeSubscription = $mode.subscribe(warm)
   let timer: ReturnType<typeof setTimeout> | undefined
   void refreshAnalysis()
   const subscription = $query.subscribe(() => {
@@ -106,6 +114,7 @@ export function initFind(): () => void {
   return () => {
     clearTimeout(timer)
     subscription.unsubscribe()
+    modeSubscription.unsubscribe()
     window.removeEventListener('keydown', onKeyDown)
     window.removeEventListener('beforeunload', onBeforeUnload)
   }

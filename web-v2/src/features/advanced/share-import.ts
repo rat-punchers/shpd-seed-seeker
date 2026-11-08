@@ -6,8 +6,7 @@ import { AppStore } from '../../shared/store/persistent'
 import { fromQueryJson } from '../query/query'
 import { normalizedQuery } from '../query/requirements/board'
 import { hasShareCode, withoutFragment } from '../query/share-link'
-import { isSearchActive } from '../search/coordinator-state'
-import { searchStore } from '../search/store'
+import { anySearchActive } from '../search/tabs'
 
 /** Why the last share link could not be loaded, until dismissed. */
 export const $shareNotice = new AppStore<string | undefined>(undefined)
@@ -28,7 +27,7 @@ export async function openShareLink(): Promise<void> {
   setFindView('advanced')
   try {
     const json = await decodeShareText(window.location.href)
-    if (isSearchActive(searchStore.state))
+    if (anySearchActive())
       throw new Error('a search is running — stop it first')
     // A list from elsewhere comes in canonical, as the editor writes it.
     setQuery(normalizedQuery(fromQueryJson(json)))

@@ -76,6 +76,7 @@ it('lists the matches as cards that open in Analyze', () => {
   act(() => analyze?.click())
   expect($mode.get()).toBe('analyze')
   expect($analyzeRequest.get()).toEqual({
+    results: 1,
     seed: 'AAA-AAA-AAB',
     query,
     trinket: 'parchment_scrap',

@@ -5,6 +5,7 @@ import {
   collectBrowserErrors,
   expectNoBrowserErrors,
 } from './helpers/browser-errors'
+import { itemPicker } from './helpers/item-picker'
 
 const viewTab = (page: Page, name: 'Simple' | 'Advanced') =>
   page
@@ -207,7 +208,7 @@ test('results export to a file and import back, and a pasted query replaces the 
       name: 'Import results or a search from the clipboard',
     })
     .click()
-  await expect(page.getByLabel('Item 1 name')).toHaveValue('wand_fireblast')
+  await expect(itemPicker(page, 1)).toContainText('Wand of Fireblast')
   await expect(page.getByTestId('result-card')).not.toHaveCount(0)
 
   // Unreadable clipboard text says why and changes nothing.
@@ -218,6 +219,6 @@ test('results export to a file and import back, and a pasted query replaces the 
     })
     .click()
   await expect(page.getByTestId('results-notice')).toBeVisible()
-  await expect(page.getByLabel('Item 1 name')).toHaveValue('wand_fireblast')
+  await expect(itemPicker(page, 1)).toContainText('Wand of Fireblast')
   expectNoBrowserErrors(errors)
 })

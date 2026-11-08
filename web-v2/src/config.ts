@@ -15,6 +15,7 @@ export const CONFIG = Object.freeze({
     findView: `${STORAGE_PREFIX}find-view`,
     presets: `${STORAGE_PREFIX}presets`,
     workers: `${STORAGE_PREFIX}workers`,
+    resultsTabs: `${STORAGE_PREFIX}results-tabs`,
     openSeeds: `${STORAGE_PREFIX}open-seeds`,
     activeSeed: `${STORAGE_PREFIX}active-seed`,
   }),

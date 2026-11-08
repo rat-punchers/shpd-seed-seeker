@@ -11,6 +11,8 @@ export interface AnalyzeRequest {
   seed: string
   query?: QueryDocument
   trinket?: string
+  /** The Find results tab the seed came from; its seeds share one tab. */
+  results?: number
 }
 
 /** The latest request; Analyze consumes it when it opens the seed. */

@@ -38,10 +38,12 @@ export interface SessionContext {
   /** A Catalyst offer id or `"none"`; absent lets the query choose. */
   trinket?: string
   challenges?: ChallengeName[]
+  /** The Find results tab this tab walks (J/K), named after it. */
+  results?: number
 }
 
 export interface SeedSession extends SessionContext {
-  /** The tab id: the seed as entered. */
+  /** The tab id: the results tab it belongs to, else the seed as entered. */
   id: string
   status: SessionStatus
   /** The latest report; kept on screen while a regenerated one loads. */
@@ -95,24 +97,27 @@ export function setReportClient(next: ReportClient): void {
   client = next
 }
 
-export function sessionIdFor(seed: string): string {
-  return seed.trim().toUpperCase()
+export function sessionIdFor(seed: string, results?: number): string {
+  return results === undefined
+    ? seed.trim().toUpperCase()
+    : `results-${results}`
 }
 
 function contextOf(session: SessionContext): SessionContext {
-  const { seed, query, trinket, challenges } = session
+  const { seed, query, trinket, challenges, results } = session
   return {
     seed,
     ...(query ? { query } : {}),
     ...(trinket ? { trinket } : {}),
     ...(challenges?.length ? { challenges } : {}),
+    ...(results === undefined ? {} : { results }),
   }
 }
 
 function newSession(context: SessionContext): SeedSession {
   return {
     ...contextOf(context),
-    id: sessionIdFor(context.seed),
+    id: sessionIdFor(context.seed, context.results),
     status: 'pending',
     report: null,
     error: null,
@@ -136,7 +141,8 @@ export function findSession(id: string | null): SeedSession | undefined {
 }
 
 export function requestFor(session: SessionContext): SeedReportRequest {
-  return contextOf(session)
+  const { results: _results, ...request } = contextOf(session)
+  return request
 }
 
 /** Asks for the session's report; resolves once it lands or fails. */
@@ -180,22 +186,24 @@ export async function openSeed(request: AnalyzeRequest): Promise<void> {
       : {}),
   })
   if (!context.seed) return
-  const id = sessionIdFor(context.seed)
+  const id = sessionIdFor(context.seed, context.results)
   const existing = findSession(id)
   $activeSeedId.set(id)
   if (existing) {
     const changed =
-      (request.query || request.trinket) && !sameContext(existing, context)
+      (request.query || request.trinket || request.results !== undefined) &&
+      !sameContext(existing, context)
     // Replace rather than patch: keys the new context leaves out must clear.
     if (changed)
       setSessions(
-        $sessions
-          .get()
-          .map((s) =>
-            s.id === id
-              ? { ...newSession(context), report: existing.report }
-              : s
-          )
+        $sessions.get().map((s) =>
+          s.id === id
+            ? {
+                ...newSession(context),
+                report: s.seed === context.seed ? existing.report : null,
+              }
+            : s
+        )
       )
     else if (existing.status === 'ready' || existing.status === 'loading')
       return
@@ -216,7 +224,7 @@ export async function replaceActiveSeed(
   context: SessionContext
 ): Promise<void> {
   const active = findSession($activeSeedId.get())
-  const id = sessionIdFor(context.seed)
+  const id = sessionIdFor(context.seed, context.results)
   if (!active || findSession(id)) return openSeed(context)
   cancelTask(active.id)
   setSessions(

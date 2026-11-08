@@ -6,9 +6,8 @@ import {
   clearQuery,
   removeSimpleRow,
   setMatchMode,
+  setRowChoice,
   setRowDepth,
-  setRowItem,
-  setRowKind,
   setRowUpgrade,
 } from '../../../src/features/find/simple-edit'
 import {
@@ -104,31 +103,29 @@ describe('row fields', () => {
   })
   const row = () => simple().constraints[0]
 
-  it('drops the item on a kind change, keeping a still-valid upgrade', () => {
+  it('switches to any item of another kind, keeping a still-valid upgrade', () => {
     setRowUpgrade(key, 3)
-    setRowKind(key, 'wand')
-    expect(row()).toMatchObject({ kind: 'wand', minUpgrade: 3 })
-    expect(row()?.item).toBeUndefined()
+    setRowChoice(key, 'wand', undefined)
+    expect(row()).toEqual({ key, kind: 'wand', minUpgrade: 3 })
   })
 
-  it('picks the first item for kinds the engine searches by name only', () => {
-    setRowKind(key, 'trinket')
-    expect(row()).toMatchObject({ kind: 'trinket', item: 'chaotic_censer' })
-    setRowKind(key, 'artifact')
-    expect(row()?.item).toBeDefined()
+  it('names an item of a kind the engine searches by name only', () => {
+    setRowUpgrade(key, 3)
+    setRowChoice(key, 'trinket', 'chaotic_censer')
+    expect(row()).toEqual({ key, kind: 'trinket', item: 'chaotic_censer' })
   })
 
   it('drops an upgrade the new item cannot reach', () => {
-    setRowKind(key, 'melee_weapon')
+    setRowChoice(key, 'melee_weapon', undefined)
     setRowUpgrade(key, 5)
-    setRowItem(key, 'longsword')
+    setRowChoice(key, 'melee_weapon', 'longsword')
     expect(row()?.minUpgrade).toBe(5)
-    setRowItem(key, 'sword')
+    setRowChoice(key, 'melee_weapon', 'sword')
     expect(row()?.minUpgrade).toBeUndefined()
   })
 
   it('clears the item back to any', () => {
-    setRowItem(key, undefined)
+    setRowChoice(key, 'ring', undefined)
     expect(row()).toEqual({ key, kind: 'ring' })
   })
 })

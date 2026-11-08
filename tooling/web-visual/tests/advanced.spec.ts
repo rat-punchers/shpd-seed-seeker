@@ -4,6 +4,7 @@ import {
   collectBrowserErrors,
   expectNoBrowserErrors,
 } from './helpers/browser-errors'
+import { itemPicker } from './helpers/item-picker'
 
 const viewTab = (page: Page, name: 'Simple' | 'Advanced') =>
   page
@@ -67,7 +68,7 @@ for (const viewport of [
       .getByRole('alert')
       .filter({ hasText: 'Advanced query active' })
     await expect(banner).toBeVisible()
-    await expect(page.getByLabel('Item 1 name')).toHaveCount(0)
+    await expect(itemPicker(page, 1)).toHaveCount(0)
 
     // The banner's way back to the whole query.
     await banner.getByRole('button', { name: 'Edit in Advanced' }).click()
@@ -84,7 +85,7 @@ for (const viewport of [
       page.getByText('Add the items a seed must hold.')
     ).toBeVisible()
     await page.getByRole('button', { name: 'Add item' }).click()
-    await expect(page.getByLabel('Item 1 name')).toBeVisible()
+    await expect(itemPicker(page, 1)).toBeVisible()
     expectNoBrowserErrors(errors)
   })
 }

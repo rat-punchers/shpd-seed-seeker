@@ -32,7 +32,7 @@ import { probabilityLabel } from '../../shared/format'
 import { AdvancedQuery } from '../advanced'
 import { validateQuery } from '../query/validation'
 import { isSearchActive } from '../search/coordinator-state'
-import { searchStore } from '../search/store'
+import { resultsTabsStore } from '../search/tabs'
 import { ConstraintEditor } from './ConstraintEditor'
 import { $analysis, toggleSearch } from './run'
 import { toSimple } from './simple'
@@ -42,6 +42,13 @@ const isMac =
   typeof navigator !== 'undefined' &&
   /Mac|iPhone|iPad/.test(navigator.userAgent)
 const SHORTCUT = isMac ? '⌘ + Enter' : 'Ctrl + Enter'
+
+/**
+ * On desktop the query scrolls inside the sidebar; the padding keeps focus
+ * rings visible. `relative` clips the absolutely positioned inputs inside
+ * switches, which would otherwise lengthen the page.
+ */
+const SCROLL_AREA = 'lg:relative lg:-mx-4 lg:min-h-0 lg:overflow-y-auto lg:px-4'
 
 /** Shown when the saved query holds something the Simple view cannot. */
 function AdvancedQueryNotice({ running }: { running: boolean }) {
@@ -120,8 +127,13 @@ export function FinderForm() {
   const query = useStore($query)
   const view = useStore($findView)
   const analysis = useStore($analysis)
-  const status = useStore(searchStore, (state) => state.state)
-  const running = isSearchActive({ state: status })
+  // The search may run in another results tab; the query is shared.
+  const status = useStore(
+    resultsTabsStore,
+    (state) =>
+      state.tabs.find((tab) => isSearchActive(tab.search))?.search.state
+  )
+  const running = status !== undefined
   const simple = useMemo(() => toSimple(query), [query])
   const validation = useMemo(() => validateQuery(query), [query])
   const impossible = Boolean(analysis?.valid && analysis.impossible)
@@ -134,30 +146,43 @@ export function FinderForm() {
   }
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-3">
+    <form
+      onSubmit={submit}
+      noValidate
+      className="flex flex-col gap-3 lg:min-h-0 lg:flex-1"
+    >
       <Tabs
         value={view}
         onValueChange={(value) => {
           if (isFindView(value)) setFindView(value)
         }}
+        className="lg:min-h-0 lg:flex-1"
       >
-        <TabsList variant="line" className="w-full" aria-label="Query view">
+        <TabsList
+          variant="line"
+          className="w-full shrink-0"
+          aria-label="Query view"
+        >
           <TabsTrigger value="simple">Simple</TabsTrigger>
           <TabsTrigger value="advanced">Advanced</TabsTrigger>
         </TabsList>
-        <TabsContent value="simple">
+        <TabsContent value="simple" className={SCROLL_AREA}>
           {simple ? (
             <ConstraintEditor simple={simple} running={running} />
           ) : (
             <AdvancedQueryNotice running={running} />
           )}
         </TabsContent>
-        <TabsContent value="advanced">
+        <TabsContent
+          value="advanced"
+          className={SCROLL_AREA}
+          data-testid="find-query-scroll"
+        >
           <AdvancedQuery />
         </TabsContent>
       </Tabs>
       <QueryEstimate blocked={blocked} />
-      <div className="flex items-end justify-between gap-2">
+      <div className="flex shrink-0 items-end justify-between gap-2">
         {simple && view === 'simple' ? (
           <Field orientation="horizontal" className="w-auto gap-2">
             <FieldLabel htmlFor="finder-match-rule">

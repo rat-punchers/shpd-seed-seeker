@@ -9,11 +9,22 @@ import { WorkspaceEmptyPlaceholder } from '../../shared/ui/WorkspaceEmptyPlaceho
 import { RESULT_CAP } from '../search/coordinator-state'
 import { searchStore } from '../search/store'
 import { ResultCard } from './ResultCard'
+import { ResultsTabs } from './ResultsTabs'
 import { ResultsActions, ResultsNotice } from './results/ResultsActions'
 import { SearchStatusCard } from './SearchStatusCard'
 
-/** The Find workspace: the search run, its matches and the results file. */
+/** The Find workspace: the results tabs over the shown tab's results. */
 export function FindWorkspace() {
+  return (
+    <div className="flex min-h-full flex-col">
+      <ResultsTabs />
+      <FindResults />
+    </div>
+  )
+}
+
+/** The shown tab: the search run, its matches and the results file. */
+function FindResults() {
   const state = useStore(searchStore, (search) => search.state)
   const error = useStore(searchStore, (search) => search.error)
   const matches = useStore(searchStore, (search) => search.matches)

@@ -46,31 +46,34 @@ const button = (name: string) =>
   [...container.querySelectorAll('button')].find(
     (element) => element.textContent?.trim() === name
   )
-const select = (label: string) =>
-  container.querySelector<HTMLSelectElement>(`select[aria-label="${label}"]`)
-function choose(label: string, value: string) {
-  const element = select(label)
-  if (!element) throw new Error(`no select ${label}`)
-  act(() => {
-    element.value = value
-    element.dispatchEvent(new Event('change', { bubbles: true }))
-  })
+const picker = (number: number) =>
+  container.querySelector<HTMLButtonElement>(
+    `button[aria-label="Item ${number}"]`
+  )
+/** Clicks the element in the page (the picker's menu is portaled). */
+function press(selector: string, text?: string) {
+  const element = [...document.querySelectorAll<HTMLElement>(selector)].find(
+    (candidate) => text === undefined || candidate.textContent?.trim() === text
+  )
+  if (!element) throw new Error(`nothing to press: ${selector} ${text ?? ''}`)
+  act(() => element.click())
 }
 
 it('asks for a first item and keeps Find disabled until then', () => {
   expect(container.textContent).toContain('Add at least one requirement.')
   expect(button('Find')?.disabled).toBe(true)
   act(() => button('Add item')?.click())
-  expect(select('Item 1 name')?.value).toBe('ring_wealth')
+  expect(picker(1)?.textContent).toContain('Ring of Wealth')
   expect(container.textContent).not.toContain('Add at least one requirement.')
 })
 
 it('writes row edits to the saved query', () => {
   act(() => button('Add item')?.click())
-  choose('Item 1 category', 'wand')
-  choose('Item 1 name', 'wand_frost')
-  choose('Item 1 upgrade level', '2')
-  choose('Item 1 floor', '9')
+  press('button[aria-label="Item 1"]')
+  press('[data-slot="combobox-item"]', 'Wand of Frost')
+  // The menu stays open for the upgrade and floor.
+  press('[aria-label="At least +2"]')
+  press('[aria-label="By floor 9"]')
   expect(toSimple($query.get())?.constraints).toEqual([
     expect.objectContaining({
       kind: 'wand',
@@ -115,7 +118,7 @@ it('shows the match probability of a possible query', () => {
 it('shows an Advanced query as a notice that can clear it', () => {
   act(() => setQuery({ ...defaultQueryState(), requireBlacksmith: true }))
   expect(container.textContent).toContain('Advanced query active')
-  expect(select('Item 1 name')).toBeNull()
+  expect(picker(1)).toBeNull()
   act(() => button('Clear')?.click())
   expect($query.get()).toEqual(defaultQueryState())
 })
@@ -146,7 +149,7 @@ it('locks the rows and offers Cancel while a search runs', () => {
   act(() => searchStore.setState((state) => ({ ...state, state: 'running' })))
   expect(button('Cancel')).toBeDefined()
   expect(button('Find')).toBeUndefined()
-  expect(select('Item 1 name')?.disabled).toBe(true)
+  expect(picker(1)?.disabled).toBe(true)
   expect(button('Add item')?.disabled).toBe(true)
   act(() => searchStore.setState((state) => ({ ...state, state: 'stopping' })))
   expect(button('Cancelling…')?.disabled).toBe(true)

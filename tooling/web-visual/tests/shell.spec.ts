@@ -134,3 +134,34 @@ test('at 390px the sidebar stacks above the workspace and fits', async ({
   expect(overflow).toBeLessThanOrEqual(0)
   expectNoBrowserErrors(errors)
 })
+
+test('on desktop a long Advanced query scrolls inside the sidebar, not the page', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 700 })
+  const errors = collectBrowserErrors(page)
+  await openApp(page, { mode: 'find', 'find-view': 'advanced' })
+  await page.getByLabel('Load preset').selectOption({ label: 'Necromancer' })
+  for (const name of ['Wandmaker', 'Challenges']) {
+    await page
+      .getByRole('region', { name, exact: true })
+      .locator('summary')
+      .click()
+  }
+
+  const scroll = page.getByTestId('find-query-scroll')
+  const heights = await scroll.evaluate((node) => ({
+    client: node.clientHeight,
+    scroll: node.scrollHeight,
+    page: document.documentElement.scrollHeight,
+  }))
+  expect(heights.scroll).toBeGreaterThan(heights.client)
+  expect(heights.page).toBe(700)
+  await expect(
+    page.getByRole('tablist', { name: 'Query view' })
+  ).toBeInViewport()
+  await expect(
+    page.getByRole('button', { name: 'Find', exact: true })
+  ).toBeInViewport()
+  expectNoBrowserErrors(errors)
+})

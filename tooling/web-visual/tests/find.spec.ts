@@ -4,6 +4,7 @@ import {
   collectBrowserErrors,
   expectNoBrowserErrors,
 } from './helpers/browser-errors'
+import { editItem, itemPicker } from './helpers/item-picker'
 
 const SEED_CODE = /^[A-Z]{3}-[A-Z]{3}-[A-Z]{3}$/
 
@@ -11,7 +12,7 @@ const SEED_CODE = /^[A-Z]{3}-[A-Z]{3}-[A-Z]{3}$/
 async function openFindWithOneRow(page: Page) {
   await openApp(page, { mode: 'find' })
   await page.getByRole('button', { name: 'Add item' }).click()
-  await expect(page.getByLabel('Item 1 name')).toBeVisible()
+  await expect(itemPicker(page, 1)).toBeVisible()
 }
 
 test('a query every seed matches finds its first seed and hands it to Analyze', async ({
@@ -20,8 +21,7 @@ test('a query every seed matches finds its first seed and hands it to Analyze', 
   const errors = collectBrowserErrors(page)
   await openFindWithOneRow(page)
   // Any ring by floor 24: every seed holds one.
-  await page.getByLabel('Item 1 name').selectOption('any')
-  await page.getByLabel('Item 1 floor').selectOption('24')
+  await editItem(page, 1, { item: 'Any ring', floor: 24 })
   await expect(
     page.getByRole('status').filter({ hasText: 'Match probability' })
   ).toHaveText('Match probability ≈ 1 in 1')
@@ -65,14 +65,14 @@ test('Ctrl+Enter starts and cancels a search, and leaving asks first', async ({
       ],
     }),
   })
-  await expect(page.getByLabel('Item 2 name')).toHaveValue('ring_wealth')
+  await expect(itemPicker(page, 2)).toContainText('Ring of Wealth')
   await expect(page.getByTestId('query-estimate')).toContainText('1 in')
 
   await page.keyboard.press('Control+Enter')
   await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible()
   await expect(page.getByText('Searching', { exact: true })).toBeVisible()
   // The item rows are locked while the search runs.
-  await expect(page.getByLabel('Item 1 name')).toBeDisabled()
+  await expect(itemPicker(page, 1)).toBeDisabled()
 
   const dialog = page.waitForEvent('dialog')
   void page.close({ runBeforeUnload: true }).catch(() => undefined)
@@ -83,7 +83,7 @@ test('Ctrl+Enter starts and cancels a search, and leaving asks first', async ({
 
   await page.keyboard.press('Control+Enter')
   await expect(page.getByText('Cancelled', { exact: true })).toBeVisible()
-  await expect(page.getByLabel('Item 1 name')).toBeEnabled()
+  await expect(itemPicker(page, 1)).toBeEnabled()
   expectNoBrowserErrors(errors)
 })
 
@@ -98,10 +98,11 @@ for (const viewport of [
     const errors = collectBrowserErrors(page)
     await openFindWithOneRow(page)
     // Wand of Lightning +3 first generates on floor 7.
-    await page.getByLabel('Item 1 category').selectOption('wand')
-    await page.getByLabel('Item 1 name').selectOption('wand_lightning')
-    await page.getByLabel('Item 1 upgrade level').selectOption('3')
-    await page.getByLabel('Item 1 floor').selectOption('6')
+    await editItem(page, 1, {
+      item: 'Wand of Lightning',
+      upgrade: 3,
+      floor: 6,
+    })
 
     const alert = page
       .getByRole('alert')
@@ -119,7 +120,7 @@ for (const viewport of [
     ).toBeVisible()
 
     // One floor deeper the query is possible again.
-    await page.getByLabel('Item 1 floor').selectOption('7')
+    await editItem(page, 1, { floor: 7 })
     await expect(alert).toBeHidden()
     await expect(
       page.getByRole('button', { name: 'Find', exact: true })

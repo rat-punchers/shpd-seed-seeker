@@ -146,10 +146,15 @@ it('hands a result to Analyze with the query and trinket that found it', () => {
   analyzeMatch({ code: 'AAA-AAA-AAB', value: 1, selectedTrinket: null })
   expect($mode.get()).toBe('analyze')
   expect($analyzeRequest.get()).toEqual({
+    results: 1,
     seed: 'AAA-AAA-AAB',
     query,
     trinket: 'none',
   })
   analyzeMatch({ code: 'AAA-AAA-AAC', value: 2 })
-  expect($analyzeRequest.get()).toEqual({ seed: 'AAA-AAA-AAC', query })
+  expect($analyzeRequest.get()).toEqual({
+    seed: 'AAA-AAA-AAC',
+    results: 1,
+    query,
+  })
 })

@@ -7,12 +7,10 @@ import init, {
   SearchSession,
 } from '../../engine/pkg/seedfinder.js'
 import type { SearchAdvance } from '../../engine/types'
+import { FIRST_CHUNK, nextChunk } from './chunk'
 import type { SearchWorkerRequest, SearchWorkerResponse } from './protocol'
 
 const context = self as unknown as DedicatedWorkerGlobalScope
-// Small enough that even a slow worker surfaces progress several times a
-// second; posts are still rate-limited to one per 100ms below.
-const CHUNK = 256
 let activeSession = 0
 let stopRequested = false
 const ready = init({
@@ -22,8 +20,16 @@ const ready = init({
   ),
 })
 const post = (message: SearchWorkerResponse) => context.postMessage(message)
+// A MessageChannel round trip lets a queued stop in without the 4ms clamp
+// nested timeouts get.
+const channel = new MessageChannel()
+const yielded: (() => void)[] = []
+channel.port1.onmessage = () => yielded.shift()?.()
 const yieldToMessages = () =>
-  new Promise<void>((resolve) => setTimeout(resolve, 0))
+  new Promise<void>((resolve) => {
+    yielded.push(resolve)
+    channel.port2.postMessage(null)
+  })
 
 async function runSearch(
   message: Extract<SearchWorkerRequest, { type: 'search:start' }>
@@ -34,7 +40,9 @@ async function runSearch(
   const sessionId = message.sessionId
   await ready
   const scanned = message.segments.map(() => 0)
-  let lastPosted = performance.now()
+  // The first chunk reports at once, so progress shows without a delay.
+  let lastPosted = Number.NEGATIVE_INFINITY
+  let chunk = FIRST_CHUNK
   let pendingMatches: SearchAdvance['matches'] = []
   const flush = () => {
     post({
@@ -61,11 +69,15 @@ async function runSearch(
           segment.endSeedExclusive
         )
         try {
+          let tested = 0
           while (active()) {
-            const advance = JSON.parse(search.advance(CHUNK)) as SearchAdvance
+            const began = performance.now()
+            const advance = JSON.parse(search.advance(chunk)) as SearchAdvance
+            const now = performance.now()
+            chunk = nextChunk(chunk, advance.tested - tested, now - began)
+            tested = advance.tested
             scanned[segmentIndex] = offset + advance.tested
             pendingMatches.push(...advance.matches)
-            const now = performance.now()
             if (now - lastPosted >= 100) {
               flush()
               lastPosted = now

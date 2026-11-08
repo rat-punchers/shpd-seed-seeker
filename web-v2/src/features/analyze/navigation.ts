@@ -1,10 +1,11 @@
 /**
  * Walking Find's results from Analyze: J (next) and K (previous) on a
- * keyboard, horizontal swipes on touch. Only a tab showing a search result
- * navigates; it is replaced in place by the neighbouring result.
+ * keyboard, horizontal swipes on touch. Only a tab opened from a results tab
+ * navigates, through that tab's seeds; it is replaced in place.
  */
 import { $mode } from '../../app/store/mode'
-import { searchStore } from '../search/store'
+import type { ParsedSeed } from '../../engine/types'
+import { tabSearch } from '../search/tabs'
 import { $activeSeedId, findSession, replaceActiveSeed } from './sessions'
 
 export interface ResultPosition {
@@ -44,20 +45,25 @@ export function activeSeedCode(): string | undefined {
   return session?.report?.seed.code ?? session?.seed
 }
 
-export function resultSeeds(): string[] {
-  return searchStore.state.matches.map((match) => match.code)
+/** The seeds of results tab `results`; none when the tab is gone. */
+export function resultMatches(results: number | undefined): ParsedSeed[] {
+  return results === undefined ? [] : (tabSearch(results)?.matches ?? [])
 }
 
 /** Opens the result `delta` steps away in the active tab; false when none. */
 export function stepActiveResult(delta: number): boolean {
-  const next = stepResult(resultSeeds(), activeSeedCode(), delta)
-  if (!next) return false
-  const match = searchStore.state.matches.find((entry) => entry.code === next)
-  const query = searchStore.state.query
+  const results = findSession($activeSeedId.get())?.results
+  const matches = resultMatches(results)
+  const seeds = matches.map((match) => match.code)
+  const next = stepResult(seeds, activeSeedCode(), delta)
+  if (!next || results === undefined) return false
+  const match = matches.find((entry) => entry.code === next)
+  const query = tabSearch(results)?.query
   const trinket =
     match?.selectedTrinket === null ? 'none' : match?.selectedTrinket
   void replaceActiveSeed({
     seed: next,
+    results,
     ...(query ? { query } : {}),
     ...(query?.challenges?.length ? { challenges: query.challenges } : {}),
     ...(trinket ? { trinket } : {}),

@@ -2,8 +2,7 @@ import { $query, setQuery } from '../../app/store/query'
 import type { RequirementKind } from '../../engine/types'
 import { defaultQueryState } from '../query/query'
 import { nextKeyHint, noteNextKey } from '../query/requirements/board'
-import { isSearchActive } from '../search/coordinator-state'
-import { searchStore } from '../search/store'
+import { anySearchActive } from '../search/tabs'
 import {
   fromSimple,
   type MatchMode,
@@ -11,12 +10,7 @@ import {
   type SimpleQuery,
   toSimple,
 } from './simple'
-import {
-  DEFAULT_ROW_DEPTH,
-  itemsForKind,
-  requiresItem,
-  upgradeLevels,
-} from './simple-items'
+import { DEFAULT_ROW_DEPTH, upgradeLevels } from './simple-items'
 
 /** The most rows Simple offers; Advanced has no such cap. */
 export const MAX_SIMPLE_ROWS = 32
@@ -50,7 +44,7 @@ function withDepths(
 
 /** Applies a Simple edit to the saved query. Refused while a search runs. */
 function editSimple(change: (simple: SimpleQuery) => SimpleQuery): void {
-  if (isSearchActive(searchStore.state)) return
+  if (anySearchActive()) return
   const simple = toSimple($query.get())
   if (!simple) return
   setQuery(fromSimple(change(simple)))
@@ -109,25 +103,17 @@ function editRow(
   }))
 }
 
-/** A new kind drops the item, or picks the first one where "any" is not allowed. */
-export function setRowKind(key: number, kind: RequirementKind): void {
+/** Picks a kind and item together, keeping the upgrade where it still fits. */
+export function setRowChoice(
+  key: number,
+  kind: RequirementKind,
+  item: string | undefined
+): void {
   editRow(key, ({ item: _, minUpgrade, ...row }) => {
-    const item = requiresItem(kind) ? itemsForKind(kind)[0]?.id : undefined
     const upgrade = keptUpgrade(kind, item, minUpgrade)
     return {
       ...row,
       kind,
-      ...(item ? { item } : {}),
-      ...(upgrade !== undefined ? { minUpgrade: upgrade } : {}),
-    }
-  })
-}
-
-export function setRowItem(key: number, item: string | undefined): void {
-  editRow(key, ({ item: _, minUpgrade, ...row }) => {
-    const upgrade = keptUpgrade(row.kind, item, minUpgrade)
-    return {
-      ...row,
       ...(item ? { item } : {}),
       ...(upgrade !== undefined ? { minUpgrade: upgrade } : {}),
     }
@@ -153,6 +139,6 @@ export function setMatchMode(matchMode: MatchMode): void {
 
 /** Replaces the saved query with an empty one, from any view. */
 export function clearQuery(): void {
-  if (isSearchActive(searchStore.state)) return
+  if (anySearchActive()) return
   setQuery(defaultQueryState())
 }

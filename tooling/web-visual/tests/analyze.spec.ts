@@ -156,8 +156,8 @@ test('J and K walk Find results from Analyze', async ({ page }) => {
   await page.keyboard.press('j')
   await expect(seedTitle(page)).toHaveText(second)
   await expect(position).toContainText(/Result 2 of/)
-  // Navigation replaces the tab instead of opening another.
-  await expect(seedTabs(page).getByRole('tab')).toHaveCount(1)
+  // Navigation replaces the tab, named after its results, instead of opening another.
+  await expect(seedTabs(page).getByRole('tab')).toHaveText(['Results #1'])
   await page.keyboard.press('k')
   await expect(seedTitle(page)).toHaveText(first)
   await position.getByRole('button', { name: 'Next result' }).click()

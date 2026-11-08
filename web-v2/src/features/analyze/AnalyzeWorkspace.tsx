@@ -12,6 +12,7 @@ import {
 import { useStore } from '@tanstack/react-store'
 import { type TouchEvent, useRef } from 'react'
 import { WorkspaceEmptyPlaceholder } from '../../shared/ui/WorkspaceEmptyPlaceholder'
+import { resultsTabLabel } from '../search/tabs'
 import { stepActiveResult, swipeDelta } from './navigation'
 import { usePublishedHeight } from './report/hooks'
 import { SessionPane } from './SessionPane'
@@ -19,6 +20,7 @@ import {
   $activeSeedId,
   $sessions,
   closeSession,
+  type SeedSession,
   setActiveSeed,
 } from './sessions'
 
@@ -43,6 +45,12 @@ function useResultSwipe() {
     },
   }
 }
+
+/** A tab opened from Find is named after its results tab. */
+const tabLabel = (session: SeedSession) =>
+  session.results === undefined
+    ? session.seed
+    : resultsTabLabel(session.results)
 
 /** The Analyze workspace: one tab per open seed. */
 export function AnalyzeWorkspace() {
@@ -86,14 +94,16 @@ export function AnalyzeWorkspace() {
                 session.status === 'pending' ? (
                   <SpinnerGapIcon className="shrink-0 animate-spin" />
                 ) : null}
-                <span className="truncate font-mono text-sm">
-                  {session.seed}
+                <span
+                  className={`truncate text-sm ${session.results === undefined ? 'font-mono' : ''}`}
+                >
+                  {tabLabel(session)}
                 </span>
               </TabsTrigger>
               <button
                 type="button"
                 className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex size-5 shrink-0 items-center justify-center rounded-sm opacity-60 group-hover/seed-tab:opacity-100"
-                aria-label={`Close ${session.seed}`}
+                aria-label={`Close ${tabLabel(session)}`}
                 onClick={() => closeSession(session.id)}
               >
                 <XIcon className="size-3" />
