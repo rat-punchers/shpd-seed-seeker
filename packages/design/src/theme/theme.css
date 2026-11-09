@@ -14,6 +14,46 @@
   font-display: swap;
 }
 
+/*
+ * Swap-period stand-ins scaled to each web font's average advance and hhea
+ * ascent/descent, so the swap barely moves text. Liberation Sans and Arimo
+ * share Arial's metrics; Android has Roboto. Latin only, like the preloads.
+ */
+@font-face {
+  font-family: "Atkinson Next Arial";
+  src: local("Arial"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 98.43%;
+  ascent-override: 99.97%;
+  descent-override: 32.1%;
+  line-gap-override: 0%;
+  unicode-range: U+0000-00FF;
+}
+@font-face {
+  font-family: "Atkinson Next Roboto";
+  src: local("Roboto"), local("Roboto Regular"), local("Roboto-Regular");
+  size-adjust: 99.58%;
+  ascent-override: 98.82%;
+  descent-override: 31.73%;
+  unicode-range: U+0000-00FF;
+}
+@font-face {
+  font-family: "SPD Pixel Arial";
+  src: local("Arial"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 92.44%;
+  ascent-override: 100.36%;
+  descent-override: 26.41%;
+  line-gap-override: 0%;
+  unicode-range: U+0000-00FF;
+}
+@font-face {
+  font-family: "SPD Pixel Roboto";
+  src: local("Roboto"), local("Roboto Regular"), local("Roboto-Regular");
+  size-adjust: 93.52%;
+  ascent-override: 99.2%;
+  descent-override: 26.11%;
+  unicode-range: U+0000-00FF;
+}
+
 /* Consumers import this file from node_modules, which Tailwind does not
  * scan; name the components so their classes are generated. */
 @source "../components";
@@ -39,9 +79,13 @@
 }
 
 @theme inline {
-  --font-sans: "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
+  --font-sans:
+    "Atkinson Hyperlegible Next Variable", "Atkinson Next Arial",
+    "Atkinson Next Roboto", system-ui, sans-serif;
   --font-mono: "Atkinson Hyperlegible Mono Variable", ui-monospace, monospace;
-  --font-pixel: "SPD Pixel", "Atkinson Hyperlegible Mono Variable", monospace;
+  --font-pixel:
+    "SPD Pixel", "SPD Pixel Arial", "SPD Pixel Roboto",
+    "Atkinson Hyperlegible Mono Variable", monospace;
   --font-heading: var(--font-pixel);
 
   /* Pixel surfaces (slots, sprites, maps) stay square; see DESIGN.md. */

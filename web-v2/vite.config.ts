@@ -5,6 +5,7 @@ import wasm from 'vite-plugin-wasm'
 import { THEME_SCRIPT } from './src/app/theme-script.ts'
 import { CONFIG_SCRIPT } from './src/config.ts'
 import { contentSecurityPolicy } from './vite/csp.ts'
+import { fontPreload } from './vite/font-preload.ts'
 
 // Ports from the repository's block (see AGENTS.md).
 const DEV_PORT = 46000
@@ -24,6 +25,7 @@ function documentScripts(): Plugin {
 export default defineConfig({
   plugins: [
     documentScripts(),
+    fontPreload(),
     react(),
     tailwindcss(),
     wasm(),
