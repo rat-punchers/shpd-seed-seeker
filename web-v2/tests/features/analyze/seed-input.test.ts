@@ -1,15 +1,38 @@
-import { beforeAll, describe, expect, it } from 'bun:test'
+import { afterEach, beforeAll, describe, expect, it } from 'bun:test'
 import { formatSeedCode } from '../../../src/engine/wasm'
 import {
+  $seedFormatterReady,
   caretAfterSignificant,
   isCompleteSeedInput,
+  loadSeedFormatter,
+  mayCompleteSeedInput,
   significantCountBefore,
 } from '../../../src/features/analyze/seed-input'
+import { $seedInput } from '../../../src/features/analyze/sessions'
 import { loadEngine } from '../../engine/engine'
 
 beforeAll(loadEngine)
+afterEach(() => $seedInput.set(''))
 
 describe('the seed field', () => {
+  it('groups text typed before the formatter loaded, once it has', async () => {
+    $seedInput.set('ABCDEFGHI')
+    const loading = loadSeedFormatter()
+    expect(loadSeedFormatter()).toBe(loading)
+    await loading
+    expect($seedFormatterReady.get()).toBe(true)
+    expect($seedInput.get()).toBe('ABC-DEF-GHI')
+  })
+
+  it('lets enough letters or digits submit before the formatter loads', () => {
+    expect(mayCompleteSeedInput('ABCDEFGHI')).toBe(true)
+    expect(mayCompleteSeedInput(' abc def ghi extra')).toBe(true)
+    expect(mayCompleteSeedInput('20260101')).toBe(true)
+    expect(mayCompleteSeedInput('ABCDEFGH')).toBe(false)
+    expect(mayCompleteSeedInput('2026-01-0')).toBe(false)
+    expect(mayCompleteSeedInput('')).toBe(false)
+  })
+
   it('accepts only whole seed codes and daily dates', () => {
     expect(isCompleteSeedInput('ABC-DEF-GHI')).toBe(true)
     expect(isCompleteSeedInput('2026-01-01')).toBe(true)

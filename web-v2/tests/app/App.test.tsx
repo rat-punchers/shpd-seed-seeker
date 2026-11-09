@@ -36,9 +36,9 @@ it('shows the app name and the supported game version', () => {
   )
 })
 
-it('shows the workspace for the stored mode', () => {
+it('shows the workspace for the stored mode', async () => {
   expect(heading(2)).toBe('No seeds analyzed yet')
-  act(() => setMode('find'))
+  await act(async () => setMode('find'))
   expect(heading(2)).toBe('No search yet')
   const selected = container.querySelector('[role="tab"][aria-selected="true"]')
   expect(selected?.textContent).toBe('Find')

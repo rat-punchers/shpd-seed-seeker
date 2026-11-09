@@ -1,7 +1,9 @@
 // The sidebar's seed field. The engine's `format_seed_code` groups the
-// text; these helpers keep the caret where the user typed.
-import { initEngine } from '../../engine/wasm'
+// text; these helpers keep the caret where the user typed. The engine loads
+// on first use of the field, not at startup.
+import { formatSeedCode, initEngine } from '../../engine/wasm'
 import { AppStore } from '../../shared/store/persistent'
+import { $seedInput } from './sessions'
 
 const SEED_CODE = /^[A-Z]{3}-[A-Z]{3}-[A-Z]{3}$/
 const DAILY_DATE = /^\d{4}-\d{2}-\d{2}$/
@@ -9,14 +11,33 @@ const DAILY_DATE = /^\d{4}-\d{2}-\d{2}$/
 /** True once the engine module is loaded, so formatting can run. */
 export const $seedFormatterReady = new AppStore(false)
 
-/** Loads the engine for the seed formatter; safe to call more than once. */
+let loading: Promise<void> | undefined
+
+/**
+ * Loads the engine for the seed formatter and groups the text typed so far;
+ * safe to call more than once.
+ */
 export function loadSeedFormatter(): Promise<void> {
-  return initEngine().then(() => $seedFormatterReady.set(true))
+  loading ??= initEngine().then(() => {
+    $seedInput.set(formatSeedCode($seedInput.get()))
+    $seedFormatterReady.set(true)
+  })
+  return loading
 }
 
 /** A whole seed code (`ABC-DEF-GHI`) or daily date (`YYYY-MM-DD`). */
 export function isCompleteSeedInput(value: string): boolean {
   return SEED_CODE.test(value) || DAILY_DATE.test(value)
+}
+
+/**
+ * Before the formatter loads: whether `raw` has enough letters or digits to
+ * format into a whole seed. The formatted text decides once it has.
+ */
+export function mayCompleteSeedInput(raw: string): boolean {
+  const kind = kindOf(raw)
+  const count = significantCountBefore(raw, raw.length)
+  return kind === 'code' ? count >= 9 : kind === 'daily' && count >= 8
 }
 
 /** Letters start a seed code and digits a daily date, as the formatter decides. */

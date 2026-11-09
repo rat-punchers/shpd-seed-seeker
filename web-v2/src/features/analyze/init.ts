@@ -4,7 +4,7 @@ import { hasShareCode } from '../query/share-link'
 import { $analyzeRequest } from './handoff'
 import { initResultKeys } from './navigation'
 import { loadSeedFormatter } from './seed-input'
-import { $seedInput, openSeed, restoreSessions } from './sessions'
+import { openSeed, restoreSessions } from './sessions'
 
 /** The seed a `?scout=` link asks for, if any. */
 export function scoutLinkSeed(search: string): string | undefined {
@@ -22,14 +22,11 @@ export function initAnalyze(): () => void {
     ? undefined
     : scoutLinkSeed(window.location.search)
   if (linked) setMode('analyze')
-  const ready = loadSeedFormatter()
-  // Text typed before the engine loaded is grouped once it has.
-  void ready.then(
-    () => $seedInput.set(formatSeedCode($seedInput.get())),
-    () => undefined
-  )
+  // Restored reports come from the report worker; only a link needs the
+  // engine here.
+  const ready = linked ? loadSeedFormatter() : undefined
   void restoreSessions().then(async () => {
-    if (!linked) return
+    if (!linked || !ready) return
     // Format like the seed field, so `?scout=abcdefghi` opens `ABC-DEF-GHI`.
     const seed = await ready.then(
       () => formatSeedCode(linked),

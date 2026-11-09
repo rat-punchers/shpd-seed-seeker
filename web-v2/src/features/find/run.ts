@@ -95,18 +95,20 @@ function onBeforeUnload(event: BeforeUnloadEvent): void {
  * cleanup.
  */
 export function initFind(): () => void {
-  void getCoordinator()
-  // Workers load their engine on start; Find starts them before the first search.
-  const warm = () => {
-    if ($mode.get() === 'find')
-      void getCoordinator().then((ready) => ready.warm($workerCount.get()))
+  // The engine (several MB) loads only once Find opens; Analyze's first
+  // screen does not need it. Workers load their engine on start; Find starts
+  // them before the first search.
+  const open = () => {
+    if ($mode.get() !== 'find') return
+    void getCoordinator().then((ready) => ready.warm($workerCount.get()))
+    void refreshAnalysis()
   }
-  warm()
-  const modeSubscription = $mode.subscribe(warm)
+  open()
+  const modeSubscription = $mode.subscribe(open)
   let timer: ReturnType<typeof setTimeout> | undefined
-  void refreshAnalysis()
   const subscription = $query.subscribe(() => {
     clearTimeout(timer)
+    if ($mode.get() !== 'find') return
     timer = setTimeout(() => void refreshAnalysis(), ANALYSIS_DEBOUNCE_MS)
   })
   window.addEventListener('keydown', onKeyDown)

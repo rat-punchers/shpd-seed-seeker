@@ -23,36 +23,50 @@ import {
   $seedFormatterReady,
   caretAfterSignificant,
   isCompleteSeedInput,
+  loadSeedFormatter,
+  mayCompleteSeedInput,
   significantCountBefore,
 } from './seed-input'
 import { $seedInput, MAX_OPEN_SEEDS, openSeed } from './sessions'
+
+function load() {
+  void loadSeedFormatter().catch(() => undefined)
+}
+
+function submit(seed: string) {
+  if (!isCompleteSeedInput(seed)) return
+  $seedInput.set('')
+  void openSeed({ seed })
+}
 
 /** The sidebar's seed field: formats as you type and opens the seed in a tab. */
 export function SeedForm() {
   const seedInput = useStore($seedInput)
   const ready = useStore($seedFormatterReady)
   const inputRef = useRef<HTMLInputElement>(null)
+  // Significant characters before the caret, so it survives the regrouping
+  // when the engine loads mid-typing.
   const caretRef = useRef<number | null>(null)
 
   useLayoutEffect(() => {
     const input = inputRef.current
-    const caret = caretRef.current
-    if (!input || caret == null || input.value !== seedInput) return
+    const count = caretRef.current
+    if (!input || count == null || input.value !== seedInput) return
+    const caret = caretAfterSignificant(seedInput, count)
     input.setSelectionRange(caret, caret)
   }, [seedInput])
 
   function onChange(event: ChangeEvent<HTMLInputElement>) {
+    load()
     const raw = event.target.value
     const cursor = event.target.selectionStart ?? raw.length
     // Until the engine loads, keep the text as typed; it formats on load.
     const formatted = ready ? formatSeedCode(raw) : raw.toUpperCase()
-    caretRef.current = caretAfterSignificant(
-      formatted,
-      significantCountBefore(raw, cursor)
-    )
+    caretRef.current = significantCountBefore(raw, cursor)
     if (formatted === seedInput) {
+      const caret = caretAfterSignificant(formatted, caretRef.current)
       event.target.value = formatted
-      event.target.setSelectionRange(caretRef.current, caretRef.current)
+      event.target.setSelectionRange(caret, caret)
       return
     }
     $seedInput.set(formatted)
@@ -60,13 +74,16 @@ export function SeedForm() {
 
   function onSubmit(event: FormEvent) {
     event.preventDefault()
-    const seed = ready ? formatSeedCode(seedInput) : seedInput
-    if (!isCompleteSeedInput(seed)) return
-    $seedInput.set('')
-    void openSeed({ seed })
+    if (ready) return submit(formatSeedCode(seedInput))
+    void loadSeedFormatter().then(
+      () => submit($seedInput.get()),
+      () => submit(seedInput)
+    )
   }
 
-  const complete = isCompleteSeedInput(seedInput)
+  const complete = ready
+    ? isCompleteSeedInput(seedInput)
+    : mayCompleteSeedInput(seedInput)
   return (
     <form onSubmit={onSubmit} aria-label="Analyze a seed">
       <FieldGroup className="gap-2">
@@ -82,6 +99,8 @@ export function SeedForm() {
                 id="seed"
                 value={seedInput}
                 onChange={onChange}
+                onFocus={load}
+                onPointerDown={load}
                 placeholder="XXX-XXX-XXX or YYYY-MM-DD"
                 autoCapitalize="characters"
                 autoComplete="off"
