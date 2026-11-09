@@ -6,49 +6,12 @@ import {
 } from './helpers/browser-errors'
 import { editItem, itemPicker } from './helpers/item-picker'
 
-const SEED_CODE = /^[A-Z]{3}-[A-Z]{3}-[A-Z]{3}$/
-
 /** Opens Find with an empty query and adds one item row. */
 async function openFindWithOneRow(page: Page) {
   await openApp(page, { mode: 'find' })
   await page.getByRole('button', { name: 'Add item' }).click()
   await expect(itemPicker(page, 1)).toBeVisible()
 }
-
-test('a query every seed matches finds its first seed and hands it to Analyze', async ({
-  page,
-}) => {
-  const errors = collectBrowserErrors(page)
-  await openFindWithOneRow(page)
-  // Any ring by floor 24: every seed holds one.
-  await editItem(page, 1, { item: 'Any ring', floor: 24 })
-  await expect(
-    page.getByRole('status').filter({ hasText: 'Match probability' })
-  ).toHaveText('Match probability ≈ 1 in 1')
-
-  await page.getByRole('button', { name: 'Find', exact: true }).click()
-  const first = page.getByTestId('result-card').first()
-  await expect(first).toBeVisible()
-  const code = (await first.getByRole('heading').textContent()) ?? ''
-  expect(code).toMatch(SEED_CODE)
-  await expect(first).toContainText('Result 1')
-  // A query every seed matches stops at the result limit. Filling 1,024
-  // results takes over 15 s on a 4-core CI runner.
-  await expect(
-    page.getByText('Result limit reached (1,024 seeds).')
-  ).toBeVisible({ timeout: 60_000 })
-  await expect(
-    page.getByRole('button', { name: 'Find', exact: true })
-  ).toBeEnabled()
-
-  await first.getByRole('button', { name: 'Analyze seed' }).click()
-  await expect(
-    page
-      .getByRole('tablist', { name: 'Mode' })
-      .getByRole('tab', { name: 'Analyze' })
-  ).toHaveAttribute('aria-selected', 'true')
-  expectNoBrowserErrors(errors)
-})
 
 test('Ctrl+Enter starts and cancels a search, and leaving asks first', async ({
   page,

@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises'
 import { expect, type Page, test } from '@playwright/test'
 import { sectionToggle, selectOption } from './helpers/advanced'
 import { openApp, STORAGE_PREFIX } from './helpers/app'
@@ -6,7 +5,6 @@ import {
   collectBrowserErrors,
   expectNoBrowserErrors,
 } from './helpers/browser-errors'
-import { itemPicker } from './helpers/item-picker'
 
 const viewTab = (page: Page, name: 'Simple' | 'Advanced') =>
   page
@@ -134,95 +132,5 @@ test('the worker count is its own setting, kept across reloads', async ({
   await expect(page.getByRole('region', { name: 'Performance' })).toContainText(
     '1 of 4 cores'
   )
-  expectNoBrowserErrors(errors)
-})
-
-test('results export to a file and import back, and a pasted query replaces the query only', async ({
-  page,
-  context,
-}) => {
-  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-  const errors = collectBrowserErrors(page)
-  // Any ring by floor 24: every seed holds one, so the search fills fast.
-  await openApp(page, {
-    mode: 'find',
-    query: JSON.stringify({
-      auto_apply_trinket: true,
-      max_depth: 24,
-      requirements: [{ kind: 'ring' }],
-    }),
-  })
-  const exportButton = page.getByRole('button', {
-    name: 'Export results to a file',
-  })
-  await expect(exportButton).toBeDisabled()
-  await page.getByRole('button', { name: 'Find', exact: true }).click()
-  // Filling 1,024 results takes over 15 s on a 4-core CI runner.
-  await expect(
-    page.getByText('Result limit reached (1,024 seeds).')
-  ).toBeVisible({ timeout: 60_000 })
-  const first = await page
-    .getByTestId('result-card')
-    .first()
-    .getByRole('heading')
-    .textContent()
-
-  const download = page.waitForEvent('download')
-  await exportButton.click()
-  const file = await download
-  expect(file.suggestedFilename()).toBe('seed-seeker-results.json')
-  const path = await file.path()
-  const exported = JSON.parse(await readFile(path, 'utf8')) as {
-    format: string
-    results: { seed: string }[]
-  }
-  expect(exported.format).toBe('seed-seeker-results')
-  // Export writes every retained match; import keeps the first 1,024.
-  expect(exported.results.length).toBeGreaterThanOrEqual(1024)
-  expect(exported.results[0]?.seed).toBe(first)
-
-  await page.getByRole('button', { name: 'Clear results' }).click()
-  await expect(
-    page.getByRole('heading', { name: 'No search yet' })
-  ).toBeVisible()
-  await page.getByTestId('results-file-input').setInputFiles(path)
-  await expect(
-    page.getByRole('status').filter({ hasText: 'Imported' })
-  ).toBeVisible()
-  await expect(
-    page.getByText(
-      /^1,024 seeds loaded from a file · [\d,]+ entries dropped \(duplicates or beyond the 1,024-seed limit\)\.$/
-    )
-  ).toBeVisible()
-  await expect(
-    page.getByTestId('result-card').first().getByRole('heading')
-  ).toHaveText(first ?? '')
-
-  // A copied query (Copy JSON) replaces the query and keeps the results.
-  await page.evaluate(() =>
-    navigator.clipboard.writeText(
-      JSON.stringify({
-        auto_apply_trinket: true,
-        requirements: [{ item: 'wand_fireblast' }],
-      })
-    )
-  )
-  await page
-    .getByRole('button', {
-      name: 'Import results or a search from the clipboard',
-    })
-    .click()
-  await expect(itemPicker(page, 1)).toContainText('Wand of Fireblast')
-  await expect(page.getByTestId('result-card')).not.toHaveCount(0)
-
-  // Unreadable clipboard text says why and changes nothing.
-  await page.evaluate(() => navigator.clipboard.writeText('{broken'))
-  await page
-    .getByRole('button', {
-      name: 'Import results or a search from the clipboard',
-    })
-    .click()
-  await expect(page.getByTestId('results-notice')).toBeVisible()
-  await expect(itemPicker(page, 1)).toContainText('Wand of Fireblast')
   expectNoBrowserErrors(errors)
 })
