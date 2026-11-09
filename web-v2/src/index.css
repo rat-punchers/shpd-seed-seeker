@@ -12,6 +12,21 @@
   --effect-text-l: 0.78;
 }
 
+/* The static screen in `index.html` until the first render; hidden briefly so
+   a fast load does not flash it. */
+@keyframes boot-loading-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.boot-loading {
+  animation: boot-loading-in 150ms ease-out 300ms both;
+}
+
 /* An enchantment glow over an item sprite (`spriteGlowCss`). */
 @keyframes sprite-glow-pulse {
   0%,

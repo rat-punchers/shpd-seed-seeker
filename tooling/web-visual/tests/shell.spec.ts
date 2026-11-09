@@ -50,6 +50,31 @@ test('the mode tabs switch workspaces and the choice survives a reload', async (
   expectNoBrowserErrors(errors)
 })
 
+test('opening in Find shows a loading screen until Find has loaded', async ({
+  page,
+}) => {
+  const errors = collectBrowserErrors(page)
+  let release = () => {}
+  const held = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  await page.route('**/assets/find-chunk-*.js', async (route) => {
+    await held
+    await route.continue()
+  })
+  await openApp(page, { mode: 'find' })
+
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Loading Seed Seeker…' })
+  ).toBeVisible()
+  release()
+  await expect(
+    page.getByRole('heading', { name: 'No search yet' })
+  ).toBeVisible()
+  await expect(page.getByText('Loading Seed Seeker…')).toBeHidden()
+  expectNoBrowserErrors(errors)
+})
+
 test('the theme toggle cycles system → light → dark and persists', async ({
   page,
 }) => {
