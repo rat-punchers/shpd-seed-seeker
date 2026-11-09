@@ -75,6 +75,29 @@ test('opening in Find shows a loading screen until Find has loaded', async ({
   expectNoBrowserErrors(errors)
 })
 
+test('the loading screen is a centered spinner without the app stylesheet', async ({
+  page,
+}) => {
+  // The dev server applies the app stylesheet only once the module graph has
+  // loaded, so the boot screen must style itself.
+  await page.route('**/assets/*.css', (route) => route.abort())
+  await page.route('**/assets/find-chunk-*.js', () => {})
+  await openApp(page, { mode: 'find' })
+
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Loading Seed Seeker…' })
+  ).toBeVisible()
+  const spinner = await page.locator('.boot-loading svg').boundingBox()
+  const viewport = page.viewportSize()
+  if (!spinner || !viewport) throw new Error('no spinner or viewport box')
+  expect(spinner.width).toBe(24)
+  expect(spinner.height).toBe(24)
+  const middle = spinner.y + spinner.height / 2
+  expect(Math.abs(middle - viewport.height / 2)).toBeLessThanOrEqual(2)
+  expect(spinner.x).toBeGreaterThan(viewport.width / 4)
+  expect(spinner.x).toBeLessThan(viewport.width / 2)
+})
+
 test('the theme toggle cycles system → light → dark and persists', async ({
   page,
 }) => {
