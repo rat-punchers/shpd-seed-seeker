@@ -5,3 +5,13 @@
 
 /third_party/*
   Cache-Control: public, max-age=86400
+
+# The build (`vite/csp.ts`) puts the hashes of index.html's inline scripts in
+# script-src. Radix's scroll lock injects <style> elements, hence 'unsafe-inline'
+# for styles. The Cloudflare hosts serve the Web Analytics beacon.
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), bluetooth=(), browsing-topics=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), serial=(), usb=(), xr-spatial-tracking=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' INLINE_SCRIPT_HASHES https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; worker-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'

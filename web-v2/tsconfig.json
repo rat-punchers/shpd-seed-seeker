@@ -8,5 +8,5 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["src", "tests", "vite.config.ts", "package.json"]
+  "include": ["src", "tests", "vite", "vite.config.ts", "package.json"]
 }
