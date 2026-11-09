@@ -2,6 +2,7 @@ import { afterEach, beforeEach, expect, it } from 'bun:test'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { App } from '../../src/app/App'
+import { preloadFind } from '../../src/app/lazy-find'
 import { setMode } from '../../src/app/store/mode'
 
 let root: Root | undefined
@@ -38,7 +39,10 @@ it('shows the app name and the supported game version', () => {
 
 it('shows the workspace for the stored mode', async () => {
   expect(heading(2)).toBe('No seeds analyzed yet')
-  await act(async () => setMode('find'))
+  await act(async () => {
+    setMode('find')
+    await preloadFind()
+  })
   expect(heading(2)).toBe('No search yet')
   const selected = container.querySelector('[role="tab"][aria-selected="true"]')
   expect(selected?.textContent).toBe('Find')
