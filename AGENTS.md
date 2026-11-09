@@ -17,8 +17,6 @@ The repository root is a Bun workspace (isolated linker) for `web-v2`,
 `packages/*`, `tooling/web-visual` and `tooling/web-deploy`. Biome formats and
 lints only those workspaces and the root config files.
 
-- Do not edit `web/`. It keeps its own Vite+ (`vp`) and pnpm setup, CI job and
-  Cloudflare Pages deploy. It is not a Bun workspace and Biome ignores it.
 - Commands from the repository root: `bun install`, `bun run check`
   (`check:fix` to apply fixes), `bun run check:types` (`tsc -b`, TypeScript
   native compiler), `bun run build`, `bun run test`, `bun run dev`.

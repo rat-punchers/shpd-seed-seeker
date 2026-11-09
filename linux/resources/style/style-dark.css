@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 
 /*
- * The web app's palette (web/src/app/styles.css `:root`), laid over
+ * The original web app's palette, laid over
  * libadwaita's dark style while it is active: slate surfaces and borders,
  * the game's yellow, its action green, the upgrade green, enchantment teal,
  * curse red, secret violet and the region colours. style.css holds the light

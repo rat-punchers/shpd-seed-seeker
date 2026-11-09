@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Builds the browser engine and copies its runtime assets into a web app.
-# Usage: scripts/build-web-wasm.sh [app-dir]   (default: web, e.g. web-v2)
+# Usage: scripts/build-web-wasm.sh [app-dir]   (default: web-v2)
 set -euo pipefail
 
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$repo_root"
 
-app_name="${1:-web}"
+app_name="${1:-web-v2}"
 app_dir="$repo_root/$app_name"
 if [[ ! -d "$app_dir/src" ]]; then
     echo "No web app at $app_dir" >&2

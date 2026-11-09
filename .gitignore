@@ -44,15 +44,6 @@
 # PGO raw counter dumps (the merged .profdata is checked in).
 pgo/*.profraw
 
-# Web app dependencies and generated browser assets.
-/web/node_modules/
-/web/dist/
-/web/src/engine/pkg/
-/web/src/engine/editor-pkg/
-/web/src/generated/
-/web/public/third_party/
-/web/public/licenses/
-
 /tooling/oracle-4.0/.work/
 /tooling/java-finder/.work/
 /.work-uv/
@@ -68,9 +59,6 @@ node_modules/
 /web-v2/src/generated/
 /web-v2/public/third_party/
 /web-v2/public/licenses/
-/packages/design/dist/
-/tooling/web-visual/test-results/
-/tooling/web-visual/playwright-report/
 /packages/design/dist/
 /tooling/web-visual/test-results/
 /tooling/web-visual/playwright-report/

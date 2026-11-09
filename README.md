@@ -12,7 +12,7 @@
 An extremely fast seed finder for [Shattered Pixel Dungeon](https://shatteredpixel.com/),
 written in Rust — with native apps for Android, iOS, Linux, macOS, and Windows.
 
-**[Try it in your browser →](https://shpd-seed-seeker.pages.dev/)**
+**[Try it in your browser →](https://seedseeker.nerdcoder.xyz/)**
 
 <p align="center">
   <img alt="Matching seeds per minute on an Apple M4 Pro, 12 workers. +2 Runic Blade (Grim, Corrupting, Vampiric or Crystal) and +2 Ring of Might: Seed Seeker (AutoTrinket on) 79.9, Java 10.6. +5 Crossbow: Seed Seeker (AutoTrinket on) 8,429.7, Java 1,772.0. Both queries through floor 19; separate bar scales. Four trinkets with grass on floor 4 and a dark garden on floor 7: seeds per second on AMD EPYC-Genoa, Seed Seeker AVX2 2,936,344, Java 115,609." src="assets/benchmark.svg">
@@ -47,7 +47,7 @@ https://github.com/user-attachments/assets/7a4dd801-44dc-4ef1-82ce-a7911c46ecad
 ### Web app
 
 Run searches directly at
-[shpd-seed-seeker.pages.dev](https://shpd-seed-seeker.pages.dev/).
+[seedseeker.nerdcoder.xyz](https://seedseeker.nerdcoder.xyz/).
 
 ### Download a release
 
@@ -151,7 +151,7 @@ First two rows: **matching seeds per minute**, through floor 19. +2 Grim/Vampiri
 
 | Query | Java baseline | AutoTrinket off | AutoTrinket on | AutoTrinket on / Java |
 | --- | ---: | ---: | ---: | ---: |
-| [+2 Runic Blade and +2 Ring of Might](https://shpd-seed-seeker.pages.dev/#q=QyAhKCsAAeAAAuoKAA) | 3.8 | 25.1 | **37.7** | 10× |
+| [+2 Runic Blade and +2 Ring of Might](https://seedseeker.nerdcoder.xyz/#q=QyAhKCsAAeAAAuoKAA) | 3.8 | 25.1 | **37.7** | 10× |
 | +5 Crossbow | 779.3 | 3,633.9 | 3,639.5 | 4.7× |
 | [Four trinkets; grass floor 4; dark garden floor 7 (seeds/s)](docs/four-trinket-java-benchmark.md) | 115,608.8 | — | **2,936,344.4** | 25.4× |
 
@@ -169,35 +169,11 @@ tooling/benchmarks/run-linux.sh --minutes 10 --workers 8 --output /tmp/seed-seek
 
 ### Web app
 
-The web app is a [Vite+](https://viteplus.dev) project. Install `vp`
-(`curl -fsSL https://vite.plus | bash`), then build the browser engine before starting the dev
-server:
-
-```sh
-./scripts/build-web-wasm.sh && cd web && vp install && vp dev
-```
-
-Release tags deploy `web/dist` to Cloudflare Pages as `shpd-seed-seeker.pages.dev`; the
-workflow needs the `CLOUDFLARE_API_TOKEN` (Cloudflare Pages: Edit) and `CLOUDFLARE_ACCOUNT_ID`
-secrets. Response headers live in `web/public/_headers`.
-
-The original Firebase Hosting site, `shpd-seed-seeker.web.app`, only redirects to Pages so
-links shared before the move keep working. Browsers carry the `#q=` fragment across the 301.
-`firebase.json` redirects every path except those starting with a dot (Firebase's RE2 regexes
-have no lookahead), which keeps serving `/.well-known/assetlinks.json` for Android App Links.
-It is not part of the release workflow; redeploy it by hand only if that file changes:
-
-```sh
-npx firebase-tools deploy --only hosting --project shpd-seed-seeker
-```
-
-### web-v2
-
-`web-v2/` is a second web app with Find (Simple and Advanced) and an Analyze
+`web-v2/` is the web app, with Find (Simple and Advanced) and an Analyze
 report. It lives in the root Bun workspace with `packages/design`,
-`tooling/web-visual` and `tooling/web-deploy`; `web/` is not part of it.
-Install [Bun](https://bun.sh), Rust with the `wasm32-unknown-unknown` target,
-and `wasm-pack`, then from the repository root:
+`tooling/web-visual` and `tooling/web-deploy`. Install [Bun](https://bun.sh),
+Rust with the `wasm32-unknown-unknown` target, and `wasm-pack`, then from the
+repository root:
 
 ```sh
 bun install
@@ -221,6 +197,20 @@ On a push to `main` it then deploys `web-v2/dist` as the Cloudflare Worker
 GitHub Actions secrets; `bun run deploy:setup` creates the token and stores both
 there and in the gitignored `web-v2/.env`, which a manual `bun run deploy` in
 `web-v2/` reads ([tooling/web-deploy/README.md](tooling/web-deploy/README.md)).
+
+Share links still use the `shpd-seed-seeker.pages.dev` host, which keeps
+serving the last build of the retired first web app and the
+`/.well-known/assetlinks.json` for Android App Links; web-v2 opens the same
+`#q=` codes. The original Firebase Hosting site, `shpd-seed-seeker.web.app`,
+redirects to Pages, and browsers carry the `#q=` fragment across the 301.
+`firebase.json` redirects every path except those starting with a dot
+(Firebase's RE2 regexes have no lookahead), so it keeps serving
+`firebase/public/.well-known/assetlinks.json`. Redeploy it by hand only if that
+file changes:
+
+```sh
+npx firebase-tools deploy --only hosting --project shpd-seed-seeker
+```
 
 ### Android
 
