@@ -1,4 +1,11 @@
-import { type ComponentType, lazy, Suspense, useState } from 'react'
+import { SpinnerGapIcon } from '@phosphor-icons/react'
+import {
+  type ComponentType,
+  lazy,
+  type ReactNode,
+  Suspense,
+  useState,
+} from 'react'
 import { $mode } from './store/mode'
 
 type FindChunk = typeof import('./find-chunk')
@@ -41,23 +48,48 @@ const LazyFindWorkspace = lazy(() =>
 function Deferred({
   pick,
   Lazy,
+  fallback,
 }: {
   pick: (chunk: FindChunk) => ComponentType
   Lazy: ComponentType
+  fallback: ReactNode
 }) {
   const [Loaded] = useState(() => (loaded ? pick(loaded) : undefined))
   if (Loaded) return <Loaded />
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={fallback}>
       <Lazy />
     </Suspense>
   )
 }
 
 export function FinderForm() {
-  return <Deferred pick={pickForm} Lazy={LazyFinderForm} />
+  return (
+    <Deferred
+      pick={pickForm}
+      Lazy={LazyFinderForm}
+      fallback={
+        <div className="text-muted-foreground flex items-center justify-center gap-2 py-8">
+          <SpinnerGapIcon className="size-5 animate-spin" />
+          <p role="status" className="text-sm">
+            Loading Find…
+          </p>
+        </div>
+      }
+    />
+  )
 }
 
 export function FindWorkspace() {
-  return <Deferred pick={pickWorkspace} Lazy={LazyFindWorkspace} />
+  return (
+    <Deferred
+      pick={pickWorkspace}
+      Lazy={LazyFindWorkspace}
+      fallback={
+        <div className="text-muted-foreground flex min-h-48 items-center justify-center py-12">
+          <SpinnerGapIcon className="size-6 animate-spin" />
+        </div>
+      }
+    />
+  )
 }
