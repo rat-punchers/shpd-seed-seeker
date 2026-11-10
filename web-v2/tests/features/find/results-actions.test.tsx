@@ -98,7 +98,7 @@ it('reads only on demand and imports the query, seeds and trinkets', async () =>
   expect(
     searchStore.state.matches.map((match) => match.selectedTrinket)
   ).toEqual(imported.trinkets)
-  expect(host.querySelectorAll('[data-testid="result-card"]')).toHaveLength(2)
+  expect(host.querySelectorAll('[data-testid="result-row"]')).toHaveLength(2)
   // The fixture was written for an older game, so the import says so.
   expect(
     host.querySelector('[data-testid="results-notice"]')?.textContent

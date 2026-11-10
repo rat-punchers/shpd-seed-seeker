@@ -113,8 +113,10 @@ export function SearchStatusCard() {
     <Card size="sm">
       <CardHeader>
         <CardTitle role="status">{copy.label}</CardTitle>
-        <CardDescription>{copy.description}</CardDescription>
-        <CardAction className="flex items-center gap-2">
+        <CardDescription className="col-span-2">
+          {copy.description}
+        </CardDescription>
+        <CardAction className="row-span-1 flex items-center gap-2">
           <Badge
             variant={search.state === 'failed' ? 'destructive' : 'secondary'}
           >
@@ -133,9 +135,9 @@ export function SearchStatusCard() {
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
+      <CardContent className="@container flex flex-col gap-3">
         {running && !search.filtering ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 @sm:grid-cols-4">
             <Stat label="Tested" value={compactNumber(search.tested)} />
             <Stat
               label="Rate"

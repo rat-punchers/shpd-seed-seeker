@@ -139,7 +139,7 @@ test('J and K walk Find results from Analyze', async ({ page }) => {
     }),
   })
   await page.getByRole('button', { name: 'Find', exact: true }).click()
-  const cards = page.getByTestId('result-card')
+  const cards = page.getByTestId('result-row')
   await expect(cards.nth(1)).toBeVisible()
   const first = (await cards.nth(0).getByRole('heading').textContent()) ?? ''
   const second = (await cards.nth(1).getByRole('heading').textContent()) ?? ''
@@ -260,7 +260,7 @@ test.describe('on a phone', () => {
       }),
     })
     await page.getByRole('button', { name: 'Find', exact: true }).click()
-    const cards = page.getByTestId('result-card')
+    const cards = page.getByTestId('result-row')
     await expect(cards.nth(1)).toBeVisible()
     const second = (await cards.nth(1).getByRole('heading').textContent()) ?? ''
     await cards.nth(0).getByRole('button', { name: 'Analyze seed' }).click()

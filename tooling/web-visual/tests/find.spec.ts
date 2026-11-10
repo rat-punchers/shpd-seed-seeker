@@ -13,6 +13,41 @@ async function openFindWithOneRow(page: Page) {
   await expect(itemPicker(page, 1)).toBeVisible()
 }
 
+test('the first match previews beside the list and a click previews another', async ({
+  page,
+}) => {
+  const errors = collectBrowserErrors(page)
+  await openFindWithOneRow(page)
+  // Any ring by floor 24: every seed holds one, so results come at once.
+  await editItem(page, 1, { item: 'Any ring', floor: 24 })
+  await page.getByRole('button', { name: 'Find', exact: true }).click()
+  const second = page.getByTestId('result-row').nth(1)
+  await expect(second).toBeVisible()
+  // Stop well before the result limit: filling it takes over 15 s on CI.
+  await page.getByRole('button', { name: 'Cancel' }).click()
+  await expect(page.getByText('Cancelled', { exact: true })).toBeVisible()
+
+  const first = page.getByTestId('result-row').first()
+  const code = (await first.getByRole('heading').textContent()) ?? ''
+  expect(code).toMatch(/^[A-Z]{3}-[A-Z]{3}-[A-Z]{3}$/)
+  const preview = page.getByRole('complementary', { name: 'Seed preview' })
+  await expect(preview.locator('[data-preview-seed]')).toHaveText(code)
+  await expect(preview).toContainText('Result 1 of')
+  await expect(preview.locator(`[data-seed-preview="${code}"]`)).toBeVisible()
+  const secondCode = (await second.getByRole('heading').textContent()) ?? ''
+  await second.getByRole('button', { name: `Preview ${secondCode}` }).click()
+  await expect(preview.locator('[data-preview-seed]')).toHaveText(secondCode)
+  await expect(second).toHaveAttribute('data-selected', 'true')
+
+  await preview.getByRole('button', { name: 'Analyze seed' }).click()
+  await expect(
+    page
+      .getByRole('tablist', { name: 'Mode' })
+      .getByRole('tab', { name: 'Analyze' })
+  ).toHaveAttribute('aria-selected', 'true')
+  expectNoBrowserErrors(errors)
+})
+
 test('Ctrl+Enter starts and cancels a search, and leaving asks first', async ({
   page,
 }) => {
