@@ -82,14 +82,14 @@ export function swipeDelta(
   return dx < 0 ? 1 : -1
 }
 
-function keyDelta(event: KeyboardEvent): number {
+export function keyDelta(event: KeyboardEvent): number {
   const key = event.key.toLowerCase()
   if (key === 'j' || event.code === 'KeyJ') return 1
   if (key === 'k' || event.code === 'KeyK') return -1
   return 0
 }
 
-function typingOrModal(event: KeyboardEvent): boolean {
+export function typingOrModal(event: KeyboardEvent): boolean {
   const target = event.target as HTMLElement | null
   if (
     target &&

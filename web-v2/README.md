@@ -42,8 +42,9 @@ Run `bun run build:wasm` again after engine changes. The preview server
   TypeScript types (`types/`). `pkg/` and `editor-pkg/` are build output of
   `bun run build:wasm` and are not committed.
 - `src/features/find/`: Simple Find (`simple.ts` maps the item list to
-  requirements and decides when a query needs Advanced), result cards and
-  the results file.
+  requirements and decides when a query needs Advanced), the result list,
+  the seed preview beside it on wide screens (`preview/`) and the results
+  file.
 - `src/features/advanced/`: the requirement board (`board/`), the
   requirement sheet (`sheet/`), presets, share-link import and the settings
   panels (`settings/`).

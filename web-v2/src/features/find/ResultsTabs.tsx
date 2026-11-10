@@ -2,6 +2,8 @@ import { PlusIcon, SpinnerGapIcon, XIcon } from '@phosphor-icons/react'
 import { Button } from '@seed-seeker/design/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@seed-seeker/design/ui/tabs'
 import { useStore } from '@tanstack/react-store'
+import { useRef } from 'react'
+import { usePublishedHeight } from '../analyze/report/hooks'
 import { isSearchActive } from '../search/coordinator-state'
 import {
   addResultsTab,
@@ -44,9 +46,15 @@ export function ResultsTabs() {
       })),
     sameTabs
   )
+  // The preview sticks below the tabs.
+  const barRef = useRef<HTMLDivElement>(null)
+  usePublishedHeight(barRef, '--results-tabs-height', true)
 
   return (
-    <div className="border-border bg-background/95 supports-backdrop-filter:bg-background/80 sticky top-0 z-20 flex min-w-0 max-w-full items-start gap-2 border-b px-3 pt-3 pb-0 backdrop-blur">
+    <div
+      ref={barRef}
+      className="border-border bg-background/95 supports-backdrop-filter:bg-background/80 sticky top-0 z-20 flex min-w-0 max-w-full items-start gap-2 border-b px-3 pt-3 pb-0 backdrop-blur"
+    >
       <Tabs
         value={String(activeId)}
         onValueChange={(value) => selectResultsTab(Number(value))}

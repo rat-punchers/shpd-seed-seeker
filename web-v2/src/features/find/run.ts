@@ -9,6 +9,7 @@ import { hasRequirements, validateQuery } from '../query/validation'
 import { SearchCoordinator } from '../search/coordinator'
 import { searchStore } from '../search/store'
 import { activeResultsTabId, anySearchActive } from '../search/tabs'
+import { initPreviewKeys } from './preview/selection'
 
 /** The engine's estimate for the saved query, or none for an empty query. */
 export const $analysis = new AppStore<AnalysisResult | undefined>(undefined)
@@ -109,7 +110,9 @@ export function initFind(): () => void {
   })
   window.addEventListener('keydown', onKeyDown)
   window.addEventListener('beforeunload', onBeforeUnload)
+  const stopPreviewKeys = initPreviewKeys()
   return () => {
+    stopPreviewKeys()
     clearTimeout(timer)
     subscription.unsubscribe()
     modeSubscription.unsubscribe()

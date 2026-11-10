@@ -14,7 +14,7 @@ const modeTab = (page: Page, name: 'Analyze' | 'Find') =>
 const seedTitle = (page: Page) => page.locator('[data-seed-title]')
 const cardCode = async (page: Page, index: number) =>
   (await page
-    .getByTestId('result-card')
+    .getByTestId('result-row')
     .nth(index)
     .getByRole('heading')
     .textContent()) ?? ''
@@ -35,12 +35,12 @@ test('results tabs keep their searches, survive a reload and name the Analyze ta
     resultsTabs(page).getByRole('tab', { name: 'Results #1' })
   ).toHaveAttribute('aria-selected', 'true')
   await page.getByRole('button', { name: 'Find', exact: true }).click()
-  await expect(page.getByTestId('result-card').nth(2)).toBeVisible()
+  await expect(page.getByTestId('result-row').nth(2)).toBeVisible()
   const first = await cardCode(page, 0)
   const third = await cardCode(page, 2)
 
   await page
-    .getByTestId('result-card')
+    .getByTestId('result-row')
     .first()
     .getByRole('button', { name: 'Analyze seed' })
     .click()
@@ -56,7 +56,7 @@ test('results tabs keep their searches, survive a reload and name the Analyze ta
     page.getByRole('heading', { name: 'No search yet' })
   ).toBeVisible()
   await resultsTabs(page).getByRole('tab', { name: 'Results #1' }).click()
-  await expect(page.getByTestId('result-card').first()).toHaveText(
+  await expect(page.getByTestId('result-row').first()).toHaveText(
     new RegExp(first)
   )
 
@@ -65,12 +65,12 @@ test('results tabs keep their searches, survive a reload and name the Analyze ta
     'Results #1',
     'Results #2',
   ])
-  await expect(page.getByTestId('result-card').first()).toHaveText(
+  await expect(page.getByTestId('result-row').first()).toHaveText(
     new RegExp(first)
   )
   // Another seed of the same results replaces the seed in its Analyze tab.
   await page
-    .getByTestId('result-card')
+    .getByTestId('result-row')
     .nth(2)
     .getByRole('button', { name: 'Analyze seed' })
     .click()
