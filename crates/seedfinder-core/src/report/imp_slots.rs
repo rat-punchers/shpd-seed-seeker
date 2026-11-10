@@ -152,15 +152,7 @@ impl Walk<'_> {
     }
 }
 
-/// `Artifact.transferUpgrade(5)` on a fresh artifact stores
-/// `round(5 * levelCap / 10)`. Caps read from the v4.0.2 classes.
-fn transfer_level(artifact: ItemId) -> u8 {
-    match artifact {
-        // Caps 5: round(2.5).
-        ItemId::EtherealChains | ItemId::TimekeepersHourglass => 3,
-        // Cap 3: round(1.5).
-        ItemId::SandalsOfNature => 2,
-        // Cap 10.
-        _ => TRANSFER,
-    }
+/// The level `Artifact.transferUpgrade(TRANSFER)` stores in a fresh artifact.
+const fn transfer_level(artifact: ItemId) -> u8 {
+    crate::model::transferred_level(artifact, TRANSFER)
 }

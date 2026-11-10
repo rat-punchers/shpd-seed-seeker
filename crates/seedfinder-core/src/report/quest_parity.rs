@@ -3,14 +3,8 @@
 
 use serde_json::Value;
 
-use super::{RewardSlot, SeedReport, decode_request};
-
-fn report(seed: &str) -> SeedReport {
-    decode_request(&format!(r#"{{"seed":"{seed}"}}"#))
-        .unwrap()
-        .generate()
-        .unwrap()
-}
+use super::test_support::seed_report;
+use super::{RewardSlot, SeedReport};
 
 fn text(value: &Value) -> Option<&str> {
     value.as_str()
@@ -39,7 +33,7 @@ fn quest_slots_match_official_engine() {
         serde_json::from_str(include_str!("../../tests/fixtures/seed-report-quests.json")).unwrap();
     for sample in fixture["samples"].as_array().unwrap() {
         let seed = sample["seed"].as_str().unwrap();
-        let report = report(seed);
+        let report = seed_report(seed);
         // The plain dart is outside the catalog and has no slot.
         let rows: Vec<&Value> = sample["rewards"]
             .as_array()

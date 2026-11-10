@@ -1,18 +1,11 @@
 //! Deck replays and the reward-slot windows built from them.
 
 use super::drift::{DRIFT, offsets};
-use super::{Quest, SeedReport, decode_request};
+use super::test_support::seed_report;
+use super::{Quest, SeedReport};
 use crate::generator::{deck_sequence, random_category};
 use crate::rng::RandomStack;
 use crate::run::{GeneratorCategory, RunState};
-
-fn report(value: u64) -> SeedReport {
-    let code = crate::seed::DungeonSeed::new(value).unwrap().to_code();
-    decode_request(&format!(r#"{{"seed":"{code}"}}"#))
-        .unwrap()
-        .generate()
-        .unwrap()
-}
 
 fn quest<'a>(report: &'a SeedReport, name: &str) -> Option<&'a Quest> {
     report.quests.iter().find(|quest| quest.quest == name)
@@ -66,7 +59,7 @@ fn offsets_are_nearest_first_within_the_deck() {
 fn slots_lead_with_the_seed_draw_and_weigh_the_window() {
     let mut unpinned_wand = false;
     for value in 0..24 {
-        let report = report(value);
+        let report = seed_report(&crate::seed::DungeonSeed::new(value).unwrap().to_code());
         for quest in &report.quests {
             let slots = quest.slots.as_ref().unwrap();
             assert!(!slots.is_empty(), "seed {value} {}", quest.quest);

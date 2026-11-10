@@ -1,19 +1,13 @@
-//! Trinket timing, alchemy pots and builders against the official engine,
-//! and the timing against the floors the replay generates with the trinket.
+//! Trinket timing, alchemy pots and builders against the official engine
+//! (run by the driver in `parity.rs`), and the timing against the floors the
+//! replay generates with the trinket.
 
 use serde_json::Value;
 
-use super::{SeedReport, decode_request};
-use crate::catalog::{ItemId, item_by_stable_id};
+use super::SeedReport;
+use super::test_support::Run;
 use crate::challenges::Challenges;
 use crate::seed::DungeonSeed;
-
-fn report(seed: &str, challenges: u16, trinket: Option<ItemId>) -> SeedReport {
-    let mut request = decode_request(&format!(r#"{{"seed":"{seed}"}}"#)).unwrap();
-    request.challenges = Challenges::new(challenges).unwrap();
-    request.selected_trinket = trinket;
-    request.generate().unwrap()
-}
 
 /// The report's name for an oracle builder or room class.
 fn report_name(class: &str) -> &str {
@@ -26,61 +20,50 @@ fn report_name(class: &str) -> &str {
     }
 }
 
-#[test]
-fn timing_matches_official_engine() {
-    let fixture: Value =
-        serde_json::from_str(include_str!("../../tests/fixtures/seed-report-timing.json")).unwrap();
-    for sample in fixture["samples"].as_array().unwrap() {
-        let seed = sample["seed"].as_str().unwrap();
-        let challenges = u16::try_from(sample["challenges"].as_u64().unwrap()).unwrap();
-        let trinket = sample["trinket"]
-            .as_str()
-            .map(|id| item_by_stable_id(id).unwrap().id);
-        let report = report(seed, challenges, trinket);
-        let context = format!("{seed} challenges {challenges} {trinket:?}");
-        let floors = sample["floors"].as_array().unwrap();
-        assert_eq!(floors.len(), 24, "{context}");
-        let mut catalyst_depth = None;
-        let mut first_pot = None;
-        for floor in floors {
-            let depth = u8::try_from(floor[0].as_u64().unwrap()).unwrap();
-            let listed = &report.floors[usize::from(depth) - 1];
-            let builder = floor[1].as_str().map(report_name);
-            assert_eq!(
-                listed.builder.as_deref(),
-                builder,
-                "{context} depth {depth}"
-            );
-            let rooms: Vec<&str> = floor[3]
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(|room| report_name(room.as_str().unwrap()))
-                .collect();
-            let pots = listed.appearances.as_ref().unwrap();
-            let listed_rooms: Vec<&str> = pots
-                .iter()
-                .map(|pot| pot.room.as_deref().unwrap())
-                .collect();
-            assert_eq!(listed_rooms, rooms, "{context} depth {depth}");
-            for pot in pots {
-                assert_eq!(pot.kind, "alchemy_pot");
-                assert_eq!(pot.secret, pot.room.as_deref() == Some("secret_laboratory"));
-            }
-            if floor[2].as_bool().unwrap() && catalyst_depth.is_none() {
-                catalyst_depth = Some(depth);
-            }
-            if !pots.is_empty() && first_pot.is_none() {
-                first_pot = Some((depth, pots.iter().all(|pot| pot.secret)));
-            }
+pub(super) fn timing_matches_oracle(run: Run<'_>, sample: &Value, report: &SeedReport) {
+    let context = run.to_string();
+    let floors = sample["floors"].as_array().unwrap();
+    assert_eq!(floors.len(), 24, "{context}");
+    let mut catalyst_depth = None;
+    let mut first_pot = None;
+    for floor in floors {
+        let depth = u8::try_from(floor[0].as_u64().unwrap()).unwrap();
+        let listed = &report.floors[usize::from(depth) - 1];
+        let builder = floor[1].as_str().map(report_name);
+        assert_eq!(
+            listed.builder.as_deref(),
+            builder,
+            "{context} depth {depth}"
+        );
+        let rooms: Vec<&str> = floor[3]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|room| report_name(room.as_str().unwrap()))
+            .collect();
+        let pots = listed.appearances.as_ref().unwrap();
+        let listed_rooms: Vec<&str> = pots
+            .iter()
+            .map(|pot| pot.room.as_deref().unwrap())
+            .collect();
+        assert_eq!(listed_rooms, rooms, "{context} depth {depth}");
+        for pot in pots {
+            assert_eq!(pot.kind, "alchemy_pot");
+            assert_eq!(pot.secret, pot.room.as_deref() == Some("secret_laboratory"));
         }
-        let timing = report.trinkets.timing.as_ref().unwrap();
-        let (pot_depth, pot_secret) = first_pot.unwrap();
-        assert_eq!(Some(timing.catalyst_depth), catalyst_depth, "{context}");
-        assert_eq!(timing.first_alchemy_pot_depth, pot_depth, "{context}");
-        assert_eq!(timing.first_alchemy_pot_secret, pot_secret, "{context}");
-        assert!(timing.selection_depth <= 4, "{context}");
+        if floor[2].as_bool().unwrap() && catalyst_depth.is_none() {
+            catalyst_depth = Some(depth);
+        }
+        if !pots.is_empty() && first_pot.is_none() {
+            first_pot = Some((depth, pots.iter().all(|pot| pot.secret)));
+        }
     }
+    let timing = report.trinkets.timing.as_ref().unwrap();
+    let (pot_depth, pot_secret) = first_pot.unwrap();
+    assert_eq!(Some(timing.catalyst_depth), catalyst_depth, "{context}");
+    assert_eq!(timing.first_alchemy_pot_depth, pot_depth, "{context}");
+    assert_eq!(timing.first_alchemy_pot_secret, pot_secret, "{context}");
+    assert!(timing.selection_depth <= 4, "{context}");
 }
 
 /// The selected trinket is active exactly from `firstEffectiveDepth`.

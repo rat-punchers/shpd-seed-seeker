@@ -28,7 +28,7 @@ versions. Future dates likewise assume this game version.
   editable; scouting requires a complete valid date. Native `isCanonical` checks still
   refer to nine-letter codes; `isScoutable` additionally accepts daily dates.
 - Native scout request seed fields (`SSQ2` through `SSQ5`, and legacy text)
-  and WASM's `scout({seed, ...})` accept dates. Scout response identities keep
+  and WASM's `seed_report({seed, ...})` accept dates. Responses keep
   the date, including trinket overrides, query match marks, and item mappings.
   Existing length-prefixed packet fields need no new wire version.
 - Level-map JSON requests accept the same date in `seed`, with the same

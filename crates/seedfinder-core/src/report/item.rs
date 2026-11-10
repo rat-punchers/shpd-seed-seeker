@@ -5,8 +5,8 @@ use serde::{Deserialize, Serialize};
 use crate::catalog::{Effect, item, kind_name};
 use crate::model::{self, WorldItem, source_name};
 
-/// A floor item. An equipment item's base fields equal one `scout` item; the
-/// optional fields belong to the `allItems` section.
+/// A floor item. An equipment item's base fields describe one generated
+/// `WorldItem`; the optional fields belong to the `allItems` section.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[allow(clippy::struct_excessive_bools)] // Independent flags in the report document.

@@ -654,8 +654,7 @@ which is why every request is answered rather than refused).
 ## Engine limits
 
 `engine_info` (C `seedfinder_engine_info`, JNI `engineInfo`, wasm
-`engine_info` and the editor module's `editor_limits`) publishes the
-editor's bounds in `limits`: `stackMax` (3), `trinketTransmutationsMax`
+`engine_info`) publishes the editor's bounds in `limits`: `stackMax` (3), `trinketTransmutationsMax`
 (13), `artifactTransmutationsMax` (10), beside the tier, upgrade and label
 bounds. Apps read them there rather than hardcoding mirrors.
 

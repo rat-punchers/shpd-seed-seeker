@@ -175,7 +175,7 @@ The core JSON APIs require the existing `json-query` feature.
 and fails if that floor does not host the quest. `challenges` defaults
 to `[]` and accepts the same stable challenge names as scouting. This field
 controls generation even when `query` has its own challenge list, matching the
-browser scout request. `query` is optional and uses the normal query schema.
+`seed_report` request. `query` is optional and uses the normal query schema.
 Unknown request fields and invalid queries/challenges are rejected.
 
 The optional `trinket` field follows scouting semantics:

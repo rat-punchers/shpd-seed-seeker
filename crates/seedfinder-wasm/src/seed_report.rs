@@ -13,7 +13,7 @@ pub fn seed_report(request_json: &str) -> Result<String, JsError> {
     seed_report_impl(request_json).map_err(|error| JsError::new(&error))
 }
 
-fn seed_report_impl(request_json: &str) -> Result<String, String> {
+pub(crate) fn seed_report_impl(request_json: &str) -> Result<String, String> {
     shpd_seedfinder_core::report::document(request_json)
 }
 
@@ -21,144 +21,10 @@ fn seed_report_impl(request_json: &str) -> Result<String, String> {
 mod tests {
     use std::path::PathBuf;
 
-    use serde_json::Value;
-
     use super::seed_report_impl;
-    use crate::scout_impl;
 
     /// Real reports kept beside the doc; see "Fixtures" there.
-    const FIXTURES: [(&str, &str); 3] = [
-        ("AAA-AAA-AAA", "aaa-aaa-aaa.json"),
-        ("RZN-LKU-EFS", "rzn-lku-efs.json"),
-        ("2026-01-01", "daily-2026-01-01.json"),
-    ];
-
-    /// Scout's items for one floor, with the Catalyst's four offers folded
-    /// into the one Magical Catalyst entry the report lists.
-    fn scout_floor_items(scout_items: &[Value], depth: &Value) -> Vec<Value> {
-        let mut items: Vec<Value> = Vec::new();
-        for item in scout_items.iter().filter(|item| item["depth"] == *depth) {
-            if item["category"] != "trinket" {
-                items.push(item.clone());
-                continue;
-            }
-            if let Some(catalyst) = items.iter_mut().find(|e| e["id"] == "trinket_catalyst") {
-                for mark in ["matched", "resinDonor", "excluded"] {
-                    let joined = catalyst[mark].as_bool().unwrap() || item[mark].as_bool().unwrap();
-                    catalyst[mark] = Value::Bool(joined);
-                }
-                continue;
-            }
-            let mut catalyst = item.clone();
-            catalyst["id"] = "trinket_catalyst".into();
-            catalyst["name"] = "Magical catalyst".into();
-            catalyst["spriteIndex"] = 70.into();
-            items.push(catalyst);
-        }
-        items
-    }
-
-    /// Report item references add the game's text, which `scout` leaves out.
-    fn without_description(entry: &Value) -> Value {
-        let mut entry = entry.clone();
-        entry.as_object_mut().unwrap().remove("description");
-        entry
-    }
-
-    #[test]
-    fn report_items_match_scout() {
-        let requests = [
-            r#"{"seed":"AAA-AAA-AAA"}"#,
-            r#"{"seed":"RZN-LKU-EFS","challenges":["faith_is_my_armor"],"trinket":"none"}"#,
-            r#"{"seed":"2026-01-01"}"#,
-            r#"{"seed":"EYY-RUL-LQG","query":{"auto_apply_trinket":true,"max_depth":19,"requirements":[{"item":"runic_blade","upgrade":1,"effect":"Grim"}]}}"#,
-            r#"{"seed":"AAA-AAA-AAA","query":{"requirements":[{"item":"mimic_tooth","select_trinket":true},{"item":"hand_axe","source":"golden_mimic","max_depth":6}]}}"#,
-        ];
-        for request in requests {
-            let scout: Value = serde_json::from_str(&scout_impl(request).unwrap()).unwrap();
-            let report: Value = serde_json::from_str(&seed_report_impl(request).unwrap()).unwrap();
-            assert_eq!(report["seed"]["code"], scout["seed"]["code"], "{request}");
-            assert_eq!(report["seed"]["value"], scout["seed"]["value"], "{request}");
-            assert_eq!(report["trinkets"]["selected"], scout["selectedTrinket"]);
-            assert_eq!(report["ringGems"], scout["ringGems"], "{request}");
-            let floors = report["floors"].as_array().unwrap();
-            let scout_items = scout["items"].as_array().unwrap();
-            for floor in floors {
-                let expected = scout_floor_items(scout_items, &floor["depth"]);
-                let expected: Vec<&Value> = expected.iter().collect();
-                // Equipment comes first in scout order; the other categories follow.
-                let listed = floor["items"].as_array().unwrap();
-                let (equipment, others) = listed.split_at(expected.len().min(listed.len()));
-                let base: Vec<Value> = equipment
-                    .iter()
-                    .map(|item| {
-                        let mut item = item.clone();
-                        for field in ["description", "prediction", "conditions", "ranges"] {
-                            item.as_object_mut().unwrap().remove(field);
-                        }
-                        item
-                    })
-                    .collect();
-                let base: Vec<&Value> = base.iter().collect();
-                assert_eq!(base, expected, "{request} depth {}", floor["depth"]);
-                for item in others {
-                    let category = item["category"].as_str().unwrap();
-                    assert!(
-                        !["weapon", "armor", "wand", "ring", "trinket", "artifact"]
-                            .contains(&category),
-                        "{request} depth {} {item}",
-                        floor["depth"]
-                    );
-                }
-            }
-            let offers: Vec<_> = report["trinkets"]["offers"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .chain(report["trinkets"]["transmutationOrder"].as_array().unwrap())
-                .map(without_description)
-                .collect();
-            let order: Vec<_> = scout["trinketOrder"].as_array().unwrap().clone();
-            assert_eq!(offers, order, "{request}");
-            let mut decks = report["trinkets"]["artifactDecks"].clone();
-            for deck in decks.as_array_mut().unwrap() {
-                for entry in deck["order"].as_array_mut().unwrap() {
-                    *entry = without_description(entry);
-                }
-            }
-            assert_eq!(decks, scout["artifactDecks"]);
-            for (index, quest) in scout["quests"].as_array().unwrap().iter().enumerate() {
-                for field in ["quest", "variant", "depth"] {
-                    assert_eq!(report["quests"][index][field], quest[field], "{request}");
-                }
-            }
-            for entry in scout["feelings"].as_array().unwrap() {
-                let depth = usize::try_from(entry["depth"].as_u64().unwrap()).unwrap();
-                assert_eq!(floors[depth - 1]["feeling"], entry["feeling"], "{request}");
-            }
-            for entry in scout["floorRooms"].as_array().unwrap() {
-                let depth = usize::try_from(entry["depth"].as_u64().unwrap()).unwrap();
-                assert_eq!(floors[depth - 1]["rooms"], entry["rooms"], "{request}");
-            }
-            if let Some(total) = scout
-                .get("totalRequirements")
-                .filter(|_| request.contains("query"))
-            {
-                assert_eq!(&report["query"]["totalRequirements"], total);
-                assert_eq!(
-                    report["query"]["matchedRequirements"],
-                    scout["matchedRequirements"]
-                );
-            }
-            let mut identities = report["identities"].clone();
-            for category in identities.as_object_mut().unwrap().values_mut() {
-                for entry in category.as_array_mut().unwrap() {
-                    entry.as_object_mut().unwrap().remove("icon");
-                }
-            }
-            assert_eq!(identities, scout["itemMappings"], "{request}");
-        }
-    }
+    const FIXTURES: [(&str, &str); 1] = [("AAA-AAA-AAA", "aaa-aaa-aaa.json")];
 
     /// Compares the committed fixtures with fresh reports, or rewrites them
     /// with `UPDATE_SEED_REPORT_FIXTURES=1`.

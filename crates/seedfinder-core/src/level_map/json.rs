@@ -3,11 +3,11 @@
 use super::{
     LevelMap, MapError, SCHEMA_VERSION, assets, generate_level_map_in_branch, validate_location,
 };
-use crate::catalog::{item, item_by_stable_id};
+use crate::catalog::item;
 use crate::challenges::Challenges;
-use crate::json_query::{self, CHALLENGE_NAMES};
+use crate::json_query::CHALLENGE_NAMES;
+use crate::scout_request::ScoutRun;
 use crate::seed::DungeonSeed;
-use crate::trinkets::{selected_for_query, trinket_order};
 use serde::Deserialize;
 use serde_json::{Value, json};
 
@@ -48,36 +48,18 @@ pub fn decode_request(input: &str) -> Result<LevelMapRequest, String> {
         .map_err(|error| format!("invalid level map request: {error}"))?;
     let seed = DungeonSeed::from_scout_input(&request.seed).map_err(|error| error.to_string())?;
     validate_location(request.depth, request.branch).map_err(|error| error.to_string())?;
-    let mut challenges = Challenges::NONE;
-    for name in request.challenges {
-        challenges |= CHALLENGE_NAMES
-            .iter()
-            .find(|(known, _)| *known == name)
-            .ok_or_else(|| format!("unknown challenge: {name}"))?
-            .1;
-    }
-    let query = request
-        .query
-        .map(|query| json_query::decode(&query.to_string()))
-        .transpose()?;
-    let selected_trinket = match request.trinket.as_deref() {
-        None => query.as_ref().and_then(|q| selected_for_query(seed, q)),
-        Some("none") => None,
-        Some(id) => Some(
-            item_by_stable_id(id)
-                .ok_or_else(|| format!("unknown trinket: {id}"))?
-                .id,
-        ),
-    };
-    if selected_trinket.is_some_and(|id| !trinket_order(seed)[..4].contains(&id)) {
-        return Err(MapError::InvalidTrinket.to_string());
-    }
+    let run = ScoutRun::decode(
+        seed,
+        &request.challenges,
+        request.query.as_ref(),
+        request.trinket.as_deref(),
+    )?;
     Ok(LevelMapRequest {
         seed,
         depth: request.depth,
         branch: request.branch,
-        challenges,
-        selected_trinket,
+        challenges: run.challenges,
+        selected_trinket: run.selected_trinket,
     })
 }
 
@@ -102,18 +84,6 @@ impl LevelMapRequest {
 /// Serializes a map without regenerating it or reading any runtime state.
 #[must_use]
 pub fn document(map: &LevelMap) -> Value {
-    use crate::level::Feeling;
-    let feeling = match map.feeling {
-        Feeling::None => "none",
-        Feeling::Chasm => "chasm",
-        Feeling::Water => "water",
-        Feeling::Grass => "grass",
-        Feeling::Dark => "dark",
-        Feeling::Large => "large",
-        Feeling::Traps => "traps",
-        Feeling::Secrets => "secrets",
-    };
-
     json!({
         "format": "seed-seeker-level-map",
         "schemaVersion": SCHEMA_VERSION,
@@ -128,7 +98,7 @@ pub fn document(map: &LevelMap) -> Value {
         "branches": map.branches,
         "challenges": CHALLENGE_NAMES.iter().filter(|(_, flag)| map.challenges.contains(*flag)).map(|(name, _)| name).collect::<Vec<_>>(),
         "selectedTrinket": map.selected_trinket.map(|id| item(id).stable_id),
-        "feeling": feeling,
+        "feeling": map.feeling.name(),
         "width": map.width,
         "height": map.height,
         "terrain": map.terrain,

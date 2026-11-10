@@ -7,14 +7,14 @@ fills `floors[].items` for every item category, with `prediction`,
 `predict.rs`).
 
 `allItems` lists every item generated with a floor, from the same replay
-`scout` runs (no assumed pickups; `level_map` instead assumes a found
+the native scout runs (no assumed pickups; `level_map` instead assumes a found
 hourglass is taken, so its later shops can differ). It covers:
 
 - the heaps, containers and carried items (mimics, statues) of floors 1–24,
   including the Rat King room on floor 5 and the iron key
   `PrisonBossLevel` always drops on floor 10;
 - the depth-20 Imp shop stock, which the game generates with that floor;
-- equipment that lies in no heap, as in `scout`: quest rewards, sacrificial
+- equipment that lies in no heap, as in the native scout: quest rewards, sacrificial
   fire prizes, the Magical Catalyst (`trinket_catalyst`, category `trinket`,
   listed once in place of its four offers, which are in `trinkets.offers`;
   its `matched`, `resinDonor` and `excluded` marks join those of the offers)

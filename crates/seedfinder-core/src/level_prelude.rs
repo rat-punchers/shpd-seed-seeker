@@ -137,6 +137,23 @@ pub enum Feeling {
     Secrets,
 }
 
+impl Feeling {
+    /// The stable lowercase name the report and map documents write.
+    #[must_use]
+    pub const fn name(self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Chasm => "chasm",
+            Self::Water => "water",
+            Self::Grass => "grass",
+            Self::Dark => "dark",
+            Self::Large => "large",
+            Self::Traps => "traps",
+            Self::Secrets => "secrets",
+        }
+    }
+}
+
 /// Rolls the ordinary level feeling. Floor 1 has no roll. Under the canonical
 /// no-trinket profile, default cases still consume both override floats.
 pub fn roll_feeling(depth: i32, random: &mut RandomStack) -> Feeling {

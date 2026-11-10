@@ -2,8 +2,8 @@
 
 `seed_report` describes one seed for the web-v2 Analyze screen. It is exported
 by `crates/seedfinder-wasm` only; the builder is
-`crates/seedfinder-core/src/report/`. `scout`, `level_map`, FFI, JNI and the
-native apps do not use it. Floor maps stay on `level_map`
+`crates/seedfinder-core/src/report/`. `level_map`, FFI, JNI and the native
+apps do not use it. Floor maps stay on `level_map`
 ([level-map-format.md](level-map-format.md)).
 
 ## Request
@@ -14,9 +14,9 @@ native apps do not use it. Floor maps stay on `level_map`
 
 | Field | Type | Meaning |
 | --- | --- | --- |
-| `seed` | string | Required. A seed code in any case or grouping, or a UTC daily date `YYYY-MM-DD`, as `scout` accepts. |
+| `seed` | string | Required. A seed code in any case or grouping, or a UTC daily date `YYYY-MM-DD`. |
 | `challenges` | string[] | Optional. Challenge names from `engine_info.challenges`. |
-| `trinket` | string | Optional. One of the seed's four Catalyst offers by item id, or `"none"` for No Trinket. Absent resolves the selection from `query`, like `scout`. |
+| `trinket` | string | Optional. One of the seed's four Catalyst offers by item id, or `"none"` for No Trinket. Absent resolves the selection from `query`, as the native scout and `level_map` do. |
 | `query` | object | Optional. A query document ([search-query-format.md](search-query-format.md)). It selects the trinket when `trinket` is absent and sets the `matched`, `resinDonor` and `excluded` item marks. Its own `challenges` are not applied; pass them in `challenges`. |
 
 Unknown request fields, invalid seeds, unknown challenges, invalid queries and
@@ -69,7 +69,7 @@ JavaScript error carrying the message.
 | `seed` | object | `code` (`XXX-XXX-XXX` or the daily date), `value` (the numeric seed), `daily`. |
 | `query` | object | Present only with a request query: `matchedRequirements`, `totalRequirements`. |
 | `identities` | object | `scrolls`, `potions`, `rings`: twelve `{name, appearance, spriteIndex, icon?}` each, in the game's class order. `icon` is the class's type glyph in `item_icons.png`, `[x, y, width, height]`, drawn over the appearance at its upper right. |
-| `ringGems` | number[12] | The gem each ring class is drawn with, in catalog ring order, as in `scout`. |
+| `ringGems` | number[12] | The gem each ring class is drawn with, in catalog ring order. |
 | `trinkets` | object | See below. |
 | `floors` | object[] | Floors 1–24 in depth order. See below. |
 | `quests` | object[] | Quests present in the world, Ghost, Wandmaker, Blacksmith, Imp order. See below. |
@@ -78,12 +78,12 @@ JavaScript error carrying the message.
 
 - `offers`: the four Catalyst offers. `transmutationOrder`: transmutation
   results 1–13. Both hold `{id, name, description?, spriteIndex, matched}`;
-  `matched` marks a transmutation the query uses. `description` is the game's
-  examine text, which `scout` leaves out; the artifact decks' entries carry it
-  too.
+  `matched` marks a transmutation the query uses; offers are never marked,
+  since the floors' Magical Catalyst carries their item marks. `description`
+  is the game's examine text; the artifact decks' entries carry it too.
 - `selected`: the selected offer id, or `null` for No Trinket.
 - `artifactDecks`: `{depth, order}` for depth 0 (before floor 1) through 24,
-  the remaining artifact deck after that floor, as in `scout`.
+  the remaining artifact deck after that floor.
 - `timing` (`trinketTiming`): `catalystDepth`, `firstAlchemyPotDepth`,
   `firstAlchemyPotSecret`, `selectionDepth`, `firstEffectiveDepth`,
   `optionEffects` (index-aligned with `offers`: `modeled`, `unmodeled` or
@@ -97,13 +97,13 @@ JavaScript error carrying the message.
 - `appearances` (`alchemyPots`): one `{kind: "alchemy_pot", room?, secret}`
   per pot, in map cell order.
 - `items`: equipment in world order, then the other categories. Equipment
-  base fields equal one `scout` item: `id`, `name`, `category`,
+  base fields: `id`, `name`, `category`,
   `spriteIndex`, `upgrade`, `effect` (`{name, kind}`, `kind` `enchantment` or
   `curse`, or `null`), `cursed`, `secret`, `depth`, `source`, `accessibility`
   (`{type: "independent"}`, `{type: "choice", group, option}` or `{type:
   "scenarios", group, mask}`, `mask` as `0x…` hex), `matched`, `resinDonor`,
   `excluded`. Optional `description` is the game's examine text, the same
-  text the level map's item tooltips show; it is not a `scout` field.
+  text the level map's item tooltips show.
   Optional `icon` is a potion's or scroll's type glyph in `item_icons.png`,
   `[x, y, width, height]`. The Magical Catalyst is listed as
   `trinket_catalyst`, not as its offers. With
@@ -131,8 +131,7 @@ JavaScript error carrying the message.
 
 ### `quests[]`
 
-- `quest` (`ghost`, `wandmaker`, `blacksmith`, `imp`), `variant` (as in
-  `scout`), `depth` (the quest giver's floor).
+- `quest` (`ghost`, `wandmaker`, `blacksmith`, `imp`), `variant`, `depth` (the quest giver's floor).
 - `spawnDepthRange`: `{min, max}`, the floors the quest giver can spawn on.
 - `rewards`: `{source, optionCount, selectedCount, favorRequirement?}`. The
   player keeps `selectedCount` of `optionCount` rewards; the reward items
@@ -146,9 +145,9 @@ JavaScript error carrying the message.
 
 ## Fixtures
 
-`crates/seedfinder-wasm/tests/fixtures/seed-report/` holds real reports for
-`AAA-AAA-AAA`, `RZN-LKU-EFS` and the daily run `2026-01-01`. The
-`seed_report` fixture test fails when they are stale. Regenerate them with:
+`crates/seedfinder-wasm/tests/fixtures/seed-report/aaa-aaa-aaa.json` is the
+real report for `AAA-AAA-AAA`. The `seed_report` fixture test fails when it is
+stale. Regenerate it with:
 
 ```sh
 UPDATE_SEED_REPORT_FIXTURES=1 cargo test -p shpd-seedfinder-wasm seed_report

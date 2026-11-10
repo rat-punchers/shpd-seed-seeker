@@ -1,14 +1,14 @@
-//! The `seed_report` JSON request, read with the same rules as `scout`.
+//! The `seed_report` JSON request. Its run fields follow the same rules as
+//! `level_map` ([`crate::scout_request`]).
 
 use serde::Deserialize;
 use serde_json::Value;
 
 use crate::catalog::ItemId;
 use crate::challenges::Challenges;
-use crate::json_query::{self, CHALLENGE_NAMES};
 use crate::query::SearchQuery;
+use crate::scout_request::ScoutRun;
 use crate::seed::{DungeonSeed, format_input};
-use crate::trinkets::{parse_offered, selected_for_query};
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -32,8 +32,8 @@ pub struct ReportRequest {
     pub query: Option<SearchQuery>,
 }
 
-/// Reads `{seed, challenges?, trinket?, query?}`. The seed accepts what
-/// `scout` accepts: a seed code in any grouping or case, or a daily date.
+/// Reads `{seed, challenges?, trinket?, query?}`. The seed is a seed code in
+/// any grouping or case, or a daily date.
 ///
 /// # Errors
 /// Reports malformed JSON, invalid seeds, unknown challenges, invalid
@@ -43,28 +43,17 @@ pub fn decode_request(input: &str) -> Result<ReportRequest, String> {
         .map_err(|error| format!("invalid seed report request JSON: {error}"))?;
     let seed = DungeonSeed::from_scout_input(&format_input(&request.seed))
         .map_err(|error| error.to_string())?;
-    let mut challenges = Challenges::NONE;
-    for name in request.challenges {
-        challenges |= CHALLENGE_NAMES
-            .iter()
-            .find(|(known, _)| *known == name)
-            .ok_or_else(|| format!("unknown challenge: {name}"))?
-            .1;
-    }
-    let query = request
-        .query
-        .map(|value| json_query::decode(&value.to_string()))
-        .transpose()?;
-    let selected_trinket = match request.trinket.as_deref() {
-        None => query.as_ref().and_then(|q| selected_for_query(seed, q)),
-        Some("none") => None,
-        Some(id) => Some(parse_offered(seed, id)?),
-    };
+    let run = ScoutRun::decode(
+        seed,
+        &request.challenges,
+        request.query.as_ref(),
+        request.trinket.as_deref(),
+    )?;
     Ok(ReportRequest {
         seed,
-        challenges,
-        selected_trinket,
-        query,
+        challenges: run.challenges,
+        selected_trinket: run.selected_trinket,
+        query: run.query,
     })
 }
 

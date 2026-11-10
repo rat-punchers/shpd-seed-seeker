@@ -24,6 +24,8 @@ mod quest_parity;
 mod quest_slots;
 mod request;
 #[cfg(test)]
+mod test_support;
+#[cfg(test)]
 mod tests;
 mod timing;
 #[cfg(test)]

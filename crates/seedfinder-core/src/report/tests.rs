@@ -1,13 +1,10 @@
 use serde_json::Value;
 
+use super::test_support::{report, seed_report};
 use super::{SECTIONS, SeedReport, Status, decode_request, document};
 use crate::level_map::{SUPPORTED_BRANCH_DEPTHS, generate_level_map_in_branch};
 
 const FORMAT_DOC: &str = include_str!("../../../../docs/seed-report-format.md");
-
-fn report(request: &str) -> SeedReport {
-    decode_request(request).unwrap().generate().unwrap()
-}
 
 /// The JSON block under the doc's `## Example` heading.
 fn doc_example() -> Value {
@@ -73,7 +70,7 @@ fn every_section_is_filled() {
 #[test]
 fn branches_are_exactly_the_quest_sub_levels_level_map_serves() {
     for seed in ["AAA-AAA-AAA", "RZN-LKU-EFS"] {
-        let report = report(&format!(r#"{{"seed":"{seed}"}}"#));
+        let report = seed_report(seed);
         let request = decode_request(&format!(r#"{{"seed":"{seed}"}}"#)).unwrap();
         for depth in SUPPORTED_BRANCH_DEPTHS {
             let listed = &report.floors[usize::from(depth) - 1].branches;

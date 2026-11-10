@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 
 use super::item::Item;
 use crate::floor_filters::RoomType;
-use crate::level_prelude::Feeling;
 use crate::model::GeneratedWorld;
 use crate::quests::QuestSummary;
 
@@ -111,7 +110,7 @@ pub(super) fn floors(world: &GeneratedWorld, items: Vec<Item>) -> Vec<Floor> {
                 .feelings
                 .iter()
                 .find(|entry| entry.depth == depth)
-                .map(|entry| feeling_name(entry.feeling).to_owned()),
+                .map(|entry| entry.feeling.name().to_owned()),
             rooms: world
                 .floor_rooms
                 .iter()
@@ -161,17 +160,4 @@ fn branches(quests: QuestSummary, depth: u8) -> Vec<Branch> {
         });
     }
     output
-}
-
-pub(super) const fn feeling_name(feeling: Feeling) -> &'static str {
-    match feeling {
-        Feeling::None => "none",
-        Feeling::Chasm => "chasm",
-        Feeling::Water => "water",
-        Feeling::Grass => "grass",
-        Feeling::Dark => "dark",
-        Feeling::Large => "large",
-        Feeling::Traps => "traps",
-        Feeling::Secrets => "secrets",
-    }
 }

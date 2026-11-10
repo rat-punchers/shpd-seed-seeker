@@ -67,6 +67,8 @@ pub mod rng;
 pub mod room;
 pub mod room_decks;
 pub mod run;
+#[cfg(feature = "json-query")]
+mod scout_request;
 pub mod search;
 pub mod secret_rooms;
 pub mod seed;

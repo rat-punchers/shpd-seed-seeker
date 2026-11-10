@@ -2,11 +2,8 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use super::{Accessibility, Condition, Item, Prediction, SeedReport, TrinketEvent, decode_request};
-
-fn report(request: &str) -> SeedReport {
-    decode_request(request).unwrap().generate().unwrap()
-}
+use super::test_support::{report, seed_report};
+use super::{Accessibility, Condition, Item, Prediction, SeedReport, TrinketEvent};
 
 fn items(report: &SeedReport) -> impl Iterator<Item = &Item> {
     report.floors.iter().flat_map(|floor| &floor.items)
@@ -224,7 +221,7 @@ fn choice_groups_never_span_floors() {
     let mut crystal_path = false;
     for value in 0..48_u64 {
         let seed = crate::seed::DungeonSeed::new(value * 113_097_991_229).unwrap();
-        let report = report(&format!(r#"{{"seed":"{}"}}"#, seed.to_code()));
+        let report = seed_report(&seed.to_code());
         let mut depths: BTreeMap<u16, BTreeSet<u8>> = BTreeMap::new();
         let mut equipment_groups = BTreeSet::new();
         for item in items(&report) {

@@ -33,13 +33,13 @@ overlapping ways to complete it. Explicit wire catalyst-source filters and
 trinket combined-level groups remain unavailable because the estimator does
 not model them.
 
-The WASM scout JSON adds `trinketOrder`, an array of exactly 17 entries with
-`id`, `name`, and `spriteIndex`. It follows private-deck draw order, independently
-of the manifest's item sorting. Entries 0–3 are the initial choices. The other
-13 entries are transmutations #1–#13 and only participate in matching when a
-requirement allows at least that many transmutations. `items` contains four records with
-`category: "trinket"`, the catalyst's placement metadata and the normal `matched`
-flag. The scout views group these beneath a single Magical catalyst entry.
+The WASM seed report lists the private deck's 17 entries in draw order,
+independently of the manifest's item sorting, each with `id`, `name`,
+`spriteIndex` and `matched`: `trinkets.offers` holds the initial choices and
+`trinkets.transmutationOrder` transmutations #1–#13, which only participate in
+matching when a requirement allows at least that many transmutations. Its
+floors list one Magical Catalyst item with the catalyst's placement metadata,
+whose `matched` flag joins those of the four offers.
 
 ## Maximum transmutation requirements
 
@@ -79,8 +79,9 @@ are created only inside the query matcher. This does not search for transmutatio
 scrolls, guarantee brewing/transmutation by a floor limit, or simulate the
 trinket's generation effects after transmuting. Initial-offer selection remains
 available on other requirements. Native editors persist the same limit in drafts, presets, exports and share links;
-their generated scout item streams remain unchanged. WASM exposes transmutation highlights as `matched` flags in the
-last 13 `trinketOrder` entries; its `items` still contains only four offers. Native
+their generated scout item streams remain unchanged. WASM exposes transmutation highlights as `matched` flags in the seed
+report's `trinkets.transmutationOrder`; its floors still list only the
+catalyst. Native
 Scout match JSON adds `transmutedTrinkets`, a list of zero-based indices into
 that 13-card tail. Android, macOS and Windows read these separately from item
 indices; Linux uses the core marks directly. Every platform labels transmutation
@@ -151,9 +152,9 @@ Click any of the four initial-choice cards in the scout to apply it, or
 click the applied card again to clear the selection. An override
 regenerates that seed with the same brewing timing and can be changed back to
 the original match. A new scout request starts from the query's selection.
-WASM scout requests accept `trinket: "none"` or an initial offer's stable ID;
-omitting it resolves the query automatically. Responses include
-`selectedTrinket` (a stable ID or null). Overrides do not edit the search query.
+WASM `seed_report` requests accept `trinket: "none"` or an initial offer's
+stable ID; omitting it resolves the query automatically. Reports include
+`trinkets.selected` (a stable ID or null). Overrides do not edit the search query.
 
 Queries without selection keep their version-4 share codes. Selected queries
 use version 5; both versions decode in this release. The selection controls

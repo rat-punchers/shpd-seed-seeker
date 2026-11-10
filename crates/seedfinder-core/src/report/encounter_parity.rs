@@ -1,19 +1,12 @@
-//! Floor encounters against the official engine and against `level_map` mobs.
+//! Floor encounters against the official engine and against `level_map`
+//! mobs. The drivers in `parity.rs` run these checks.
 
 use serde_json::Value;
 
 use super::encounter::{encounters, mob_id};
-use super::{Encounter, SeedReport, decode_request};
-use crate::catalog::{ItemId, item_by_stable_id};
-use crate::challenges::Challenges;
-use crate::level_map::{SUPPORTED_DEPTHS, generate_level_map};
-
-fn report(seed: &str, challenges: u16, trinket: Option<ItemId>) -> SeedReport {
-    let mut request = decode_request(&format!(r#"{{"seed":"{seed}"}}"#)).unwrap();
-    request.challenges = Challenges::new(challenges).unwrap();
-    request.selected_trinket = trinket;
-    request.generate().unwrap()
-}
+use super::test_support::Run;
+use super::{Encounter, Floor, SeedReport};
+use crate::level_map::LevelMap;
 
 /// `(mob, quantity, sorted reward ids)` per encounter.
 fn summary(encounters: &[Encounter]) -> Vec<(String, u32, Vec<String>)> {
@@ -57,56 +50,25 @@ fn oracle_summary(mobs: &[Value]) -> Vec<(String, u32, Vec<String>)> {
     output
 }
 
-#[test]
-fn floor_encounters_match_official_engine() {
-    let fixture: Value = serde_json::from_str(include_str!(
-        "../../tests/fixtures/seed-report-encounters.json"
-    ))
-    .unwrap();
-    for sample in fixture["samples"].as_array().unwrap() {
-        let seed = sample["seed"].as_str().unwrap();
-        let challenges = u16::try_from(sample["challenges"].as_u64().unwrap()).unwrap();
-        let trinket = sample["trinket"]
-            .as_str()
-            .map(|id| item_by_stable_id(id).unwrap().id);
-        let report = report(seed, challenges, trinket);
-        let floors = sample["floors"].as_array().unwrap();
-        assert_eq!(floors.len(), report.floors.len(), "{seed}");
-        for floor in floors {
-            let depth = usize::try_from(floor["depth"].as_u64().unwrap()).unwrap();
-            let encounters = report.floors[depth - 1].encounters.as_ref().unwrap();
-            assert_eq!(
-                summary(encounters),
-                oracle_summary(floor["mobs"].as_array().unwrap()),
-                "{seed} challenges {challenges} {trinket:?} depth {depth}"
-            );
-        }
+pub(super) fn encounters_match_oracle(run: Run<'_>, sample: &Value, report: &SeedReport) {
+    let floors = sample["floors"].as_array().unwrap();
+    assert_eq!(floors.len(), report.floors.len(), "{run}");
+    for floor in floors {
+        let depth = usize::try_from(floor["depth"].as_u64().unwrap()).unwrap();
+        let encounters = report.floors[depth - 1].encounters.as_ref().unwrap();
+        assert_eq!(
+            summary(encounters),
+            oracle_summary(floor["mobs"].as_array().unwrap()),
+            "{run} depth {depth}"
+        );
     }
 }
 
-#[test]
-fn floor_encounters_match_level_map_mobs() {
-    for (seed, challenges, trinket) in [
-        ("AAA-AAA-AAA", 0, None),
-        ("BAD-RAT-KNG", 0, None),
-        ("AAA-AAA-AAA", 0, Some(ItemId::MimicTooth)),
-        ("RZN-LKU-EFS", 0, Some(ItemId::RatSkull)),
-    ] {
-        let report = report(seed, challenges, trinket);
-        let dungeon_seed = crate::seed::DungeonSeed::new(report.seed.value).unwrap();
-        for depth in SUPPORTED_DEPTHS {
-            let map = generate_level_map(
-                dungeon_seed,
-                depth,
-                Challenges::new(challenges).unwrap(),
-                trinket,
-            )
-            .unwrap();
-            assert_eq!(
-                report.floors[usize::from(depth) - 1].encounters.as_ref(),
-                Some(&encounters(&map.contents.mobs)),
-                "{seed} {trinket:?} depth {depth}"
-            );
-        }
-    }
+pub(super) fn encounters_match_map(run: Run<'_>, floor: &Floor, map: &LevelMap) {
+    assert_eq!(
+        floor.encounters.as_ref(),
+        Some(&encounters(&map.contents.mobs)),
+        "{run} depth {}",
+        floor.depth
+    );
 }

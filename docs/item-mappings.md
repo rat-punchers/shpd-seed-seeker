@@ -10,7 +10,8 @@ provide `name`, `appearance`, and `spriteIndex` (Rust: `sprite_index`). Sprite
 indices identify the unidentified appearance in `items.png`; do not resolve
 these cells through the ring gem table a second time.
 
-Web scouting includes this data as `itemMappings: { scrolls, potions, rings }`.
+The web's seed report includes this data as `identities: { scrolls, potions,
+rings }` ([seed-report-format.md](seed-report-format.md)).
 
 Android, Windows, and macOS use `SSQ5` for mappings and floor room summaries.
 Mappings were introduced in `SSQ4`, whose request body is
