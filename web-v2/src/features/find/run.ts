@@ -59,10 +59,6 @@ export async function toggleSearch(): Promise<void> {
   controller.start(toQueryDocument(query), $workerCount.get())
 }
 
-export function cancelSearch(): void {
-  coordinator?.cancel()
-}
-
 /** Opens a search result in Analyze with the query and trinket that found it. */
 export function analyzeMatch(match: ParsedSeed): void {
   const query = searchStore.state.query

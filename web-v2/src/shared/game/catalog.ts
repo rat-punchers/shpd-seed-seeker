@@ -88,23 +88,6 @@ export const enchantmentNamesForCategory = (category: string): string[] =>
     : category === 'armor'
       ? [...armorGlyphs]
       : []
-/** The curses of a category, in catalog order. */
-export const curseNamesForCategory = (category: string): string[] =>
-  weaponish(category)
-    ? [...weaponCurses]
-    : category === 'armor'
-      ? [...armorCurses]
-      : []
-export const isCurseForCategory = (
-  category: string,
-  effect: string
-): boolean =>
-  weaponish(category)
-    ? weaponCurses.includes(effect)
-    : category === 'armor'
-      ? armorCurses.includes(effect)
-      : false
-
 export const sources: { value: ItemSource; label: string }[] = (
   [
     ['heap', 'Heap'],

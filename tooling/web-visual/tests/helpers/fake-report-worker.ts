@@ -17,7 +17,7 @@ const REAL_FIXTURES = fileURLToPath(
 /** A report as the fake serves it; only the seed code is read here. */
 export type ReportFixture = { seed: { code: string } } & Record<string, unknown>
 
-/** Every real fixture, keyed by its seed code (`AAA-AAA-AAA`, `2026-01-01`). */
+/** Every real fixture, keyed by its seed code (`AAA-AAA-AAA`). */
 export async function loadReportFixtures(): Promise<
   Record<string, ReportFixture>
 > {

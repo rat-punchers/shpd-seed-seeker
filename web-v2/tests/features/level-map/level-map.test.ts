@@ -21,7 +21,7 @@ import type {
   LevelMapRequest,
 } from '../../../src/features/level-map/types'
 import { loadEngine } from '../../engine/engine'
-import { REAL_FIXTURES, realReport } from '../analyze/fixtures'
+import { REAL_REPORTS } from '../analyze/fixtures'
 
 beforeAll(loadEngine)
 
@@ -64,9 +64,9 @@ describe('map requests', () => {
 })
 
 describe('report branches', () => {
-  for (const file of REAL_FIXTURES) {
-    it(`match the maps of ${file}`, async () => {
-      const report = await realReport(file)
+  for (const [name, load] of REAL_REPORTS) {
+    it(`match the maps of ${name}`, async () => {
+      const report = await load()
       const floors = report.floors.filter((floor) => floor.branches.length)
       expect(floors.length).toBeGreaterThan(0)
       for (const floor of floors) {

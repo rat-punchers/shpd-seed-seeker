@@ -2,16 +2,8 @@ import { beforeAll, describe, expect, it } from 'bun:test'
 import {
   analyze_query,
   filter_seeds,
-  scout,
-  seed_report,
 } from '../../../src/engine/pkg/seedfinder.js'
-import type {
-  BoardEdit,
-  QueryDocument,
-  QueryState,
-  ScoutResult,
-  SeedReport,
-} from '../../../src/engine/types'
+import type { BoardEdit, QueryState } from '../../../src/engine/types'
 import type { ReportItem } from '../../../src/engine/types/report'
 import {
   fromQueryJson,
@@ -26,7 +18,7 @@ import {
   displayedUpgrade,
   itemsByCategory,
 } from '../../../src/shared/game/catalog'
-import { loadEngine } from '../../engine/engine'
+import { loadEngine, reportItems, reportOf } from '../../engine/engine'
 import { drawSheet, sheetOn } from './sheet-render'
 
 beforeAll(loadEngine)
@@ -41,17 +33,8 @@ const edited = (query: QueryState, edits: BoardEdit[]): QueryState => {
   if (!answer.ok) throw new Error(answer.error)
   return { ...query, requirements: answer.value.requirements }
 }
-const report = (query?: unknown): SeedReport =>
-  JSON.parse(
-    seed_report(
-      JSON.stringify({
-        seed: 'AAA-AAA-AAA',
-        ...(query ? { query: query as QueryDocument } : {}),
-      })
-    )
-  ) as SeedReport
-const reportItems = (seedReport: SeedReport): ReportItem[] =>
-  seedReport.floors.flatMap((floor) => floor.items)
+const report = (query?: unknown) =>
+  reportOf({ seed: 'AAA-AAA-AAA', ...(query ? { query } : {}) })
 
 /**
  * The artifacts a run can still take: every generated artifact but the
@@ -226,11 +209,8 @@ describe('artifacts in search and Analyze', () => {
     const query = {
       requirements: [{ item: 'sandals_of_nature', upgrade: 5, max_depth: 19 }],
     }
-    const scouted = JSON.parse(
-      scout(JSON.stringify({ seed: 'AAA-AAA-AAA', query }))
-    ) as ScoutResult
-    expect(scouted.matchedRequirements).toBe(1)
     const result = report(query)
+    expect(result.query?.matchedRequirements).toBe(1)
     const artifact = reportItems(result).find(
       (entry) => entry.id === 'sandals_of_nature'
     )

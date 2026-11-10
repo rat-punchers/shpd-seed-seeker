@@ -5,7 +5,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import type { SeedReport } from '../../../src/engine/types'
 import { hideItemDetail } from '../../../src/features/analyze/report/item-detail-store'
 import { SeedReportView } from '../../../src/features/analyze/report/SeedReportView'
-import { REAL_FIXTURES, realReport } from './fixtures'
+import { REAL_REPORTS, realReport } from './fixtures'
 
 let root: Root | undefined
 let container: HTMLDivElement
@@ -36,13 +36,12 @@ afterEach(() => {
 })
 
 const all = (selector: string) => [...container.querySelectorAll(selector)]
-const text = () => container.textContent ?? ''
 const slots = () => all('[data-slot="item-box"]')
 
 describe('a real report', () => {
-  for (const file of REAL_FIXTURES) {
-    it(`renders every section ${file} lists, and only those`, async () => {
-      const report = await realReport(file)
+  for (const [name, load] of REAL_REPORTS) {
+    it(`renders every section ${name} lists, and only those`, async () => {
+      const report = await load()
       render(report)
       expect(container.querySelector('[data-seed-title]')?.textContent).toBe(
         report.seed.code
@@ -112,8 +111,7 @@ describe('a real report', () => {
   })
 
   it('labels a floor with its feeling and its boss', async () => {
-    const report = await realReport('aaa-aaa-aaa.json')
-    render(report)
+    render(await realReport('aaa-aaa-aaa.json'))
     const floor2 = container.querySelector('[data-floor-depth="2"]')
     expect(floor2?.querySelector('[data-feeling]')?.textContent).toBe('Chasm')
     expect(floor2?.querySelector('[data-boss]')).toBeNull()
@@ -136,8 +134,7 @@ describe('a real report', () => {
   })
 
   it('opens the description of an item on click', async () => {
-    const report = await realReport('aaa-aaa-aaa.json')
-    render(report)
+    render(await realReport('aaa-aaa-aaa.json'))
     const wand = slots().find((slot) =>
       slot.getAttribute('aria-label')?.startsWith('Wand of frost')
     ) as HTMLButtonElement
@@ -257,7 +254,7 @@ describe('the engine-filled sections of AAA-AAA-AAA', () => {
         '[aria-label="About items that vary with gameplay"]'
       )
     ).not.toBeNull()
-    expect(text()).not.toContain('matches the query')
+    expect(container.textContent).not.toContain('matches the query')
   })
 
   it('describes an item with its in-game text, like the map', async () => {

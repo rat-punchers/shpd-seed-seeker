@@ -3,12 +3,11 @@ import {
   analyze_query,
   filter_seeds,
   SearchSession,
-  scout,
 } from '../../../src/engine/pkg/seedfinder.js'
-import type { ScoutResult, SearchAdvance } from '../../../src/engine/types'
+import type { SearchAdvance } from '../../../src/engine/types'
 import { fromQueryJson } from '../../../src/features/query/query'
 import { validateQuery } from '../../../src/features/query/validation'
-import { loadEngine } from '../../engine/engine'
+import { loadEngine, reportItems, reportOf } from '../../engine/engine'
 
 beforeAll(loadEngine)
 
@@ -27,11 +26,9 @@ describe('Arcane Resin in the engine', () => {
       arcane_resin_filter: { include_mage_wand: true, source: 'ghost_reward' },
       requirements: [],
     }
-    const result = JSON.parse(
-      scout(JSON.stringify({ seed: 'AAA-AAA-AAA', query: credit }))
-    ) as ScoutResult
-    expect(result.matchedRequirements).toBe(1)
-    expect(result.items.filter((item) => item.matched)).toHaveLength(0)
+    const result = reportOf({ seed: 'AAA-AAA-AAA', query: credit })
+    expect(result.query?.matchedRequirements).toBe(1)
+    expect(reportItems(result).filter((item) => item.matched)).toHaveLength(0)
     expect(analyze(credit).probability).toBe(1)
     for (const invalid of [null, 1, 'true']) {
       const json = JSON.stringify({
@@ -58,7 +55,7 @@ describe('Arcane Resin in the engine', () => {
     }
   })
 
-  it('searches, scouts and refines fixed and Auto resin through the real engine', () => {
+  it('searches, reports and refines fixed and Auto resin through the real engine', () => {
     // This seed's required +2 Lightning needs 3 resin, matching the fixed query.
     for (const query of [document, { ...document, arcane_resin: 'auto' }]) {
       const json = JSON.stringify(query)
@@ -71,12 +68,12 @@ describe('Arcane Resin in the engine', () => {
         expect(JSON.parse(filter_seeds(json, new Float64Array([18])))).toEqual(
           found.matches
         )
-        const manifest = JSON.parse(
-          scout(JSON.stringify({ seed: 'AAA-AAA-AAS', query }))
-        ) as ScoutResult
-        expect(manifest.matchedRequirements).toBe(2)
-        expect(manifest.totalRequirements).toBe(2)
-        const marked = manifest.items.filter((item) => item.matched)
+        const report = reportOf({ seed: 'AAA-AAA-AAS', query })
+        expect(report.query).toEqual({
+          matchedRequirements: 2,
+          totalRequirements: 2,
+        })
+        const marked = reportItems(report).filter((item) => item.matched)
         const reserved = marked.find(
           (item) => item.id === 'wand_lightning' && item.upgrade === 2
         )

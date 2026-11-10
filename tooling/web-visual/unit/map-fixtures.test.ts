@@ -12,10 +12,6 @@ import {
 } from '../tests/helpers/map-fixtures'
 
 const SNAPSHOTS = join(import.meta.dir, '../snapshots')
-const REPORTS = join(
-  import.meta.dir,
-  '../../../crates/seedfinder-wasm/tests/fixtures/seed-report'
-)
 
 describe('floor map snapshots', () => {
   test('register unique, valid levels and snapshot names', () => {
@@ -47,10 +43,8 @@ describe('floor map snapshots', () => {
     expect([...kinds].sort()).toEqual(['Crystal', 'Gnoll', 'Vault', 'main'])
   })
 
-  test('every seed has a real report and every snapshot is committed', () => {
+  test('every snapshot is committed', () => {
     for (const fixture of MAP_FIXTURES) {
-      const report = join(REPORTS, `${fixture.seed.toLowerCase()}.json`)
-      expect(existsSync(report)).toBe(true)
       expect(existsSync(join(SNAPSHOTS, mapSnapshotName(fixture)))).toBe(true)
     }
   })

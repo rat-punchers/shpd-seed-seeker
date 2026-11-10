@@ -58,6 +58,10 @@ const ENCHANT_GLOW: Record<string, Glow> = {
 
 const CURSE_GLOW = glow('#000000')
 
+/** The glow of an enchantment or glyph by wire name; undefined for a curse. */
+export const enchantGlow = (name: string): Glow | undefined =>
+  ENCHANT_GLOW[name]
+
 /**
  * One glow per name a requirement's effect filter accepts, in the filter's
  * order. An unknown name is a curse and glows black; the "any enchantment"
@@ -66,5 +70,5 @@ const CURSE_GLOW = glow('#000000')
 export function effectGlows(effect: EffectFilter | undefined): Glow[] {
   if (!effect || effect === ANY_ENCHANTMENT) return []
   const names = typeof effect === 'string' ? [effect] : effect
-  return names.map((name) => ENCHANT_GLOW[name] ?? CURSE_GLOW)
+  return names.map((name) => enchantGlow(name) ?? CURSE_GLOW)
 }

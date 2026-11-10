@@ -181,7 +181,8 @@ bun run build:wasm   # build the browser engine into web-v2/
 bun run dev:web-v2   # http://localhost:46000
 ```
 
-`bun run dev` starts web-v2 and the design preview (port 46002) together.
+`bun run dev:design` starts the design preview (port 46002), and `bun run dev`
+starts web-v2 and the design preview together.
 Checks, in order: `bun run check` (Biome), `bun run check:types`,
 `bun run build`, `bun run test`. Browser tests run in Playwright Chromium:
 `bun run install:visual-browser` once, then `bun run test:visual`. See

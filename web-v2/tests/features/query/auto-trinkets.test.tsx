@@ -5,15 +5,10 @@ import {
   filter_seeds,
   parse_seed_code,
   SearchSession,
-  seed_report,
 } from '../../../src/engine/pkg/seedfinder.js'
-import type {
-  ParsedSeed,
-  SearchAdvance,
-  SeedReport,
-} from '../../../src/engine/types'
+import type { ParsedSeed, SearchAdvance } from '../../../src/engine/types'
 import { fromQueryJson, toQueryJson } from '../../../src/features/query/query'
-import { loadEngine } from '../../engine/engine'
+import { loadEngine, reportOf } from '../../engine/engine'
 
 beforeAll(loadEngine)
 
@@ -23,8 +18,6 @@ const document = {
   requirements: [{ kind: 'weapon', effect: 'Grim' }],
 }
 const seedOf = (code: string) => JSON.parse(parse_seed_code(code)) as ParsedSeed
-const reportOf = (request: Record<string, unknown>) =>
-  JSON.parse(seed_report(JSON.stringify(request))) as SeedReport
 const filtered = (
   query: string,
   seed: ParsedSeed,

@@ -4,13 +4,8 @@ import {
   decode_share_text,
   encode_share_link,
   filter_seeds,
-  scout,
 } from '../../../src/engine/pkg/seedfinder.js'
-import type {
-  BoardEdit,
-  QueryState,
-  ScoutResult,
-} from '../../../src/engine/types'
+import type { BoardEdit, QueryState } from '../../../src/engine/types'
 import {
   decodeResultsFile,
   encodeResultsFile,
@@ -26,7 +21,7 @@ import {
   requirementBoardOf,
 } from '../../../src/features/query/requirements/board'
 import { validateQuery } from '../../../src/features/query/validation'
-import { loadEngine } from '../../engine/engine'
+import { loadEngine, reportItems, reportOf } from '../../engine/engine'
 import {
   analysisOf,
   findButton,
@@ -197,10 +192,9 @@ it('warns and disables Find when a +3 blanket conflicts with exact +2 wands', ()
   expect(findButton(drawn)?.disabled).toBe(true)
 })
 
-it('searches and scouts a real Wandmaker reward as one item serving two conditions', () => {
+it('searches and reports a real Wandmaker reward as one item serving two conditions', () => {
   const seed = 'AAA-AAA-AAA'
-  const initial = JSON.parse(scout(JSON.stringify({ seed }))) as ScoutResult
-  const reward = initial.items.find(
+  const reward = reportItems(reportOf({ seed })).find(
     (item) => item.source === 'wandmaker_reward'
   )
   if (!reward) throw new Error('no Wandmaker reward')
@@ -210,11 +204,9 @@ it('searches and scouts a real Wandmaker reward as one item serving two conditio
       { kind: 'wand', source: 'wandmaker_reward', blanket: true },
     ],
   }
-  const result = JSON.parse(
-    scout(JSON.stringify({ seed, query }))
-  ) as ScoutResult
-  expect(result.matchedRequirements).toBe(2)
-  expect(result.items.filter((item) => item.matched)).toHaveLength(1)
+  const result = reportOf({ seed, query })
+  expect(result.query?.matchedRequirements).toBe(2)
+  expect(reportItems(result).filter((item) => item.matched)).toHaveLength(1)
   expect(
     JSON.parse(filter_seeds(JSON.stringify(query), new Float64Array([0])))
   ).toHaveLength(1)
@@ -240,7 +232,7 @@ it('keeps Auto resin on the ordinary board and preserves blankets through shared
   ).toBeNull()
 })
 
-it('analyzes Auto blanket witnesses quickly and scouts the same reserved wand', () => {
+it('analyzes Auto blanket witnesses quickly and reports the same reserved wand', () => {
   const query = {
     arcane_resin: 'auto',
     requirements: [
@@ -276,11 +268,10 @@ it('analyzes Auto blanket witnesses quickly and scouts the same reserved wand', 
   expect(performance.now() - wideStarted).toBeLessThan(1000)
   expect(wideAnalysis).toMatchObject({ valid: true, impossible: false })
   expect(wideAnalysis.probability).toBeGreaterThan(0)
-  const result = JSON.parse(
-    scout(JSON.stringify({ seed: 'AAA-AAA-AAS', query }))
-  ) as ScoutResult
-  expect(result.matchedRequirements).toBe(3)
-  expect(result.totalRequirements).toBe(3)
+  expect(reportOf({ seed: 'AAA-AAA-AAS', query }).query).toEqual({
+    matchedRequirements: 3,
+    totalRequirements: 3,
+  })
   expect(
     JSON.parse(filter_seeds(JSON.stringify(query), new Float64Array([18])))
   ).toHaveLength(1)

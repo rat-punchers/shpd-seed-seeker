@@ -43,11 +43,6 @@ export function formatSeedCode(input: string): string {
   return format_seed_code(input)
 }
 
-export async function parseSeedCode(input: string): Promise<ParsedSeed> {
-  await initEngine()
-  return JSON.parse(parse_seed_code(input)) as ParsedSeed
-}
-
 export async function analyzeQuery(queryJson: string): Promise<AnalysisResult> {
   await initEngine()
   return JSON.parse(analyze_query(queryJson)) as AnalysisResult

@@ -12,11 +12,7 @@ import { seedReport } from '../../src/engine/wasm'
 import { loadEngine, REPO_ROOT } from './engine'
 
 /** The engine's committed real reports (docs/seed-report-format.md). */
-const FIXTURES = [
-  ['AAA-AAA-AAA', 'aaa-aaa-aaa.json'],
-  ['RZN-LKU-EFS', 'rzn-lku-efs.json'],
-  ['2026-01-01', 'daily-2026-01-01.json'],
-] as const
+const FIXTURES = [['AAA-AAA-AAA', 'aaa-aaa-aaa.json']] as const
 
 async function fixture(file: string): Promise<SeedReport> {
   const path = join(
