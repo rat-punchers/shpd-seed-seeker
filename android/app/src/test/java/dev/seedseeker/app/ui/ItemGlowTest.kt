@@ -13,7 +13,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/** Parity checks against `web/src/shared/sprites/glow.ts`, which mirrors `ItemSprite.Glowing`. */
+/** Parity checks against `web-v2/src/shared/sprites/glow.ts`, which mirrors `ItemSprite.Glowing`. */
 class ItemGlowTest {
     init { PackagedCatalog.install() }
 

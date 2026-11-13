@@ -1,0 +1,19 @@
+{
+  "name": "@seed-seeker/web-visual",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "bun test ./unit",
+    "test:visual": "playwright test",
+    "test:visual:update": "playwright test --update-snapshots",
+    "install:browser": "playwright install chromium",
+    "install:browser:ci": "playwright install --with-deps chromium",
+    "check:types": "tsc -b"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.0",
+    "@seed-seeker/web-v2": "workspace:*",
+    "@types/bun": "1.4.4",
+    "typescript": "7.0.2"
+  }
+}

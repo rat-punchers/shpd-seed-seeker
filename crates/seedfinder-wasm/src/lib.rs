@@ -1,28 +1,25 @@
 //! Thin JSON and cooperative-search adapter for browser WebAssembly.
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::Value;
 use shpd_seedfinder_core::auto_trinkets::{self, SeedRecipe};
-use shpd_seedfinder_core::catalog::{Effect, ItemKind, item};
-use shpd_seedfinder_core::challenges::Challenges;
+use shpd_seedfinder_core::catalog::item;
 use shpd_seedfinder_core::deep_link;
-use shpd_seedfinder_core::editor;
 use shpd_seedfinder_core::engine_info::document as engine_info_document;
 use shpd_seedfinder_core::feasibility::QueryPlan;
 use shpd_seedfinder_core::json_query;
-use shpd_seedfinder_core::main_world::{
-    CanonicalMainWorldGenerator, ConfiguredMainWorldGenerator, generate_main_world_with_trinket,
-};
-use shpd_seedfinder_core::model::{Accessibility, ItemSource, WorldItem};
+use shpd_seedfinder_core::main_world::{CanonicalMainWorldGenerator, ConfiguredMainWorldGenerator};
 use shpd_seedfinder_core::probability::estimate_match_probability;
-use shpd_seedfinder_core::query::{SearchQuery, scout_matches};
-use shpd_seedfinder_core::quests::{
-    BlacksmithQuestType, GhostQuestType, ImpQuestType, QuestSummary, WandmakerQuestType,
-};
+use shpd_seedfinder_core::query::SearchQuery;
 use shpd_seedfinder_core::results_export;
 pub use shpd_seedfinder_core::results_export::MAX_RESULTS;
 use shpd_seedfinder_core::seed::{self, DungeonSeed, TOTAL_SEEDS};
 use wasm_bindgen::prelude::*;
+
+#[cfg(test)]
+mod report_tests;
+mod seed_report;
+pub use seed_report::seed_report;
 
 const SEARCH_BATCH_SIZE: u64 = 256;
 
@@ -69,147 +66,6 @@ enum AnalysisOutput {
     },
 }
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct ScoutRequest {
-    /// Missing uses the query; "none" explicitly disables the selected trinket.
-    #[serde(default)]
-    trinket: Option<String>,
-    seed: String,
-    #[serde(default)]
-    challenges: Vec<FileChallenge>,
-    #[serde(default)]
-    query: Option<Value>,
-}
-
-#[derive(Clone, Copy, Deserialize)]
-#[serde(rename_all = "snake_case")]
-enum FileChallenge {
-    OnDiet,
-    FaithIsMyArmor,
-    Pharmacophobia,
-    BarrenLand,
-    SwarmIntelligence,
-    IntoDarkness,
-    ForbiddenRunes,
-    HostileChampions,
-    BadderBosses,
-}
-
-impl From<FileChallenge> for Challenges {
-    fn from(value: FileChallenge) -> Self {
-        match value {
-            FileChallenge::OnDiet => Self::NO_FOOD,
-            FileChallenge::FaithIsMyArmor => Self::NO_ARMOR,
-            FileChallenge::Pharmacophobia => Self::NO_HEALING,
-            FileChallenge::BarrenLand => Self::NO_HERBALISM,
-            FileChallenge::SwarmIntelligence => Self::SWARM_INTELLIGENCE,
-            FileChallenge::IntoDarkness => Self::DARKNESS,
-            FileChallenge::ForbiddenRunes => Self::NO_SCROLLS,
-            FileChallenge::HostileChampions => Self::CHAMPION_ENEMIES,
-            FileChallenge::BadderBosses => Self::STRONGER_BOSSES,
-        }
-    }
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct ScoutOutput {
-    item_mappings: shpd_seedfinder_core::item_mappings::ItemMappings,
-    selected_trinket: Option<&'static str>,
-    trinket_order: Vec<TrinketOutput>,
-    artifact_decks: Vec<ArtifactDeckOutput>,
-    seed: SeedOutput,
-    quests: Vec<ScoutQuestOutput>,
-    feelings: Vec<ScoutFeelingOutput>,
-    floor_rooms: Vec<ScoutRoomsOutput>,
-    items: Vec<ScoutItemOutput>,
-    /// The gem each ring class is drawn with in this run, in catalog ring
-    /// order. A ring item's atlas cell is `RING_SPRITE_BASE` plus its class's
-    /// entry; `spriteIndex` below stays the class's own catalog cell, whose
-    /// offset from `RING_SPRITE_BASE` is the class's `item_icons.png` glyph.
-    ring_gems: [u8; 12],
-    matched_requirements: usize,
-    total_requirements: usize,
-}
-
-#[derive(Serialize)]
-struct ArtifactDeckOutput {
-    depth: u8,
-    order: Vec<TrinketOutput>,
-}
-
-#[derive(Serialize)]
-struct ScoutRoomsOutput {
-    depth: u8,
-    rooms: Vec<shpd_seedfinder_core::floor_filters::RoomType>,
-}
-
-#[derive(Serialize)]
-struct ScoutFeelingOutput {
-    depth: u8,
-    feeling: &'static str,
-}
-
-fn feeling_name(feeling: shpd_seedfinder_core::level_prelude::Feeling) -> &'static str {
-    use shpd_seedfinder_core::level_prelude::Feeling;
-    match feeling {
-        Feeling::None => "none",
-        Feeling::Chasm => "chasm",
-        Feeling::Water => "water",
-        Feeling::Grass => "grass",
-        Feeling::Dark => "dark",
-        Feeling::Large => "large",
-        Feeling::Traps => "traps",
-        Feeling::Secrets => "secrets",
-    }
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct ScoutQuestOutput {
-    quest: &'static str,
-    variant: &'static str,
-    depth: u8,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-#[allow(clippy::struct_excessive_bools)] // Independent flags in the scout JSON document.
-struct ScoutItemOutput {
-    id: &'static str,
-    name: &'static str,
-    category: &'static str,
-    sprite_index: u16,
-    upgrade: u8,
-    effect: Option<EffectOutput>,
-    cursed: bool,
-    secret: bool,
-    depth: u8,
-    source: &'static str,
-    accessibility: AccessibilityOutput,
-    matched: bool,
-    /// Matched as a surplus wand consumed for Arcane Resin.
-    resin_donor: bool,
-    /// Forbidden to every slot by the query (a Blacksmith reward under
-    /// `exclude_blacksmith_rewards`), so never matched.
-    excluded: bool,
-}
-
-#[derive(Serialize)]
-struct EffectOutput {
-    name: &'static str,
-    kind: &'static str,
-}
-
-#[derive(Serialize)]
-#[serde(tag = "type", rename_all = "snake_case")]
-enum AccessibilityOutput {
-    Independent,
-    Choice { group: u16, option: u8 },
-    Scenarios { group: u16, mask: String },
-}
-
 #[derive(Serialize)]
 struct AdvanceOutput {
     state: &'static str,
@@ -226,24 +82,6 @@ struct AdvanceOutput {
 #[must_use]
 pub fn engine_info() -> String {
     engine_info_document().to_string()
-}
-
-/// Answers a requirement-board request (`docs/requirement-editor.md`). The
-/// board itself loads the lean `seedfinder_editor` module before first
-/// render; this copy serves workers and tests that already hold the engine.
-/// Never throws: a request the editor cannot read answers `{"error": ...}`.
-#[wasm_bindgen]
-#[must_use]
-pub fn requirement_board(request_json: &str) -> String {
-    editor::requirement_board(request_json)
-}
-
-/// Answers a requirement-sheet request (`docs/requirement-editor.md`); see
-/// [`requirement_board`].
-#[wasm_bindgen]
-#[must_use]
-pub fn requirement_editor(request_json: &str) -> String {
-    editor::requirement_editor(request_json)
 }
 
 /// Detects and groups partial seed codes or daily dates as you type. The
@@ -356,17 +194,6 @@ pub fn analyze_query(query_json: &str) -> String {
         impossible,
         notes,
     })
-}
-
-/// Generates and describes one complete depth-24 world as JSON.
-///
-/// # Errors
-///
-/// Returns a JavaScript error for malformed requests, invalid seeds or
-/// queries, and world-generation failures.
-#[wasm_bindgen]
-pub fn scout(request_json: &str) -> Result<String, JsError> {
-    scout_impl(request_json).map_err(|error| JsError::new(&error))
 }
 
 /// Returns the shared, versioned map JSON document for one regular floor.
@@ -604,256 +431,6 @@ fn parse_seed_code_impl(input: &str) -> Result<String, String> {
     seed::parse_document(input).map_err(|error| error.to_string())
 }
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct TrinketOutput {
-    matched: bool,
-    id: &'static str,
-    name: &'static str,
-    sprite_index: u16,
-}
-
-fn artifact_deck_outputs(
-    world: &shpd_seedfinder_core::model::GeneratedWorld,
-    marks: Option<&shpd_seedfinder_core::query::ScoutMatches>,
-) -> Vec<ArtifactDeckOutput> {
-    (0..=24)
-        .map(|depth| ArtifactDeckOutput {
-            depth,
-            order: shpd_seedfinder_core::artifacts::deck_at(world, depth)
-                .iter()
-                .enumerate()
-                .map(|(index, &id)| {
-                    let entry = item(id);
-                    TrinketOutput {
-                        id: entry.stable_id,
-                        name: entry.name,
-                        sprite_index: entry.sprite_index,
-                        matched: marks.is_some_and(|marks| {
-                            if depth == 0 {
-                                marks.transmuted_artifacts.iter().any(|&(floor, position)| {
-                                    shpd_seedfinder_core::artifacts::deck_at(world, floor)
-                                        .get(position)
-                                        == Some(&id)
-                                })
-                            } else {
-                                marks.transmuted_artifacts.contains(&(depth, index))
-                            }
-                        }),
-                    }
-                })
-                .collect(),
-        })
-        .collect()
-}
-
-fn scout_impl(request_json: &str) -> Result<String, String> {
-    let request: ScoutRequest = serde_json::from_str(request_json)
-        .map_err(|error| format!("invalid scout request JSON: {error}"))?;
-    let formatted_seed = format_seed_code(&request.seed);
-    let seed = DungeonSeed::from_scout_input(&formatted_seed).map_err(|error| error.to_string())?;
-    let challenges = request
-        .challenges
-        .into_iter()
-        .fold(Challenges::NONE, |mask, challenge| mask | challenge.into());
-    let query = request
-        .query
-        .map(|value| json_query::decode(&value.to_string()))
-        .transpose()?;
-    let selected = match request.trinket.as_deref() {
-        None => query
-            .as_ref()
-            .and_then(|q| shpd_seedfinder_core::trinkets::selected_for_query(seed, q)),
-        Some("none") => None,
-        Some(id) => Some(shpd_seedfinder_core::trinkets::parse_offered(seed, id)?),
-    };
-    let world = generate_main_world_with_trinket(seed, 24, challenges, selected)
-        .map_err(|error| format!("world generation failed: {error}"))?;
-    let feelings = world
-        .feelings
-        .iter()
-        .map(|entry| ScoutFeelingOutput {
-            depth: entry.depth,
-            feeling: feeling_name(entry.feeling),
-        })
-        .collect();
-    let marks = query.as_ref().map(|query| scout_matches(&world, query));
-    let matched_requirements = marks.as_ref().map_or(0, |marks| marks.matched_requirements);
-    let total_requirements = marks.as_ref().map_or(0, |marks| marks.total_requirements);
-    let transmuted = marks.as_ref().map(|marks| marks.transmuted_trinkets);
-    let artifact_decks = artifact_deck_outputs(&world, marks.as_ref());
-    let items = world
-        .items
-        .iter()
-        .enumerate()
-        .map(|(index, world_item)| scout_item_output(world_item, marks.as_ref(), index))
-        .collect();
-    Ok(to_json(&ScoutOutput {
-        item_mappings: shpd_seedfinder_core::item_mappings::item_mappings(seed),
-        selected_trinket: selected.map(|id| item(id).stable_id),
-        artifact_decks,
-        seed: seed.into(),
-        trinket_order: shpd_seedfinder_core::trinkets::trinket_order(seed)
-            .into_iter()
-            .enumerate()
-            .map(|(index, id)| {
-                let entry = item(id);
-                TrinketOutput {
-                    matched: index
-                        .checked_sub(4)
-                        .is_some_and(|step| transmuted.is_some_and(|marks| marks[step])),
-                    id: entry.stable_id,
-                    name: entry.name,
-                    sprite_index: entry.sprite_index,
-                }
-            })
-            .collect(),
-        quests: scout_quest_outputs(world.quests),
-        feelings,
-        floor_rooms: world
-            .floor_rooms
-            .iter()
-            .map(|floor| ScoutRoomsOutput {
-                depth: floor.depth,
-                rooms: floor.rooms.iter().collect(),
-            })
-            .collect(),
-        items,
-        ring_gems: world.ring_gems.ordinals(),
-        matched_requirements,
-        total_requirements,
-    }))
-}
-
-fn scout_quest_outputs(quests: QuestSummary) -> Vec<ScoutQuestOutput> {
-    let mut output = Vec::with_capacity(4);
-    if let Some(quest) = quests.ghost {
-        output.push(ScoutQuestOutput {
-            quest: "ghost",
-            variant: match quest.variant {
-                GhostQuestType::FetidRat => "fetid_rat",
-                GhostQuestType::GnollTrickster => "gnoll_trickster",
-                GhostQuestType::GreatCrab => "great_crab",
-            },
-            depth: quest.depth,
-        });
-    }
-    if let Some(quest) = quests.wandmaker {
-        output.push(ScoutQuestOutput {
-            quest: "wandmaker",
-            variant: match quest.variant {
-                WandmakerQuestType::CorpseDust => "corpse_dust",
-                WandmakerQuestType::ElementalEmbers => "elemental_embers",
-                WandmakerQuestType::Rotberry => "rotberry",
-            },
-            depth: quest.depth,
-        });
-    }
-    if let Some(quest) = quests.blacksmith {
-        output.push(ScoutQuestOutput {
-            quest: "blacksmith",
-            variant: match quest.variant {
-                BlacksmithQuestType::Crystal => "crystal",
-                BlacksmithQuestType::Gnoll => "gnoll",
-            },
-            depth: quest.depth,
-        });
-    }
-    if let Some(quest) = quests.imp {
-        output.push(ScoutQuestOutput {
-            quest: "imp",
-            variant: match quest.variant {
-                ImpQuestType::Vault => "vault",
-            },
-            depth: quest.depth,
-        });
-    }
-    output
-}
-
-/// The scout output of `world_item`, the `index`th item of the world `marks`
-/// (when a query was given) describe.
-fn scout_item_output(
-    world_item: &WorldItem,
-    marks: Option<&shpd_seedfinder_core::query::ScoutMatches>,
-    index: usize,
-) -> ScoutItemOutput {
-    let flag = |flags: &[bool]| flags.get(index).copied().unwrap_or(false);
-    let definition = item(world_item.item);
-    ScoutItemOutput {
-        id: definition.stable_id,
-        name: definition.name,
-        category: item_kind_name(definition.kind),
-        sprite_index: definition.sprite_index,
-        upgrade: world_item.upgrade,
-        effect: world_item.effect.map(effect_output),
-        cursed: world_item.cursed,
-        secret: world_item.secret,
-        depth: world_item.depth,
-        source: item_source_name(world_item.source),
-        accessibility: accessibility_output(world_item.accessibility),
-        matched: marks.is_some_and(|marks| flag(&marks.matched)),
-        resin_donor: marks.is_some_and(|marks| flag(&marks.resin_donors)),
-        excluded: marks.is_some_and(|marks| flag(&marks.excluded)),
-    }
-}
-
-const fn item_kind_name(kind: ItemKind) -> &'static str {
-    match kind {
-        ItemKind::Weapon => "weapon",
-        ItemKind::Armor => "armor",
-        ItemKind::Wand => "wand",
-        ItemKind::Ring => "ring",
-        ItemKind::Trinket => "trinket",
-        ItemKind::Artifact => "artifact",
-    }
-}
-
-const fn item_source_name(source: ItemSource) -> &'static str {
-    match source {
-        ItemSource::Heap => "heap",
-        ItemSource::Chest => "chest",
-        ItemSource::LockedChest => "locked_chest",
-        ItemSource::CrystalChest => "crystal_chest",
-        ItemSource::Tomb => "tomb",
-        ItemSource::Skeleton => "skeleton",
-        ItemSource::SacrificialFire => "sacrificial_fire",
-        ItemSource::Mimic => "mimic",
-        ItemSource::GoldenMimic => "golden_mimic",
-        ItemSource::CrystalMimic => "crystal_mimic",
-        ItemSource::Statue => "statue",
-        ItemSource::ArmoredStatue => "armored_statue",
-        ItemSource::Shop => "shop",
-        ItemSource::GhostReward => "ghost_reward",
-        ItemSource::WandmakerReward => "wandmaker_reward",
-        ItemSource::BlacksmithReward => "blacksmith_reward",
-        ItemSource::ImpReward => "imp_reward",
-        ItemSource::VaultTreasure => "vault_treasure",
-    }
-}
-
-const fn effect_output(effect: Effect) -> EffectOutput {
-    EffectOutput {
-        name: effect.wire_name(),
-        kind: if effect.is_curse() {
-            "curse"
-        } else {
-            "enchantment"
-        },
-    }
-}
-
-fn accessibility_output(accessibility: Accessibility) -> AccessibilityOutput {
-    match accessibility {
-        Accessibility::Independent => AccessibilityOutput::Independent,
-        Accessibility::Choice { group, option } => AccessibilityOutput::Choice { group, option },
-        Accessibility::Scenarios { group, mask } => AccessibilityOutput::Scenarios {
-            group,
-            mask: format!("0x{mask:x}"),
-        },
-    }
-}
-
 #[allow(
     clippy::cast_possible_truncation,
     clippy::cast_precision_loss,
@@ -883,21 +460,20 @@ fn to_json<T: Serialize>(value: &T) -> String {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
     use std::num::NonZeroUsize;
 
     use serde::Deserialize;
     use serde_json::{Value, json};
-    use shpd_seedfinder_core::catalog::{RING_SPRITE_BASE, item, item_by_stable_id};
+    use shpd_seedfinder_core::catalog::item_by_stable_id;
     use shpd_seedfinder_core::json_query;
-    use shpd_seedfinder_core::main_world::{CanonicalMainWorldGenerator, generate_main_world};
+    use shpd_seedfinder_core::main_world::CanonicalMainWorldGenerator;
     use shpd_seedfinder_core::search::{SearchOptions, SearchProgress, search_parallel};
     use shpd_seedfinder_core::seed::DungeonSeed;
 
     use super::{
         MAX_RESULTS, SearchSession, analyze_query, decode_share_text_impl, encode_share_link_impl,
         engine_info, engine_info_document, filter_seeds_impl, format_seed_code,
-        parse_seed_code_impl, scout_impl,
+        parse_seed_code_impl,
     };
 
     #[test]
@@ -983,14 +559,17 @@ mod tests {
     }
 
     #[test]
-    fn map_bridge_uses_shared_document_and_scout_selection() {
+    fn map_bridge_uses_shared_document_and_report_selection() {
         let request = r#"{"seed":"AAA-AAA-AAA","depth":4,"query":{"requirements":[{"item":"mimic_tooth","select_trinket":true}]}}"#;
         let map: Value = serde_json::from_str(&super::level_map_impl(request).unwrap()).unwrap();
-        let mut scout_request: Value = serde_json::from_str(request).unwrap();
-        scout_request.as_object_mut().unwrap().remove("depth");
-        let scout: Value =
-            serde_json::from_str(&scout_impl(&scout_request.to_string()).unwrap()).unwrap();
-        assert_eq!(map["selectedTrinket"], scout["selectedTrinket"]);
+        let mut report_request: Value = serde_json::from_str(request).unwrap();
+        report_request.as_object_mut().unwrap().remove("depth");
+        let report: Value = serde_json::from_str(
+            &shpd_seedfinder_core::report::document(&report_request.to_string()).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(map["selectedTrinket"], "mimic_tooth");
+        assert_eq!(map["selectedTrinket"], report["trinkets"]["selected"]);
         let shared = shpd_seedfinder_core::level_map::json::decode_request(request)
             .unwrap()
             .generate_document()
@@ -1038,36 +617,6 @@ mod tests {
     }
 
     #[test]
-    fn scout_selection_defaults_overrides_and_validation() {
-        let query =
-            serde_json::json!({"requirements":[{"item":"mimic_tooth","select_trinket":true}]});
-        let mut request = serde_json::json!({"seed":"AAA-AAA-AAA", "query":query});
-        let selected: serde_json::Value =
-            serde_json::from_str(&scout_impl(&request.to_string()).unwrap()).unwrap();
-        assert_eq!(selected["selectedTrinket"], "mimic_tooth");
-        request["trinket"] = "none".into();
-        let none: serde_json::Value =
-            serde_json::from_str(&scout_impl(&request.to_string()).unwrap()).unwrap();
-        assert!(none["selectedTrinket"].is_null());
-        assert_ne!(none["items"], selected["items"]);
-        for id in [
-            "mimic_tooth",
-            "parchment_scrap",
-            "dimensional_sundial",
-            "thirteen_leaf_clover",
-        ] {
-            request["trinket"] = id.into();
-            let result: serde_json::Value =
-                serde_json::from_str(&scout_impl(&request.to_string()).unwrap()).unwrap();
-            assert_eq!(result["selectedTrinket"], id);
-        }
-        for id in ["rat_skull", "not_a_trinket", "longsword"] {
-            request["trinket"] = id.into();
-            assert!(scout_impl(&request.to_string()).is_err());
-        }
-    }
-
-    #[test]
     fn share_links_round_trip_the_canonical_document() {
         let document = r#"{"requirements":[{"item":"wand_fireblast","upgrade":{"at_least":3}}]}"#;
         let link = encode_share_link_impl(document).unwrap();
@@ -1084,22 +633,6 @@ mod tests {
     fn engine_info_serializes_the_shared_document_with_the_browser_cap() {
         let info: Value = serde_json::from_str(&engine_info()).unwrap();
         assert_eq!(info, engine_info_document());
-    }
-
-    #[test]
-    fn requirement_editor_exports_answer_the_shared_envelopes() {
-        let board = r#"{"rows":[{"key":1,"kind":"wand"}],"edits":[{"type":"set_count","key":1,"count":2}]}"#;
-        assert_eq!(
-            super::requirement_board(board),
-            shpd_seedfinder_core::editor::requirement_board(board)
-        );
-        let open = r#"{"op":"open","rows":[]}"#;
-        assert_eq!(
-            super::requirement_editor(open),
-            shpd_seedfinder_core::editor::requirement_editor(open)
-        );
-        let error: Value = serde_json::from_str(&super::requirement_board("[")).unwrap();
-        assert!(error["error"].is_string());
     }
 
     #[test]
@@ -1162,123 +695,18 @@ mod tests {
     }
 
     #[test]
-    fn scouting_reports_the_run_gems_that_recolor_its_rings() {
-        // YKH-LGJ-WDQ draws haste as a diamond in the game. The item keeps its
-        // catalog cell — which is what names the class and indexes its glyph —
-        // and the gem table is what moves the art onto the diamond.
-        let output: Value =
-            serde_json::from_str(&scout_impl(r#"{"seed":"YKH-LGJ-WDQ"}"#).unwrap()).unwrap();
-        assert_eq!(
-            output["ringGems"],
-            serde_json::json!([7, 8, 3, 5, 4, 6, 2, 11, 10, 1, 0, 9])
-        );
-
-        let mappings = &output["itemMappings"];
-        for category in ["scrolls", "potions", "rings"] {
-            assert_eq!(mappings[category].as_array().unwrap().len(), 12);
-        }
-        assert_eq!(mappings["rings"][7]["appearance"], "Diamond");
-        assert_eq!(mappings["rings"][7]["spriteIndex"], RING_SPRITE_BASE + 11);
-        assert_eq!(mappings["rings"][7]["name"], "Ring of haste");
-
-        let haste = item_by_stable_id("ring_haste").unwrap();
-        assert_eq!(haste.sprite_index, RING_SPRITE_BASE + 7);
-        assert_eq!(haste.ring_glyph_index(), Some(7));
-        let gems = output["ringGems"].as_array().unwrap();
-        let glyph = usize::from(haste.ring_glyph_index().unwrap());
-        let drawn = RING_SPRITE_BASE + u16::try_from(gems[glyph].as_u64().unwrap()).unwrap();
-        assert_eq!(drawn, RING_SPRITE_BASE + 11);
-
-        for output_item in output["items"].as_array().unwrap() {
-            let definition = item_by_stable_id(output_item["id"].as_str().unwrap()).unwrap();
-            assert_eq!(output_item["spriteIndex"], definition.sprite_index);
-        }
-    }
-
-    #[test]
-    fn scout_feelings_match_game_fixtures_and_skip_boss_floors() {
-        let output: Value =
-            serde_json::from_str(&scout_impl(r#"{"seed":"AAA-AAA-AAA"}"#).unwrap()).unwrap();
-        let feelings = output["feelings"].as_array().unwrap();
-        assert_eq!(feelings.len(), 20);
-        assert_eq!(
-            feelings[0],
-            serde_json::json!({"depth": 1, "feeling": "none"})
-        );
-        assert!(
-            feelings
-                .iter()
-                .all(|entry| entry["depth"].as_u64().unwrap() % 5 != 0)
-        );
-        for fixture in [
-            include_str!("../../../tooling/oracle-4.0/tests/prison-floors.expected.json"),
-            include_str!("../../../tooling/oracle-4.0/tests/caves-floors.expected.json"),
-            include_str!("../../../tooling/oracle-4.0/tests/city-floors.expected.json"),
-            include_str!("../../../tooling/oracle-4.0/tests/halls-floors.expected.json"),
-        ] {
-            let fixture: Value = serde_json::from_str(fixture).unwrap();
-            for level in fixture["seeds"]["AAA-AAA-AAA"]["levels"]
-                .as_array()
-                .unwrap()
-            {
-                let actual = feelings
-                    .iter()
-                    .find(|entry| entry["depth"] == level["depth"])
-                    .unwrap();
-                assert_eq!(
-                    actual["feeling"],
-                    level["feeling"].as_str().unwrap().to_lowercase(),
-                    "floor {}",
-                    level["depth"]
-                );
-            }
-        }
-    }
-
-    #[test]
-    fn scout_matches_canonical_world_and_android_catalog() {
+    fn android_catalog_agrees_with_the_core_catalog() {
         use shpd_seedfinder_core::catalog::WeaponCategory;
-
-        let output: Value =
-            serde_json::from_str(&scout_impl(r#"{"seed":"AAA-AAA-AAA"}"#).unwrap()).unwrap();
-        let world = generate_main_world(DungeonSeed::MIN, 24).unwrap();
-        let output_items = output["items"].as_array().unwrap();
-        assert_eq!(output_items.len(), world.items.len());
-
-        assert_eq!(
-            output["quests"],
-            serde_json::json!([
-                { "quest": "ghost", "variant": "gnoll_trickster", "depth": 3 },
-                { "quest": "wandmaker", "variant": "elemental_embers", "depth": 9 },
-                { "quest": "blacksmith", "variant": "crystal", "depth": 13 },
-                { "quest": "imp", "variant": "vault", "depth": 19 },
-            ])
-        );
 
         let catalog: AndroidCatalog = serde_json::from_str(include_str!(
             "../../../android/app/src/main/assets/third_party/shattered-pixel-dungeon/catalog-v4.0.2.json"
         ))
         .unwrap();
-        let sprites = catalog
-            .entries
-            .iter()
-            .map(|entry| (entry.id.clone(), entry.sprite))
-            .collect::<BTreeMap<_, _>>();
-        for (output_item, world_item) in output_items.iter().zip(&world.items) {
-            let definition = item(world_item.item);
-            assert_eq!(output_item["id"], definition.stable_id);
-            assert_eq!(output_item["depth"], world_item.depth);
-            assert_eq!(output_item["secret"], world_item.secret);
-            assert_eq!(
-                output_item["spriteIndex"],
-                sprites
-                    .get(definition.stable_id)
-                    .copied()
-                    .unwrap_or(definition.sprite_index)
-            );
+        // Every frontend draws an item from the core catalog's sprite cell.
+        for entry in &catalog.entries {
+            let definition = item_by_stable_id(&entry.id).unwrap();
+            assert_eq!(entry.sprite, definition.sprite_index, "{}", entry.id);
         }
-        // The canonical seed hides part of its loot behind secret rooms.
-        assert!(output_items.iter().any(|item| item["secret"] == true));
 
         // The asset's melee/thrown classes mirror the core catalog exactly.
         for entry in &catalog.entries {
@@ -1326,161 +754,13 @@ mod tests {
                 definition.kind,
                 shpd_seedfinder_core::catalog::ItemKind::Artifact
             );
-            assert_eq!(entry["type"], super::item_kind_name(definition.kind));
+            assert_eq!(
+                entry["type"],
+                shpd_seedfinder_core::catalog::kind_name(definition.kind)
+            );
             assert_eq!(entry["name"], definition.name);
             assert_eq!(entry["sprite"], definition.sprite_index);
         }
-    }
-
-    #[test]
-    fn trinket_transmutations_filter_and_highlight_the_remaining_deck() {
-        // Official v4.0.0 oracle: Censer is first, Salt Cube is thirteenth.
-        let query = json!({"max_depth": 3, "requirements": [
-            {"item": "chaotic_censer", "trinket_transmutations": 1},
-            {"item": "salt_cube", "trinket_transmutations": 13}
-        ]});
-        let output: Value = serde_json::from_str(
-            &scout_impl(
-                &json!({
-                    "seed": "AAA-AAA-AAA", "query": query
-                })
-                .to_string(),
-            )
-            .unwrap(),
-        )
-        .unwrap();
-        assert_eq!(output["matchedRequirements"], 2);
-        assert_eq!(output["trinketOrder"][4]["matched"], true);
-        assert_eq!(output["trinketOrder"][16]["matched"], true);
-        let offers: Vec<_> = output["items"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .filter(|entry| entry["category"] == "trinket")
-            .collect();
-        assert_eq!(offers.len(), 4);
-        assert!(offers.iter().all(|entry| entry["matched"] == false));
-        assert_eq!(output["selectedTrinket"], Value::Null);
-        let filtered: Value =
-            serde_json::from_str(&filter_seeds_impl(&query.to_string(), &[0.0]).unwrap()).unwrap();
-        assert_eq!(filtered.as_array().unwrap().len(), 1);
-        let mut wrong = query;
-        wrong["requirements"][0]["trinket_transmutations"] = 0.into();
-        let filtered: Value =
-            serde_json::from_str(&filter_seeds_impl(&wrong.to_string(), &[0.0]).unwrap()).unwrap();
-        assert!(filtered.as_array().unwrap().is_empty());
-    }
-
-    #[test]
-    fn trinket_wire_order_catalog_and_or_search_agree() {
-        let query = serde_json::json!({"requirements": [{"any_of": [
-            {"item": "rat_skull"}, {"item": "mimic_tooth"}
-        ]}], "max_depth": 3});
-        let output: Value = serde_json::from_str(
-            &scout_impl(
-                &serde_json::json!({
-                    "seed": "AAA-AAA-AAA", "query": query
-                })
-                .to_string(),
-            )
-            .unwrap(),
-        )
-        .unwrap();
-        let order = output["trinketOrder"].as_array().unwrap();
-        assert_eq!(order.len(), 17);
-        assert_eq!(order[0]["id"], "dimensional_sundial");
-        assert_eq!(order[1]["id"], "mimic_tooth");
-        assert_eq!(order[16]["id"], "salt_cube");
-        assert_eq!(output["matchedRequirements"], 1);
-        let offers: Vec<_> = output["items"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .filter(|item| item["category"] == "trinket")
-            .collect();
-        assert_eq!(offers.len(), 4);
-        assert!(
-            offers
-                .iter()
-                .any(|offer| offer["id"] == "mimic_tooth" && offer["matched"] == true)
-        );
-        let catalog: Value =
-            serde_json::from_str(include_str!("../../../android/app/src/main/assets/third_party/shattered-pixel-dungeon/catalog-v4.0.2.json"))
-                .unwrap();
-        for entry in catalog["entries"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .filter(|entry| entry["type"] == "trinket")
-        {
-            let wire = order.iter().find(|wire| wire["id"] == entry["id"]).unwrap();
-            assert_eq!(wire["name"], entry["name"]);
-            assert_eq!(wire["spriteIndex"], entry["sprite"]);
-        }
-        let filtered: Value =
-            serde_json::from_str(&filter_seeds_impl(&query.to_string(), &[0.0]).unwrap()).unwrap();
-        assert_eq!(filtered.as_array().unwrap().len(), 1);
-    }
-
-    #[test]
-    fn scout_query_marks_a_matching_known_item() {
-        let world = generate_main_world(DungeonSeed::MIN, 24).unwrap();
-        let known = &world.items[0];
-        let definition = item(known.item);
-        let request = json!({
-            "seed": "AAAAAAAAA",
-            "query": {
-                "requirements": [{
-                    "item": definition.stable_id,
-                    "max_depth": known.depth
-                }]
-            }
-        });
-        let output: Value =
-            serde_json::from_str(&scout_impl(&request.to_string()).unwrap()).unwrap();
-        assert_eq!(output["totalRequirements"], 1);
-        assert_eq!(output["matchedRequirements"], 1);
-        let matched = output["items"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .filter(|item| item["matched"] == true)
-            .collect::<Vec<_>>();
-        assert_eq!(matched.len(), 1);
-        assert_eq!(matched[0]["id"], definition.stable_id);
-    }
-
-    #[test]
-    fn scout_items_flag_excluded_smith_rewards() {
-        let output = |exclude: bool| -> Value {
-            let request = json!({
-                "seed": "AAAAAAAAA",
-                "query": {
-                    "exclude_blacksmith_rewards": exclude,
-                    "requirements": [{"kind": "weapon"}]
-                }
-            });
-            serde_json::from_str(&scout_impl(&request.to_string()).unwrap()).unwrap()
-        };
-        let excluded = output(true);
-        let items = excluded["items"].as_array().unwrap();
-        assert!(
-            items
-                .iter()
-                .any(|item| item["source"] == "blacksmith_reward")
-        );
-        for item in items {
-            assert_eq!(item["excluded"], item["source"] == "blacksmith_reward");
-            assert!(item["excluded"] == false || item["matched"] == false);
-        }
-        let allowed = output(false);
-        assert!(
-            allowed["items"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .all(|item| item["excluded"] == false)
-        );
     }
 
     #[test]

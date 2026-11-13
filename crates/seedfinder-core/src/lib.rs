@@ -60,11 +60,15 @@ pub mod regular_items;
 pub mod regular_level;
 pub mod regular_placement;
 #[cfg(feature = "json-query")]
+pub mod report;
+#[cfg(feature = "json-query")]
 pub mod results_export;
 pub mod rng;
 pub mod room;
 pub mod room_decks;
 pub mod run;
+#[cfg(feature = "json-query")]
+mod scout_request;
 pub mod search;
 pub mod secret_rooms;
 pub mod seed;

@@ -73,6 +73,7 @@ use crate::special_forced::{
 pub struct PaintedHallsFloor {
     pub prepared: PreparedRegularFloor,
     pub graph_attempts: u32,
+    pub builder: crate::builder::BuilderKind,
     pub level: Level,
     pub rooms: Vec<Room>,
     pub entrance_room: RoomId,
@@ -669,6 +670,7 @@ pub(crate) fn paint_halls_floor_filtered(
     Ok(Some(PaintedHallsFloor {
         prepared,
         graph_attempts: built.builder_attempts,
+        builder: built.builder,
         level,
         rooms,
         entrance_room: built.entrance,
@@ -746,6 +748,7 @@ fn build_halls_room_graph(
                     exit,
                     floor_specials: initialized.floor_specials,
                     builder_attempts: attempts,
+                    builder: builder.kind(),
                 },
                 shop_room,
             ));

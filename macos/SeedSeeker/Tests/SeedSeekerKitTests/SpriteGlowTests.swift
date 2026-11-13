@@ -3,7 +3,7 @@ import SeedSeekerKit
 import XCTest
 
 /// The glow table and atlas geometry must stay identical to the web reference in
-/// `web/src/shared/sprites/glow.ts` and `web/src/shared/sprites/sprites.ts`; these pin the values that
+/// `web-v2/src/shared/sprites/glow.ts` and `web-v2/src/shared/sprites/sprites.ts`; these pin the values that
 /// would silently drift apart otherwise.
 final class GlowTableTests: XCTestCase {
     func testEnchantmentColoursAndPeriods() {

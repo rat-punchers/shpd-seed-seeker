@@ -27,7 +27,7 @@ struct AboutView: View {
                     attribution("Pixel Dungeon", "© 2012–2015 Oleg Dolya")
                     attribution("Shattered Pixel Dungeon", "© 2014–2026 Evan Debenham")
                     attribution("Project", "github.com/00-Evan/shattered-pixel-dungeon")
-                    attribution("Bundled notices", "ATTRIBUTION.md, DUNGEON-ICONS-ATTRIBUTION.md and LICENSE.txt in Resources")
+                    attribution("Bundled notices", "ATTRIBUTION.md and LICENSE.txt in Resources")
                 }
                 Section("GNU GPL v3 or later") {
                     Text("This program is free software. You may redistribute and modify it under "

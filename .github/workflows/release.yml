@@ -13,85 +13,6 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  web:
-    name: Web
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Cache Rust build
-        uses: Swatinem/rust-cache@v2
-        with:
-          shared-key: release-web
-
-      - name: Install wasm-pack
-        uses: taiki-e/install-action@v2
-        with:
-          tool: wasm-pack
-
-      # Installs the Vite+ toolchain, Node.js, and the web app's dependencies.
-      - name: Install Vite+
-        uses: voidzero-dev/setup-vp@v1.18.0
-        with:
-          node-version: 22
-          working-directory: web
-          cache: true
-
-      - name: Build browser engine
-        run: ./scripts/build-web-wasm.sh
-
-      - name: Build web app
-        working-directory: web
-        run: |
-          vp check
-          vp test
-          vp build
-
-      # Hidden files are dropped by default, which would leave out
-      # .well-known/assetlinks.json and break Android App Link verification.
-      - name: Upload web artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: seed-seeker-web-dist
-          path: web/dist
-          include-hidden-files: true
-          if-no-files-found: error
-
-  web-deploy:
-    name: Deploy web
-    needs: web
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Download web artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: seed-seeker-web-dist
-          path: web/dist
-
-      # Tags check out a detached HEAD, which Wrangler would publish as a
-      # preview; naming the production branch makes the upload go live.
-      # Wrangler 2 silently skipped dotfiles such as .well-known/, so keep
-      # the major version pinned.
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: "4"
-          command: pages deploy web/dist --project-name=shpd-seed-seeker --branch=main
-
   cli:
     name: CLI (${{ matrix.target }})
     runs-on: ${{ matrix.runner }}
@@ -599,8 +520,6 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          # Exclude the web build; it deploys to Cloudflare Pages and is not a release asset.
-          pattern: '!seed-seeker-web-dist'
           path: dist
           merge-multiple: true
 

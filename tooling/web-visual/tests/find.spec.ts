@@ -1,0 +1,133 @@
+import { expect, type Page, test } from '@playwright/test'
+import { openApp } from './helpers/app'
+import {
+  collectBrowserErrors,
+  expectNoBrowserErrors,
+} from './helpers/browser-errors'
+import { editItem, itemPicker } from './helpers/item-picker'
+
+/** Opens Find with an empty query and adds one item row. */
+async function openFindWithOneRow(page: Page) {
+  await openApp(page, { mode: 'find' })
+  await page.getByRole('button', { name: 'Add item' }).click()
+  await expect(itemPicker(page, 1)).toBeVisible()
+}
+
+test('the first match previews beside the list and a click previews another', async ({
+  page,
+}) => {
+  const errors = collectBrowserErrors(page)
+  await openFindWithOneRow(page)
+  // Any ring by floor 24: every seed holds one, so results come at once.
+  await editItem(page, 1, { item: 'Any ring', floor: 24 })
+  await page.getByRole('button', { name: 'Find', exact: true }).click()
+  const second = page.getByTestId('result-row').nth(1)
+  await expect(second).toBeVisible()
+  // Stop well before the result limit: filling it takes over 15 s on CI.
+  await page.getByRole('button', { name: 'Cancel' }).click()
+  await expect(page.getByText('Cancelled', { exact: true })).toBeVisible()
+
+  const first = page.getByTestId('result-row').first()
+  const code = (await first.getByRole('heading').textContent()) ?? ''
+  expect(code).toMatch(/^[A-Z]{3}-[A-Z]{3}-[A-Z]{3}$/)
+  const preview = page.getByRole('complementary', { name: 'Seed preview' })
+  await expect(preview.locator('[data-preview-seed]')).toHaveText(code)
+  await expect(preview).toContainText('Result 1 of')
+  await expect(preview.locator(`[data-seed-preview="${code}"]`)).toBeVisible()
+  const secondCode = (await second.getByRole('heading').textContent()) ?? ''
+  await second.getByRole('button', { name: `Preview ${secondCode}` }).click()
+  await expect(preview.locator('[data-preview-seed]')).toHaveText(secondCode)
+  await expect(second).toHaveAttribute('data-selected', 'true')
+
+  await preview.getByRole('button', { name: 'Analyze seed' }).click()
+  await expect(
+    page
+      .getByRole('tablist', { name: 'Mode' })
+      .getByRole('tab', { name: 'Analyze' })
+  ).toHaveAttribute('aria-selected', 'true')
+  expectNoBrowserErrors(errors)
+})
+
+test('Ctrl+Enter starts and cancels a search, and leaving asks first', async ({
+  page,
+}) => {
+  const errors = collectBrowserErrors(page)
+  // Two rows that rarely meet, so the search is still scanning when cancelled.
+  await openApp(page, {
+    mode: 'find',
+    query: JSON.stringify({
+      auto_apply_trinket: true,
+      max_depth: 4,
+      requirements: [
+        { kind: 'weapon', item: 'longsword', upgrade: { at_least: 3 } },
+        { kind: 'ring', item: 'ring_wealth' },
+      ],
+    }),
+  })
+  await expect(itemPicker(page, 2)).toContainText('Ring of Wealth')
+  await expect(page.getByTestId('query-estimate')).toContainText('1 in')
+
+  await page.keyboard.press('Control+Enter')
+  await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible()
+  await expect(page.getByText('Searching', { exact: true })).toBeVisible()
+  // The item rows are locked while the search runs.
+  await expect(itemPicker(page, 1)).toBeDisabled()
+
+  const dialog = page.waitForEvent('dialog')
+  void page.close({ runBeforeUnload: true }).catch(() => undefined)
+  const leave = await dialog
+  expect(leave.type()).toBe('beforeunload')
+  await leave.dismiss()
+  expect(page.isClosed()).toBe(false)
+
+  await page.keyboard.press('Control+Enter')
+  await expect(page.getByText('Cancelled', { exact: true })).toBeVisible()
+  await expect(itemPicker(page, 1)).toBeEnabled()
+  expectNoBrowserErrors(errors)
+})
+
+for (const viewport of [
+  { width: 1440, height: 1200 },
+  { width: 390, height: 844 },
+]) {
+  test(`an impossible query explains why and cannot start at ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport)
+    const errors = collectBrowserErrors(page)
+    await openFindWithOneRow(page)
+    // Wand of Lightning +3 first generates on floor 7.
+    await editItem(page, 1, {
+      item: 'Wand of Lightning',
+      upgrade: 3,
+      floor: 6,
+    })
+
+    const alert = page
+      .getByRole('alert')
+      .filter({ hasText: 'Impossible query' })
+    await expect(alert).toBeVisible()
+    await expect(alert).toContainText(
+      'Requirement 1 (Wand of lightning) needs floor 7 or later, beyond its floor limit.'
+    )
+    await expect(
+      page.getByRole('button', { name: 'Find', exact: true })
+    ).toBeDisabled()
+    await page.keyboard.press('Control+Enter')
+    await expect(
+      page.getByRole('heading', { name: 'No search yet' })
+    ).toBeVisible()
+
+    // One floor deeper the query is possible again.
+    await editItem(page, 1, { floor: 7 })
+    await expect(alert).toBeHidden()
+    await expect(
+      page.getByRole('button', { name: 'Find', exact: true })
+    ).toBeEnabled()
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth
+    )
+    expect(overflow).toBeLessThanOrEqual(0)
+    expectNoBrowserErrors(errors)
+  })
+}

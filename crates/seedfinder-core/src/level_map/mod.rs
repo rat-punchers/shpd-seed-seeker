@@ -8,7 +8,10 @@ pub mod assets;
 pub(crate) mod contents;
 mod item_text;
 mod item_tooltips;
+#[cfg(feature = "json-query")]
+mod mob_text;
 pub use item_tooltips::{MapItemTooltip, MapTooltipItem};
+pub(crate) use item_tooltips::{item_description, item_icon};
 mod glow;
 pub use contents::{MapContents, MapEffect, MapFeature, MapHeap, MapItem, MapMob, MapPlant};
 pub use glow::MapGlow;
@@ -313,7 +316,8 @@ pub fn generate_level_map_in_branch(
         depth,
         challenges,
         &MapGate(selected_trinket),
-        &mut |floor| {
+        crate::main_world::ObservedProfile::Map,
+        &mut |floor: crate::main_world::FloorObservation<'_>| {
             if floor.level.depth != u32::from(depth) {
                 return;
             }

@@ -355,6 +355,46 @@ pub(crate) struct FloorObservation<'a> {
     pub imp_rewards: &'a [crate::quests::ImpRewardOption],
     pub trinket: &'a crate::trinkets::TrinketEffects,
     pub vault: Option<&'a crate::vault_floor::GeneratedVault>,
+    /// World choice groups allocated before this floor. A floor-local group
+    /// `g` in a paint event is world group `g + choice_group_offset`.
+    #[cfg_attr(not(feature = "json-query"), allow(dead_code))] // Read by the seed report.
+    pub choice_group_offset: u16,
+}
+
+/// Receives each completed floor of an observed replay.
+pub(crate) trait FloorObserver {
+    fn floor(&mut self, floor: FloorObservation<'_>);
+    /// The depth-20 Imp shop stock, cached while the City boss floor is built.
+    fn boss_shop(
+        &mut self,
+        _inventory: &crate::shop::ShopInventory,
+        _trinket: &crate::trinkets::TrinketEffects,
+    ) {
+    }
+    /// The quest state once every floor is generated.
+    fn quests(&mut self, _quests: &QuestState) {}
+}
+
+impl<F: FnMut(FloorObservation<'_>)> FloorObserver for F {
+    fn floor(&mut self, floor: FloorObservation<'_>) {
+        self(floor);
+    }
+}
+
+struct NoObserver;
+impl FloorObserver for NoObserver {
+    fn floor(&mut self, _: FloorObservation<'_>) {}
+}
+
+/// How an observed replay treats run history.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum ObservedProfile {
+    /// Loot scouting: the same world as `generate_main_world_with_trinket`.
+    #[cfg_attr(not(feature = "json-query"), allow(dead_code))] // Used by the seed report.
+    Scout,
+    /// Level maps: an obtainable earlier-floor hourglass is taken, so later
+    /// shops stock its sand (`docs/level-map-format.md`).
+    Map,
 }
 
 /// Captures completed regular floors without changing generation or retaining
@@ -364,7 +404,8 @@ pub(crate) fn generate_main_world_observed(
     maximum_depth: u8,
     challenges: Challenges,
     gate: &dyn FloorGate,
-    observer: &mut impl FnMut(FloorObservation<'_>),
+    profile: ObservedProfile,
+    observer: &mut impl FloorObserver,
 ) -> Result<Option<GeneratedWorld>, MainWorldError> {
     if !(1..=24).contains(&maximum_depth) {
         return Err(MainWorldError::InvalidMaximumDepth(maximum_depth));
@@ -374,8 +415,17 @@ pub(crate) fn generate_main_world_observed(
     let roots = regular_depths(target)
         .map(|depth| seed_for_depth(dungeon_seed, depth, 0))
         .collect::<Vec<_>>();
-    // Map observers need the vault alongside its parent floor, so replay eagerly.
-    generate_gated_world_attempt(seed, target, &roots, challenges, gate, None, true, observer)
+    // Observers need the vault alongside its parent floor, so replay eagerly.
+    generate_gated_world_attempt(
+        seed,
+        target,
+        &roots,
+        challenges,
+        gate,
+        None,
+        Some(profile),
+        observer,
+    )
 }
 
 /// Sequential gated composite over the canonical per-region floor generators.
@@ -396,8 +446,8 @@ fn generate_gated_world_with_roots(
         challenges,
         gate,
         deferred,
-        false,
-        &mut |_| {},
+        None,
+        &mut NoObserver,
     );
     if deferred.is_some() && result.is_err() {
         // Delaying a vault can change which regional error is encountered
@@ -409,8 +459,8 @@ fn generate_gated_world_with_roots(
             challenges,
             gate,
             None,
-            false,
-            &mut |_| {},
+            None,
+            &mut NoObserver,
         );
     }
     result
@@ -431,9 +481,10 @@ fn generate_gated_world_attempt(
     challenges: Challenges,
     gate: &dyn FloorGate,
     deferred: Option<&crate::feasibility::QueryPlan>,
-    acquire_hourglass: bool,
-    observer: &mut impl FnMut(FloorObservation<'_>),
+    profile: Option<ObservedProfile>,
+    observer: &mut impl FloorObserver,
 ) -> Result<Option<GeneratedWorld>, MainWorldError> {
+    let acquire_hourglass = profile == Some(ObservedProfile::Map);
     let dungeon_seed = i64::try_from(seed.value()).expect("base-26 seed range fits Java long");
     let mut pending_vault = None;
     let mut run = RunState::with_challenges(dungeon_seed, challenges);
@@ -445,7 +496,7 @@ fn generate_gated_world_attempt(
     let mut quests = QuestState::new();
     let mut shop_run = ShopRunState::default();
     let mut random = RandomStack::with_base_seed(0);
-    random.record_room_order = acquire_hourglass;
+    random.record_room_order = profile.is_some();
     let mut items = Vec::new();
     let mut feelings = Vec::new();
     let mut floor_rooms = Vec::new();
@@ -481,7 +532,7 @@ fn generate_gated_world_attempt(
                     depth: completed,
                     rooms: crate::floor_filters::RoomSet::from_rooms(&floor.painted.rooms),
                 });
-                observer(FloorObservation {
+                observer.floor(FloorObservation {
                     contents: crate::level_map::contents::FloorSource::Sewer(&floor),
                     level: &floor.painted.level,
                     rooms: &floor.painted.rooms,
@@ -489,6 +540,7 @@ fn generate_gated_world_attempt(
                     imp_rewards: &quests.imp.reward_options,
                     trinket: &random.trinket,
                     vault: None,
+                    choice_group_offset: next_choice_group,
                 });
                 (floor.world_items, Some(floor.painted.level.feeling))
             }
@@ -510,7 +562,7 @@ fn generate_gated_world_attempt(
                     depth: completed,
                     rooms: crate::floor_filters::RoomSet::from_rooms(&floor.painted.rooms),
                 });
-                observer(FloorObservation {
+                observer.floor(FloorObservation {
                     contents: crate::level_map::contents::FloorSource::Prison(&floor),
                     level: &floor.painted.level,
                     rooms: &floor.painted.rooms,
@@ -518,6 +570,7 @@ fn generate_gated_world_attempt(
                     imp_rewards: &quests.imp.reward_options,
                     trinket: &random.trinket,
                     vault: None,
+                    choice_group_offset: next_choice_group,
                 });
                 (floor.world_items, Some(floor.painted.level.feeling))
             }
@@ -539,7 +592,7 @@ fn generate_gated_world_attempt(
                     depth: completed,
                     rooms: crate::floor_filters::RoomSet::from_rooms(&floor.painted.rooms),
                 });
-                observer(FloorObservation {
+                observer.floor(FloorObservation {
                     contents: crate::level_map::contents::FloorSource::Caves(&floor),
                     level: &floor.painted.level,
                     rooms: &floor.painted.rooms,
@@ -547,6 +600,7 @@ fn generate_gated_world_attempt(
                     imp_rewards: &quests.imp.reward_options,
                     trinket: &random.trinket,
                     vault: None,
+                    choice_group_offset: next_choice_group,
                 });
                 (floor.world_items, Some(floor.painted.level.feeling))
             }
@@ -596,7 +650,7 @@ fn generate_gated_world_attempt(
                     depth: completed,
                     rooms: crate::floor_filters::RoomSet::from_rooms(&floor.painted.rooms),
                 });
-                observer(FloorObservation {
+                observer.floor(FloorObservation {
                     contents: crate::level_map::contents::FloorSource::City(&floor),
                     level: &floor.painted.level,
                     rooms: &floor.painted.rooms,
@@ -604,15 +658,16 @@ fn generate_gated_world_attempt(
                     imp_rewards: &quests.imp.reward_options,
                     trinket: &random.trinket,
                     vault: floor.vault.as_ref(),
+                    choice_group_offset: next_choice_group,
                 });
                 (floor.world_items, Some(floor.painted.level.feeling))
             }
-            20 => (
-                generate_city_boss_shop(&mut run, &mut shop_run, &mut random)
-                    .map_err(|error| MainWorldError::Halls(HallsFloorError::BossShop(error)))?
-                    .world_items,
-                None,
-            ),
+            20 => {
+                let shop = generate_city_boss_shop(&mut run, &mut shop_run, &mut random)
+                    .map_err(|error| MainWorldError::Halls(HallsFloorError::BossShop(error)))?;
+                observer.boss_shop(&shop.inventory, &random.trinket);
+                (shop.world_items, None)
+            }
             _ => {
                 let Some(floor) = crate::halls_floor::generate_halls_floor_filtered(
                     &mut run,
@@ -631,7 +686,7 @@ fn generate_gated_world_attempt(
                     depth: completed,
                     rooms: crate::floor_filters::RoomSet::from_rooms(&floor.painted.rooms),
                 });
-                observer(FloorObservation {
+                observer.floor(FloorObservation {
                     contents: crate::level_map::contents::FloorSource::Halls(&floor),
                     level: &floor.painted.level,
                     rooms: &floor.painted.rooms,
@@ -639,6 +694,7 @@ fn generate_gated_world_attempt(
                     imp_rewards: &quests.imp.reward_options,
                     trinket: &random.trinket,
                     vault: None,
+                    choice_group_offset: next_choice_group,
                 });
                 (floor.world_items, Some(floor.painted.level.feeling))
             }
@@ -711,6 +767,7 @@ fn generate_gated_world_attempt(
         );
         items.splice(pending.insertion_index..pending.insertion_index, treasure);
     }
+    observer.quests(&quests);
     Ok(Some(GeneratedWorld {
         seed,
         items,
@@ -1731,8 +1788,8 @@ mod deferred_vault_tests {
             Challenges::NONE,
             &recorder,
             None,
-            false,
-            &mut |_| {},
+            None,
+            &mut NoObserver,
         )
         .unwrap();
         let expected_calls = std::mem::take(&mut *recorder.calls.lock().unwrap());

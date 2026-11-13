@@ -100,7 +100,7 @@ checks, independent of room count and size. Empty conditions, unknown fields,
 unknown IDs, duplicate depths, and boss floors are rejected.
 
 `GeneratedWorld.floor_rooms` retains one 128-bit presence mask per regular
-floor, alongside feelings. WASM scouts expose `floorRooms: [{depth, rooms}]`.
+floor, alongside feelings. The WASM seed report lists them as each floor's `rooms`.
 Native scout packets keep their existing format and omit room summaries.
 Portable JSON preserves floor requirements in presets and result exports.
 Share links use version 11 when floor requirements are present, or version 12

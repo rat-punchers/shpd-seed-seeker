@@ -1,7 +1,7 @@
 {
   "hosting": {
-    "public": "web/public",
-    "ignore": ["**/.DS_Store", "_headers", "third_party/**"],
+    "public": "firebase/public",
+    "ignore": ["**/.DS_Store"],
     "redirects": [
       {"source": "/", "destination": "https://shpd-seed-seeker.pages.dev/", "type": 301},
       {"regex": "^/(?P<path>[^.].*)$", "destination": "https://shpd-seed-seeker.pages.dev/:path", "type": 301}

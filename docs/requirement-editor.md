@@ -22,7 +22,7 @@ stateless JSON envelopes that project the same API without adding rules:
 
 | App | Entry points |
 | --- | --- |
-| Web | `requirement_board`, `requirement_editor`, `editor_limits` from the lean `seedfinder_editor` WebAssembly module (`web/src/engine/editor-pkg`); `requirement_board` and `requirement_editor` also from the engine module (`web/src/engine/pkg`) for workers and tests |
+| Web | `requirement_board` and `requirement_editor` from the lean `seedfinder_editor` WebAssembly module (`web-v2/src/engine/editor-pkg`) |
 | macOS, iOS, Windows | `seedfinder_requirement_board`, `seedfinder_requirement_editor` (C ABI, `crates/seedfinder-ffi/include/seedfinder.h`) |
 | Android | `JniBindings.requirementBoard`, `JniBindings.requirementEditor` (JNI, UTF-8 JSON bytes in and out) |
 | Linux (GTK) | `shpd_seedfinder_core::editor` directly |
@@ -654,8 +654,7 @@ which is why every request is answered rather than refused).
 ## Engine limits
 
 `engine_info` (C `seedfinder_engine_info`, JNI `engineInfo`, wasm
-`engine_info` and the editor module's `editor_limits`) publishes the
-editor's bounds in `limits`: `stackMax` (3), `trinketTransmutationsMax`
+`engine_info`) publishes the editor's bounds in `limits`: `stackMax` (3), `trinketTransmutationsMax`
 (13), `artifactTransmutationsMax` (10), beside the tier, upgrade and label
 bounds. Apps read them there rather than hardcoding mirrors.
 

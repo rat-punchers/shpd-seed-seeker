@@ -1,0 +1,14 @@
+{
+  "name": "@seed-seeker/web-deploy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "bun setup-credentials.ts",
+    "test": "bun test",
+    "check:types": "tsc -b"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "typescript": "7.0.2"
+  }
+}

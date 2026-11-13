@@ -1,0 +1,20 @@
+# Seed Seeker
+
+> Seed Seeker is a browser tool for finding and analyzing Shattered Pixel Dungeon seeds. Its Rust seed finder runs as WebAssembly in the browser, so searches stay on your device.
+
+The app has two modes:
+
+- **Find** searches for seeds that match a query: items such as weapons, armor, wands and rings, plus quests, rooms and challenges. Simple edits one item list; Advanced edits the full query.
+- **Analyze** opens one seed per tab and shows what the seed generates, with floor maps. It can also read a seed from a screenshot.
+
+## Links
+
+- [Seed Seeker](https://seedseeker.nerdcoder.xyz/): the app.
+- Query share links have the form `https://seedseeker.nerdcoder.xyz/#q=CODE` and open the shared query in Find.
+- Seed links have the form `https://seedseeker.nerdcoder.xyz/?scout=ABC-DEF-GHI` and open that seed in Analyze.
+
+## License and attribution
+
+- [License (GPL-3.0-or-later)](https://seedseeker.nerdcoder.xyz/licenses/COPYING.txt)
+- [Shattered Pixel Dungeon attribution](https://seedseeker.nerdcoder.xyz/third_party/shattered-pixel-dungeon/ATTRIBUTION.md)
+- [Shattered Pixel Dungeon source](https://github.com/00-Evan/shattered-pixel-dungeon)

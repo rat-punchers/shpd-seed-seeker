@@ -38,8 +38,8 @@ with another option from that group.
 Artifact records carry the normal source, floor, curse, secret and accessibility
 metadata. Core `SSC3`/`SSC4`/`SSC5` wire records use stable artifact IDs with the existing
 upgrade field. Query JSON and result files use `artifact`; share links append
-category code 7 and artifact item codes, preserving previous codes. WASM scout
-JSON reports `category: "artifact"` and the normal `matched` flag.
+category code 7 and artifact item codes, preserving previous codes. The WASM seed
+report's items carry `category: "artifact"` and the normal `matched` flag.
 
 Web, Android, Windows, macOS, and Linux use the shared item catalog for artifact
 pickers and scout results. Native scout packets and match indices include the
@@ -57,7 +57,7 @@ the estimator's documented approximations.
 
 Tests pin all 11 artifact identities across eight worlds against the official
 BETA-4 JAR and cover
-floor limits, gated/scalar search, vault exclusivity, codecs, and the web scout.
+floor limits, gated/scalar search, vault exclusivity, codecs, and the web seed report.
 The parity oracle emits `search_upgrade` alongside `true_level` so transferred
 artifact levels can be compared without losing the underlying Java level.
 

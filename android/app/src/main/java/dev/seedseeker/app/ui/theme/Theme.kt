@@ -16,8 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Brand palette mirrored from the web front-end's design tokens (see
-// `web/src/app/styles.css` `:root`), which use Shattered Pixel Dungeon's
+// Brand palette carried over from the original web front-end's design tokens,
+// which use Shattered Pixel Dungeon's
 // official colours: dark slate-blue surfaces, the game's yellow for seeds and
 // headings, its accent green for primary actions, teal for enchantments and a
 // muted red for curses.
@@ -43,7 +43,7 @@ val SpdResin = Color(0xFF8C64DC)
 /** Arcane Resin donor text, a lighter violet that reads on [SpdResin] fills. */
 val SpdResinText = Color(0xFFC9A6F5)
 
-// Region accents, mirrored from `web/src/shared/game/region.ts`.
+// Region accents, carried over from the original web front-end.
 val RegionSewers = Color(0xFF7FE2B8)
 val RegionPrison = Color(0xFF8FB7E8)
 val RegionCaves = Color(0xFFD8A26B)

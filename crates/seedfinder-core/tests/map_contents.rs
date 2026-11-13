@@ -329,16 +329,17 @@ fn check_heaps(map: &LevelMap, sample: &Value, context: &str) {
                     heap.cell
                 );
             } else {
+                // Secret laboratory and library picks follow the runtime's HashMap order.
                 assert!(
-                    matches!(
-                        item.kind.as_str(),
-                        "ScrollHolder"
-                            | "PotionBandolier"
-                            | "MagicalHolster"
-                            | "RuntimeVaultConsumable"
-                            | "RuntimeLaboratoryPotion"
-                            | "RuntimeLibraryScroll"
-                    ),
+                    item.kind.contains("PotionOf")
+                        || item.kind.contains("ScrollOf")
+                        || matches!(
+                            item.kind.as_str(),
+                            "ScrollHolder"
+                                | "PotionBandolier"
+                                | "MagicalHolster"
+                                | "RuntimeVaultConsumable"
+                        ),
                     "{context}: unclassified runtime item {}",
                     item.kind
                 );

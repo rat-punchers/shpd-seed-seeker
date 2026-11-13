@@ -115,6 +115,7 @@ pub struct BuiltRegularGraph {
     pub exit: usize,
     pub floor_specials: FloorSpecialDeck,
     pub builder_attempts: u32,
+    pub builder: crate::builder::BuilderKind,
 }
 
 /// Main-dungeon region owning one regular floor.
@@ -191,6 +192,7 @@ pub fn build_regular_room_graph(
                 exit,
                 floor_specials: initialized.floor_specials,
                 builder_attempts: attempts,
+                builder: builder.kind(),
             });
         }
     }
@@ -465,6 +467,7 @@ pub fn build_sewer_room_graph(
                 exit,
                 floor_specials: initialized.floor_specials,
                 builder_attempts: attempts,
+                builder: builder.kind(),
             };
         }
     }

@@ -92,7 +92,7 @@ selection-only result `SRU-YSU-QHS` matches a +1 Grim Runic
 Blade through floor 19 with Parchment Scrap, fails without it, and reproduces
 through a complete floor-24 scout. The early floors remain unchanged.
 
-Web tests exercise the real WASM session, filter and scout paths, query/share
+Web tests exercise the real WASM session, filter and seed-report paths, query/share
 serialization, exported choices, duplicate import handling, single-core
 settings, and explicit-selection disabling. Browser checks against the
 hosted production build additionally covered toggle persistence, a live

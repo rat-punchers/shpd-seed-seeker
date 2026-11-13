@@ -30,6 +30,27 @@ pub(super) fn mob_bounds(kind: &str) -> [i32; 4] {
     })
 }
 
+/// A mob kind's idle film as source rectangles on its atlas, for portraits.
+#[cfg(feature = "json-query")]
+pub(super) fn mob_film(kind: &str) -> Option<(&'static str, u16, Vec<[u16; 4]>)> {
+    actors::actor(kind).map(|sprite| {
+        let columns = super::assets::get(sprite.asset).expect("actor atlas").width / sprite.width;
+        let frames = sprite
+            .frames
+            .iter()
+            .map(|&frame| {
+                [
+                    frame % columns * sprite.width,
+                    frame / columns * sprite.height,
+                    sprite.width,
+                    sprite.height,
+                ]
+            })
+            .collect();
+        (sprite.asset, sprite.duration, frames)
+    })
+}
+
 pub(super) fn scene(
     seed: DungeonSeed,
     level: &Level,
@@ -221,8 +242,11 @@ fn build_layers(
         room_terrain,
         boss_terrain,
     ];
-    layers.extend(objects::layers(scene, level, contents, &mut walls));
-    layers.extend([raised, walls, room_walls, boss_walls, effects]);
+    let (objects, door_actors) = objects::layers(scene, level, contents, &mut walls, reveal);
+    layers.extend(objects);
+    layers.extend([raised, walls, room_walls, boss_walls]);
+    layers.extend(door_actors);
+    layers.push(effects);
     layers.push(darkness);
     layers
 }
@@ -315,6 +339,43 @@ mod occlusion_tests {
                     .position(|layer| layer.name == "actors" && layer.cells[cell].is_some())
                     .unwrap();
                 assert_eq!(wall < actor, behind, "occlusion at cell {cell}");
+            }
+        }
+    }
+
+    #[test]
+    fn a_mimic_in_a_doorway_draws_over_the_door_frame() {
+        let mut level = Level::new(6, Feeling::None);
+        level.set_size(5, 5);
+        level.map.cells.fill(t::EMPTY);
+        for x in 0..5 {
+            level.map.cells[2 * 5 + x] = t::WALL;
+        }
+        let door = 2 * 5 + 2;
+        level.map.cells[door] = t::DOOR;
+        for (kind, above) in [("EbonyMimic", true), ("Rat", false)] {
+            let contents = MapContents {
+                mobs: vec![MapMob {
+                    cell: door,
+                    kind: kind.into(),
+                    stealthy: kind == "EbonyMimic",
+                    sleeping: true,
+                    approximate: false,
+                    items: vec![],
+                }],
+                ..MapContents::default()
+            };
+            let scene = scene(DungeonSeed::MIN, &level, &[], MapKind::Regular, &contents);
+            for layers in [&scene.layers, &scene.concealed_layers] {
+                let walls = layers
+                    .iter()
+                    .rposition(|layer| layer.name == "walls")
+                    .unwrap();
+                let actor = layers
+                    .iter()
+                    .position(|layer| layer.name == "actors" && layer.cells[door].is_some())
+                    .unwrap();
+                assert_eq!(actor > walls, above, "{kind}");
             }
         }
     }
@@ -585,33 +646,37 @@ mod tests {
                     ..MapContents::default()
                 };
                 let scene = scene(DungeonSeed::MIN, &level, &[], MapKind::Regular, &contents);
-                let mut fragments = 0;
-                for sprite in scene
-                    .layers
-                    .iter()
-                    .filter(|l| l.name == "actors")
-                    .flat_map(|l| l.cells.iter().flatten())
-                    .map(|&s| &scene.sprites[s])
-                {
-                    fragments += 1;
-                    if stealthy {
-                        assert_eq!(sprite.frames.len(), 1);
-                    } else {
-                        assert_eq!(sprite.frames.len(), 6);
-                        assert_eq!(sprite.frame_duration_ms, 1000);
-                    }
-                    for draw in sprite.frames.iter().flatten() {
-                        if let MapDraw::Blit { opacity, tint, .. } = draw {
-                            let expected = match (kind == "EbonyMimic", tint.is_some()) {
-                                (true, false) | (false, true) => 153,
-                                (true, true) => 91,
-                                (false, false) => 255,
-                            };
-                            assert_eq!(*opacity, expected);
+                for (layers, reveal) in [(&scene.layers, true), (&scene.concealed_layers, false)] {
+                    let mut fragments = 0;
+                    for sprite in layers
+                        .iter()
+                        .filter(|l| l.name == "actors")
+                        .flat_map(|l| l.cells.iter().flatten())
+                        .map(|&s| &scene.sprites[s])
+                    {
+                        fragments += 1;
+                        if stealthy {
+                            assert_eq!(sprite.frames.len(), 1);
+                        } else {
+                            assert_eq!(sprite.frames.len(), 5);
+                            assert_eq!(sprite.frame_duration_ms, 200);
+                        }
+                        // A hidden Ebony mimic is faint until revealed.
+                        let faint = kind == "EbonyMimic" && stealthy && !reveal;
+                        for draw in sprite.frames.iter().flatten() {
+                            if let MapDraw::Blit { opacity, tint, .. } = draw {
+                                let expected = match (faint, tint.is_some()) {
+                                    (true, false) => 51,
+                                    (true, true) => 30,
+                                    (false, true) => 153,
+                                    (false, false) => 255,
+                                };
+                                assert_eq!(*opacity, expected);
+                            }
                         }
                     }
+                    assert_eq!(fragments, 2, "raised actor must span both cells");
                 }
-                assert_eq!(fragments, 2, "raised actor must span both cells");
             }
         }
     }

@@ -170,15 +170,31 @@ pub struct WorldItem {
     pub secret: bool,
 }
 
+/// The level cap of an artifact whose cap is not 10, read from the v4.0.2
+/// classes.
+const fn short_level_cap(item: ItemId) -> Option<u8> {
+    match item {
+        ItemId::SandalsOfNature => Some(3),
+        ItemId::EtherealChains | ItemId::TimekeepersHourglass => Some(5),
+        _ => None,
+    }
+}
+
+/// `Artifact.transferUpgrade(upgrade)` on a fresh artifact stores
+/// `round(upgrade * levelCap / 10)`; other items keep `upgrade`.
+pub(crate) const fn transferred_level(item: ItemId, upgrade: u8) -> u8 {
+    match short_level_cap(item) {
+        Some(cap) => (upgrade * cap + 5) / 10,
+        None => upgrade,
+    }
+}
+
 /// Identified in-game level, shared by scout rows and map inspection.
 pub(crate) const fn displayed_upgrade(item: ItemId, upgrade: u8) -> u8 {
-    let cap = match item {
-        ItemId::SandalsOfNature => 3,
-        ItemId::EtherealChains | ItemId::TimekeepersHourglass => 5,
-        _ => return upgrade,
+    let Some(cap) = short_level_cap(item) else {
+        return upgrade;
     };
-    let internal = (upgrade * cap + 5) / 10;
-    (internal * 10 + cap / 2) / cap
+    (transferred_level(item, upgrade) * 10 + cap / 2) / cap
 }
 
 impl WorldItem {

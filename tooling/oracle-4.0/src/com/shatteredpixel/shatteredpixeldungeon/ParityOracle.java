@@ -157,6 +157,7 @@ public final class ParityOracle {
 		for (int depth = 1; depth <= stopDepth; depth++) {
 			PersistentSnapshot beforeBoss = options.bossSkipCheckpoints && isBossDepth(depth)
 					? persistentSnapshot() : null;
+			driftDecks(System.getProperty("seedfinder.deckDrift"), depth);
 			Level level = Dungeon.newLevel();
 			boolean selected = requestedDepths.contains(depth);
 			List<Map<String, Object>> questItems = quests.observe(depth, selected);
@@ -200,6 +201,28 @@ public final class ParityOracle {
 		if (options.vault) generateVault(options, quests.impDepth);
 
 		output.finish();
+	}
+
+	/**
+	 * Shifts seeded category decks before a floor, standing in for run history
+	 * that draws from them. The {@code seedfinder.deckDrift} property is a
+	 * {@code ;}-separated list of {@code DEPTH:COUNT:CATEGORY[,CATEGORY...]}; each
+	 * entry draws (and discards) {@code COUNT} items from every named
+	 * {@code Generator.Category} just before floor {@code DEPTH} is generated.
+	 * The draws run outside level generation, on the base RNG stream.
+	 */
+	private static void driftDecks(String spec, int depth) {
+		if (spec == null || spec.isEmpty()) return;
+		for (String entry : spec.split(";")) {
+			String[] parts = entry.split(":");
+			if (parts.length != 3) throw new IllegalArgumentException("bad seedfinder.deckDrift entry " + entry);
+			if (Integer.parseInt(parts[0]) != depth) continue;
+			int count = Integer.parseInt(parts[1]);
+			for (String name : parts[2].split(",")) {
+				Generator.Category category = Generator.Category.valueOf(name);
+				for (int i = 0; i < count; i++) Generator.random(category);
+			}
+		}
 	}
 
 	/**
@@ -430,7 +453,22 @@ public final class ParityOracle {
 		record.put("selected", selected);
 		record.put("level_class", className(level));
 		record.put("generator_state_hash", generatorStateHash());
+		record.put("builder", level instanceof RegularLevel ? simpleName(getField(level, "builder")) : null);
+		record.put("trinket_catalyst_dropped", Dungeon.LimitedDrops.TRINKET_CATA.count > 0);
+		List<Map<String, Object>> pots = new ArrayList<Map<String, Object>>();
+		for (int cell = 0; cell < level.map.length; cell++) {
+			if (level.map[cell] != com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ALCHEMY) continue;
+			Map<String, Object> pot = new LinkedHashMap<String, Object>();
+			pot.put("cell", cell);
+			pot.put("room", roomAt(level, cell));
+			pots.add(pot);
+		}
+		record.put("alchemy_pots", pots);
 		return record;
+	}
+
+	private static String simpleName(Object value) {
+		return value == null ? null : value.getClass().getSimpleName();
 	}
 
 	private static Map<String, Object> bossTransition(Level level, PersistentSnapshot before,

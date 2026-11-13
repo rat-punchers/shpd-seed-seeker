@@ -73,7 +73,7 @@ mkdir -p "$ROOT/windows/SeedSeeker/Assets"
 magick "${WINPNGS[@]}" "$ROOT/windows/SeedSeeker/Assets/SeedSeeker.ico"
 
 # --- web favicon ------------------------------------------------------------
-render "$SRC/seed-seeker-small.svg" 32 "$ROOT/web/public/favicon.png"
+render "$SRC/seed-seeker-small.svg" 32 "$ROOT/web-v2/public/favicon.png"
 
 # --- Android legacy launcher mipmaps (API < 26) -----------------------------
 # Both masters here are the full sprite, so only 96 and 192 land on whole

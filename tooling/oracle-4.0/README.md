@@ -66,6 +66,16 @@ the positional `SEED FLOORS` form are unchanged. `--no-phases` is accepted as a
 no-op (schema v2 has no phase records). `--transmute-imp` is gone: the v4.0.2
 Imp no longer hands out a single ring, so the diagnostic is obsolete.
 
+## Deck drift
+
+`-Dseedfinder.deckDrift=DEPTH:COUNT:CATEGORY[,CATEGORY...][;...]` (passed
+through `JAVA_TOOL_OPTIONS`) draws and discards `COUNT` items from each named
+`Generator.Category` (`WAND`, `RING`, `ARTIFACT`, `WEP_T4`, …) just before
+floor `DEPTH` is generated. It stands in for run history that draws from the
+seeded decks, so a quest reward lands `COUNT` cards later in its deck. The draws run between
+floors, outside each level's own seeded RNG. `generate-seed-report-quests.py`
+uses it for the seed report's quest reward fixture.
+
 ## Headless technique
 
 Startup follows the v3.3.8 oracle exactly: `Game.version`/`versionCode` are
@@ -137,7 +147,15 @@ nothing changed, the v1 vocabulary is kept verbatim.
   sorted room descriptors/connections, sorted mob descriptors (now with the
   containing `room`), **`mob_count`/`heap_count`**, limited drops, the complete
   Generator state and its compact hash, and the post-floor room queues.
+  `generate-seed-report-encounters.py` turns the `--map-contents` mobs into
+  the seed report's encounter fixture.
 - `generator_checkpoint`, `boss_transition`: as in v1, plus `branch`.
+  `generator_checkpoint` also carries `builder` (simple class name of
+  `RegularLevel.builder`, null on levels without one),
+  `trinket_catalyst_dropped` (`LimitedDrops.TRINKET_CATA` counted) and
+  `alchemy_pots` (`{cell, room}` per `ALCHEMY` cell, `room` as for `item`).
+  `generate-seed-report-timing.py` turns these into the seed report's timing
+  fixture.
 - `item`: every searchable item in ordinary heaps, shops, mimics, statues, the
   sacrificial-fire prize, generated Ghost/Wandmaker/Blacksmith/Imp reward
   choices, and the depth-20 Imp shop cache. New/changed fields: **`branch`**,

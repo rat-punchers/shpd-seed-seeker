@@ -99,18 +99,39 @@ fn modified_name(base: String, effect: Option<crate::catalog::Effect>) -> String
         .join(" ")
 }
 
+fn text_key(kind: &str) -> String {
+    kind.chars()
+        .filter(|c| c.is_ascii_alphanumeric() || *c == '$')
+        .map(|c| c.to_ascii_lowercase())
+        .collect()
+}
+
+fn item_text(key: &str) -> Option<(&'static str, &'static str, &'static str)> {
+    ITEM_TEXT
+        .binary_search_by_key(&key, |entry| entry.0)
+        .ok()
+        .map(|index| ITEM_TEXT[index])
+}
+
+/// The game's examine text for an item class name or stable id, if any.
+pub(crate) fn item_description(kind: &str) -> Option<&'static str> {
+    item_text(&text_key(kind)).map(|entry| entry.2)
+}
+
+/// The type glyph rectangle in `item_icons.png` for an item class name,
+/// stable id or English name (rings, potions and scrolls), if any.
+pub(crate) fn item_icon(kind: &str) -> Option<[u16; 4]> {
+    let key = text_key(kind);
+    ITEM_ICONS
+        .binary_search_by_key(&key.as_str(), |entry| entry.0)
+        .ok()
+        .map(|index| ITEM_ICONS[index].1)
+}
+
 impl MapTooltipItem {
-    fn from_item(item: &MapItem) -> Self {
-        let key: String = item
-            .kind
-            .chars()
-            .filter(|c| c.is_ascii_alphanumeric() || *c == '$')
-            .map(|c| c.to_ascii_lowercase())
-            .collect();
-        let text = ITEM_TEXT
-            .binary_search_by_key(&key.as_str(), |entry| entry.0)
-            .ok()
-            .map(|index| ITEM_TEXT[index]);
+    pub(crate) fn from_item(item: &MapItem) -> Self {
+        let key = text_key(&item.kind);
+        let text = item_text(&key);
         Self {
             name: modified_name(
                 text.map_or_else(
@@ -125,10 +146,7 @@ impl MapTooltipItem {
             ),
             description: text.map_or("", |entry| entry.2),
             image: item.image,
-            icon: ITEM_ICONS
-                .binary_search_by_key(&key.as_str(), |entry| entry.0)
-                .ok()
-                .map(|index| ITEM_ICONS[index].1),
+            icon: item_icon(&item.kind),
             quantity: item.quantity,
             deterministic: item.deterministic,
             upgrade: item.roll.map(|roll| {
@@ -184,6 +202,7 @@ impl LevelMap {
                     label,
                     &heap.items,
                     super::visuals::heap_bounds(heap),
+                    false,
                 )
             })
             .chain(
@@ -197,10 +216,11 @@ impl LevelMap {
                             words(&mob.kind),
                             &mob.items,
                             super::visuals::mob_bounds(&mob.kind),
+                            mob.stealthy,
                         )
                     }),
             );
-        for (cell, label, items, bounds) in sources {
+        for (cell, label, items, bounds, stealthy) in sources {
             if items.is_empty() {
                 continue;
             }
@@ -215,6 +235,7 @@ impl LevelMap {
                     (x + w).max(bx + bw) - left,
                     (y + h).max(by + bh) - top,
                 ];
+                tip.hidden |= stealthy;
                 tip.items
                     .extend(items.iter().map(MapTooltipItem::from_item));
                 if !label.is_empty() {
@@ -232,9 +253,10 @@ impl LevelMap {
                 cell: usize::try_from(cell).expect("map cell is nonnegative"),
                 label,
                 bounds,
-                hidden: self.secret_rooms.iter().any(|&[left, top, right, bottom]| {
-                    x > left && x < right && y > top && y < bottom
-                }),
+                hidden: stealthy
+                    || self.secret_rooms.iter().any(|&[left, top, right, bottom]| {
+                        x > left && x < right && y > top && y < bottom
+                    }),
                 items: items.iter().map(MapTooltipItem::from_item).collect(),
             });
         }
@@ -288,6 +310,110 @@ mod tests {
             document["itemTooltips"][0]["items"][0]["name"],
             "Potion of healing"
         );
+    }
+
+    #[test]
+    fn a_stealthy_mimic_is_a_secret_until_found() {
+        use crate::level_map::{MapMob, generate_level_map};
+        use crate::{challenges::Challenges, seed::DungeonSeed};
+        let mut map = generate_level_map(
+            DungeonSeed::from_code("AAA-AAA-AAA").unwrap(),
+            1,
+            Challenges::NONE,
+            None,
+        )
+        .unwrap();
+        map.secret_rooms.clear();
+        map.contents.heaps.clear();
+        map.contents.mobs = [("EbonyMimic", true), ("Mimic", false)]
+            .into_iter()
+            .enumerate()
+            .map(|(index, (kind, stealthy))| MapMob {
+                cell: usize::try_from(map.width + 1).unwrap() + index * 2,
+                kind: kind.into(),
+                stealthy,
+                sleeping: false,
+                approximate: false,
+                items: vec![MapItem::new("Gold", 18, 40)],
+            })
+            .collect();
+        let tips = map.item_tooltips();
+        assert_eq!(
+            tips.iter()
+                .map(|tip| (tip.label.as_str(), tip.hidden))
+                .collect::<Vec<_>>(),
+            [("Ebony Mimic", true), ("Mimic", false)]
+        );
+        let document = crate::level_map::json::document(&map);
+        let mimic = &document["mobDetails"]["Mimic"];
+        assert_eq!(mimic["name"], "Mimic");
+        assert!(
+            mimic["description"]
+                .as_str()
+                .is_some_and(|text| text.starts_with("Mimics are magical creatures"))
+        );
+        assert_eq!(mimic["asset"], "mimic.png");
+        assert_eq!(mimic["frames"].as_array().map(Vec::len), Some(5));
+    }
+
+    #[test]
+    fn every_plant_kind_has_examine_text() {
+        use crate::level_map::{MapPlant, generate_level_map};
+        use crate::{challenges::Challenges, seed::DungeonSeed};
+        let mut map = generate_level_map(
+            DungeonSeed::from_code("AAA-AAA-AAA").unwrap(),
+            1,
+            Challenges::NONE,
+            None,
+        )
+        .unwrap();
+        let kinds = [
+            "Rotberry",
+            "Firebloom",
+            "Swiftthistle",
+            "Sungrass",
+            "Icecap",
+            "Stormvine",
+            "Sorrowmoss",
+            "Fadeleaf",
+            "Earthroot",
+            "Starflower",
+            "Blindweed",
+            "Mageroyal",
+            "Blandfruit",
+            "BlandfruitBush",
+            "Seedpod",
+            "Dewcatcher",
+        ];
+        map.contents.plants = kinds
+            .iter()
+            .enumerate()
+            .map(|(cell, kind)| MapPlant {
+                cell,
+                kind: (*kind).into(),
+                image: 3,
+            })
+            .collect();
+        let document = crate::level_map::json::document(&map);
+        for kind in kinds {
+            let detail = &document["plantDetails"][kind];
+            assert!(detail["name"].is_string(), "{kind} has no name");
+            assert!(detail["description"].is_string(), "{kind} has no text");
+        }
+        let sungrass = &document["plantDetails"]["Sungrass"];
+        assert_eq!(sungrass["name"], "Sungrass");
+        assert_eq!(sungrass["asset"], "terrain_features.png");
+    }
+
+    #[test]
+    fn every_mob_text_kind_is_a_drawn_actor() {
+        for (kind, name, description) in crate::level_map::mob_text::MOB_TEXT {
+            assert!(
+                crate::level_map::visuals::mob_film(kind).is_some(),
+                "{kind}"
+            );
+            assert!(!name.is_empty() && !description.is_empty(), "{kind}");
+        }
     }
 
     #[test]

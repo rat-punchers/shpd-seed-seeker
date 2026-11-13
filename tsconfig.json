@@ -1,0 +1,17 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/design"
+    },
+    {
+      "path": "./tooling/web-deploy"
+    },
+    {
+      "path": "./tooling/web-visual"
+    },
+    {
+      "path": "./web-v2"
+    }
+  ]
+}

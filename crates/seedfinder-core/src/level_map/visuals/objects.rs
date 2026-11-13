@@ -40,9 +40,12 @@ pub(super) fn layers(
     level: &Level,
     contents: &MapContents,
     walls: &mut MapLayer,
-) -> Vec<MapLayer> {
+    reveal: bool,
+) -> (Vec<MapLayer>, Vec<MapLayer>) {
     let mut heaps = layer("heaps", level.len());
     let mut actors: Vec<MapLayer> = vec![];
+    // A mimic disguised in a doorway reads on top of the door frame.
+    let mut door_actors: Vec<MapLayer> = vec![];
     for heap in &contents.heaps {
         if !visible(level, heap.cell) {
             continue;
@@ -137,7 +140,8 @@ pub(super) fn layers(
                 let offset = [0, 21, 32, 43, 54, 65][usize::from(tier.min(5))];
                 sprite.frames.iter().map(|frame| frame + offset).collect()
             } else if mob.stealthy && mob.kind.ends_with("Mimic") {
-                vec![sprite.frames[0] - 1]
+                // `MimicSprite.advancedHiding`: the closed chest, three frames before idle.
+                vec![sprite.frames[0] - 3]
             } else {
                 sprite.frames.to_vec()
             };
@@ -153,8 +157,12 @@ pub(super) fn layers(
                 })
                 .collect();
             let mut target = layer("actors", level.len());
-            // Keep Ebony mimics discoverable in a scouting overview.
-            let opacity = if mob.kind == "EbonyMimic" { 153 } else { 255 };
+            // A hidden Ebony mimic stays faintly discoverable before searching.
+            let opacity = if mob.kind == "EbonyMimic" && mob.stealthy && !reveal {
+                51
+            } else {
+                255
+            };
             let offset = [
                 (17 - i32::from(sprite.width)).div_euclid(2),
                 16 - i32::from(sprite.height) - sprite.raise,
@@ -204,31 +212,46 @@ pub(super) fn layers(
                 opacity,
                 None,
             );
-            // Overlapping actors must keep independent animation clocks. Pack
-            // disjoint sprites together, above any earlier overlapping actor.
-            let index = actors[actor_start..]
-                .iter()
-                .rposition(|layer| {
-                    layer
-                        .cells
-                        .iter()
-                        .zip(&target.cells)
-                        .any(|(a, b)| a.is_some() && b.is_some())
-                })
-                .map_or(actor_start, |index| actor_start + index + 1);
-            if index == actors.len() {
-                actors.push(layer("actors", level.len()));
-            }
-            for (dest, src) in actors[index].cells.iter_mut().zip(target.cells) {
-                if src.is_some() {
-                    *dest = src;
-                }
+            if mob.kind.ends_with("Mimic")
+                && matches!(
+                    level.map.cells[mob.cell],
+                    crate::geometry::terrain::DOOR
+                        | crate::geometry::terrain::OPEN_DOOR
+                        | crate::geometry::terrain::LOCKED_DOOR
+                )
+            {
+                pack(&mut door_actors, 0, target, level.len());
+            } else {
+                pack(&mut actors, actor_start, target, level.len());
             }
         }
     }
     let mut layers = vec![heaps];
     layers.extend(actors);
-    layers
+    (layers, door_actors)
+}
+
+/// Overlapping actors must keep independent animation clocks. Packs disjoint
+/// sprites together, above any earlier overlapping actor from `start` on.
+fn pack(actors: &mut Vec<MapLayer>, start: usize, target: MapLayer, len: usize) {
+    let index = actors[start..]
+        .iter()
+        .rposition(|layer| {
+            layer
+                .cells
+                .iter()
+                .zip(&target.cells)
+                .any(|(a, b)| a.is_some() && b.is_some())
+        })
+        .map_or(start, |index| start + index + 1);
+    if index == actors.len() {
+        actors.push(layer("actors", len));
+    }
+    for (dest, src) in actors[index].cells.iter_mut().zip(target.cells) {
+        if src.is_some() {
+            *dest = src;
+        }
+    }
 }
 
 pub(super) fn visible(level: &Level, cell: usize) -> bool {

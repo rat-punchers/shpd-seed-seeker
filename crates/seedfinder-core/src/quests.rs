@@ -70,6 +70,23 @@ impl From<GeneratorError> for QuestError {
     }
 }
 
+/// The seeded deck a reward's class was drawn from and the draw index
+/// (`dropped` before the draw). The seed report's drift windows start here.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct DeckDraw {
+    pub category: GeneratorCategory,
+    pub index: i32,
+}
+
+impl DeckDraw {
+    fn next(generator: &GeneratorState, category: GeneratorCategory) -> Self {
+        Self {
+            category,
+            index: generator.category(category).dropped,
+        }
+    }
+}
+
 /// Sewer quest selected solely by the Ghost's spawn depth.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[repr(u8)]
@@ -99,6 +116,8 @@ pub struct GhostQuest {
     pub processed: bool,
     pub depth: Option<u8>,
     pub weapon: Option<GeneratedEquipment>,
+    /// The weapon's tier-deck draw.
+    pub weapon_draw: Option<DeckDraw>,
     pub armor: Option<GeneratedEquipment>,
     pub enchantment: Option<WeaponEffect>,
     pub glyph: Option<ArmorEffect>,
@@ -156,6 +175,7 @@ impl GhostQuest {
             4 => GeneratorCategory::WeaponTier4,
             _ => GeneratorCategory::WeaponTier5,
         };
+        let weapon_draw = DeckDraw::next(generator, weapon_category);
         let mut weapon = random_category_target(random, generator, weapon_category, 0)
             .map_err(QuestError::from)?;
 
@@ -192,6 +212,7 @@ impl GhostQuest {
         self.processed = false;
         self.depth = Some(depth);
         self.weapon = Some(weapon);
+        self.weapon_draw = Some(weapon_draw);
         self.armor = Some(armor);
         self.enchantment = keep_modifier.then_some(enchantment);
         self.glyph = keep_modifier.then_some(glyph);
@@ -336,6 +357,8 @@ pub struct WandmakerQuest {
     pub depth: Option<u8>,
     pub wand1: Option<GeneratedEquipment>,
     pub wand2: Option<GeneratedEquipment>,
+    /// The first wand's deck draw; the second is the next card of another class.
+    pub wand1_draw: Option<DeckDraw>,
     pub discarded_duplicates: usize,
     quest_room_spawned: bool,
     pending_spawn_depth: Option<u8>,
@@ -395,6 +418,7 @@ impl WandmakerQuest {
             .take()
             .ok_or(QuestError::WandmakerSpawnWasNotBegun)?;
 
+        let wand1_draw = DeckDraw::next(generator, GeneratorCategory::Wand);
         let mut first = random_wand(random, generator, false)?;
         first.roll.cursed = false;
         first.roll.upgrade = first.roll.upgrade.wrapping_add(1);
@@ -422,6 +446,7 @@ impl WandmakerQuest {
         self.depth = Some(depth);
         self.wand1 = Some(first);
         self.wand2 = Some(second);
+        self.wand1_draw = Some(wand1_draw);
         self.discarded_duplicates = discarded.len();
         Ok(())
     }
@@ -797,6 +822,9 @@ pub struct ImpQuest {
     pub room_accessible: bool,
     /// `Imp.Quest.rewardOptions`: six entries once the quest is scheduled.
     pub reward_options: Vec<ImpRewardOption>,
+    /// Each option's deck draw, index-aligned with `reward_options`; `None`
+    /// for the deck-free Plate Armor. The ring option records its first try.
+    pub reward_draws: Vec<Option<DeckDraw>>,
     room_in_current_build: bool,
 }
 
@@ -851,7 +879,8 @@ impl ImpQuest {
         let depth = self.depth.expect("scheduled Imp quest records its depth");
         self.given = false;
         self.completed = false;
-        self.reward_options = generate_imp_reward_options(random, generator, depth)?;
+        (self.reward_options, self.reward_draws) =
+            generate_imp_reward_options(random, generator, depth)?;
         Ok(())
     }
 
@@ -994,20 +1023,25 @@ fn generate_imp_reward_options(
     random: &mut RandomStack,
     generator: &mut GeneratorState,
     depth: u8,
-) -> Result<Vec<ImpRewardOption>, QuestError> {
+) -> Result<(Vec<ImpRewardOption>, Vec<Option<DeckDraw>>), QuestError> {
     let depth = i32::from(depth);
     let mut options = Vec::with_capacity(6);
+    let mut draws = Vec::with_capacity(6);
 
+    let artifact_draw = DeckDraw::next(generator, GeneratorCategory::Artifact);
     let first_ring = if let Some(artifact) = random_artifact(random, generator)? {
         options.push(ImpRewardOption::Artifact(artifact));
+        draws.push(Some(artifact_draw));
         None
     } else {
+        draws.push(Some(DeckDraw::next(generator, GeneratorCategory::Ring)));
         let mut ring = imp_deck_ring(random, generator, depth)?;
         ring.roll.upgrade = imp_level(random, 2, 4);
         options.push(ImpRewardOption::Ring(ring));
         Some(ring.kind)
     };
 
+    draws.push(Some(DeckDraw::next(generator, GeneratorCategory::Ring)));
     let mut ring = loop {
         let ring = imp_deck_ring(random, generator, depth)?;
         if Some(ring.kind) != first_ring {
@@ -1017,7 +1051,19 @@ fn generate_imp_reward_options(
     ring.roll.upgrade = imp_level(random, 2, 4);
     options.push(ImpRewardOption::Ring(ring));
 
-    if random.int_bound(2) == 0 {
+    let pair = if random.int_bound(2) == 0 {
+        [
+            GeneratorCategory::WeaponTier5,
+            GeneratorCategory::MissileTier4,
+        ]
+    } else {
+        [
+            GeneratorCategory::MissileTier5,
+            GeneratorCategory::WeaponTier4,
+        ]
+    };
+    draws.extend(pair.map(|category| Some(DeckDraw::next(generator, category))));
+    if pair[0] == GeneratorCategory::WeaponTier5 {
         options.push(imp_melee(
             random,
             generator,
@@ -1061,7 +1107,9 @@ fn generate_imp_reward_options(
             cursed: false,
         },
     }));
+    draws.push(None);
 
+    draws.push(Some(DeckDraw::next(generator, GeneratorCategory::Wand)));
     let wand = random_category(random, generator, GeneratorCategory::Wand, depth)?;
     let GeneratedItem::Equipment(mut wand) = wand else {
         return Err(QuestError::UnexpectedImpReward(wand.family()));
@@ -1072,7 +1120,7 @@ fn generate_imp_reward_options(
     for option in &mut options {
         option.set_cursed(false);
     }
-    Ok(options)
+    Ok((options, draws))
 }
 
 fn imp_deck_ring(
@@ -1240,7 +1288,10 @@ mod tests {
     #[test]
     fn imp_reward_options_follow_the_v4_roll_order() {
         let (mut random, mut generator) = fixture(0, 0);
-        let options = generate_imp_reward_options(&mut random, &mut generator, 17).unwrap();
+        let (options, draws) =
+            generate_imp_reward_options(&mut random, &mut generator, 17).unwrap();
+        assert_eq!(draws.len(), options.len());
+        assert_eq!(draws[4], None);
 
         assert_eq!(options.len(), 6);
         assert!(matches!(options[0], ImpRewardOption::Artifact(_)));
