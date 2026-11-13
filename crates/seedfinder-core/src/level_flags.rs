@@ -91,9 +91,9 @@ impl LevelFlags {
             width_i32,
             width_i32 + 1,
         ];
-        for cell in 0..length {
+        for (cell, discoverable) in flags.discoverable.iter_mut().enumerate().take(length) {
             let cell_i32 = i32::try_from(cell).expect("generated map length fits Java int");
-            flags.discoverable[cell] = neighbours9.iter().any(|&offset| {
+            *discoverable = neighbours9.iter().any(|&offset| {
                 let neighbour = cell_i32.wrapping_add(offset);
                 let Ok(neighbour) = usize::try_from(neighbour) else {
                     return false;
