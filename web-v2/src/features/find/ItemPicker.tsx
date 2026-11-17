@@ -30,9 +30,9 @@ import type { SimpleConstraint } from './simple'
 import { setRowChoice, setRowDepth, setRowUpgrade } from './simple-edit'
 import {
   choiceFor,
-  ITEM_CHOICE_GROUPS,
   type ItemChoice,
   type ItemChoiceGroup,
+  itemChoiceGroups,
   rowSprite,
   upgradeLevels,
 } from './simple-items'
@@ -122,7 +122,7 @@ function PickerBody({
 }
 
 const comboboxProps = (row: SimpleConstraint) => ({
-  items: ITEM_CHOICE_GROUPS as ItemChoiceGroup[],
+  items: itemChoiceGroups() as ItemChoiceGroup[],
   value: choiceFor(row.kind, row.item),
   isItemEqualToValue: sameChoice,
   onValueChange: (next: ItemChoice | null) => {

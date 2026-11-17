@@ -128,6 +128,7 @@ it('ticks effects through the core and keeps an unchanged save from touching the
 it('shows why a draft cannot be saved and keeps its button off', async () => {
   await render('{"requirements":[{"item":"rat_skull"}]}')
   await click('Add')
+  await click('Trinket', inSheet('[aria-label="Category"]'))
   await pick('Item', 'Rat Skull')
   expect(inSheet('[data-slot="sheet-subject"]').textContent).toBe('Rat Skull')
   expect(inSheet('[role="alert"]').textContent).toBe(
@@ -136,10 +137,10 @@ it('shows why a draft cannot be saved and keeps its button off', async () => {
   expect(button('Add Requirement', sheet() ?? document)?.disabled).toBe(true)
 })
 
-it('picks the kind and source from searchable lists, and keeps a named weapon general', async () => {
+it('picks the family from tabs and the item and source from searchable lists, and keeps a named weapon general', async () => {
   await render('{"requirements":[]}')
   await click('Add')
-  await pick('Item', 'Any thrown weapon')
+  await click('Thrown', inSheet('[aria-label="Weapon type"]'))
   expect(inSheet('[aria-label="Item"]').textContent).toContain(
     'Any thrown weapon'
   )
@@ -170,4 +171,17 @@ it('adds an enchanted weapon through the sheet, and Cancel leaves the query', as
   await click('Add Requirement', sheet() ?? document)
   expect(requirements()).toEqual([{ kind: 'weapon', effect: 'Blazing' }])
   expect(chip('Any weapon').getAttribute('aria-label')).toContain('Blazing')
+})
+
+it("lists only the chosen tab's family, Skeleton Key among the artifacts", async () => {
+  await render('{"requirements":[]}')
+  await click('Add')
+  await click('Artifact', inSheet('[aria-label="Category"]'))
+  await togglePicker('Item')
+  const labels = entries().map((entry) => entry.textContent?.trim())
+  expect(labels).toContain('Skeleton Key')
+  expect(labels).not.toContain('Spear')
+  await choose('Skeleton Key')
+  await click('Add Requirement', sheet() ?? document)
+  expect(requirements()).toEqual([{ kind: 'artifact', item: 'skeleton_key' }])
 })

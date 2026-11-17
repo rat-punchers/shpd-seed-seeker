@@ -18,12 +18,7 @@ import {
   SwitchRow,
 } from './controls'
 import { GroupedPicker } from './GroupedPicker'
-import {
-  currentItem,
-  type ItemEntry,
-  itemGroups,
-  pickChanges,
-} from './item-choices'
+import { currentItem, type ItemEntry, itemGroups } from './item-choices'
 
 // The sheet draws the shared core's form (docs/requirement-editor.md): which
 // controls show, what they offer, their ranges, labels, help texts and errors
@@ -52,10 +47,7 @@ export const SECTION =
   'flex flex-col gap-3 border-t pt-4 first:border-t-0 first:pt-0'
 export const HEADING = 'font-pixel text-px-1'
 
-/**
- * One searchable list of every item and wildcard, across the categories and
- * weapon types: a pick sends the kind and the item to the core.
- */
+/** A searchable list of the chosen family's items, grouped by tier. */
 function ItemPicker({
   sheet,
   onChange,
@@ -82,19 +74,17 @@ function ItemPicker({
           <span className="min-w-0 flex-1 truncate">{label}</span>
         </>
       }
-      groups={() => itemGroups(sheet)}
+      groups={() => itemGroups(form)}
       value={(groups) => currentItem(groups, form)}
       icon={(entry) => (
         <ItemSprite
-          art={requirementArt({ item: entry.item, kind: entry.kind })}
+          art={requirementArt({ item: entry.item, kind: form.kind.value })}
           size={24}
         />
       )}
       searchPlaceholder="Search items…"
       emptyText="No items match."
-      onPick={(entry) => {
-        for (const change of pickChanges(form, entry)) onChange(change)
-      }}
+      onPick={(entry) => onChange({ type: 'set_item', value: entry.item })}
     />
   )
 }
@@ -112,6 +102,25 @@ export function ItemSection({
   return (
     <section className={SECTION}>
       <h3 className={HEADING}>Item</h3>
+      {form.category.visible ? (
+        <Segmented
+          value={form.category.value}
+          options={form.category.options}
+          onChange={(value) => onChange({ type: 'set_category', value })}
+          ariaLabel="Category"
+          fill
+        />
+      ) : null}
+      {form.weapon_type.visible ? (
+        <LabeledControl label="Weapon type">
+          <Segmented
+            value={form.weapon_type.value}
+            options={form.weapon_type.options}
+            onChange={(value) => onChange({ type: 'set_weapon_type', value })}
+            ariaLabel="Weapon type"
+          />
+        </LabeledControl>
+      ) : null}
       {form.item.visible ? (
         <ItemPicker sheet={sheet} onChange={onChange} />
       ) : null}

@@ -177,9 +177,11 @@ describe('offered trinkets', () => {
     expect(body.querySelector('[aria-label="Item"]')?.textContent).toBe(
       'Rat Skull'
     )
-    expect(
-      itemGroups(sheet).find((group) => group.value === 'Trinkets')?.items
-    ).toHaveLength(17)
+    // The Trinket tab lists only trinkets: no wildcard, no other family.
+    expect(body.querySelector('[aria-label="Category"]')).not.toBeNull()
+    expect(itemGroups(sheet.form).flatMap((group) => group.items)).toHaveLength(
+      17
+    )
   })
 
   it('joins named trinkets into an OR group and persists them as offered predicates', () => {

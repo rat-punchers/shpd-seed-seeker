@@ -3,7 +3,6 @@ import type { EditorChange, EditorSheet } from '../../../src/engine/types'
 import {
   currentItem,
   itemGroups,
-  pickChanges,
 } from '../../../src/features/advanced/sheet/item-choices'
 import { sourceGroups } from '../../../src/features/advanced/sheet/source-choices'
 import { defaultQueryState } from '../../../src/features/query/query'
@@ -20,45 +19,55 @@ function sheetAfter(...changes: EditorChange[]): EditorSheet {
   return answer.value
 }
 
-it('lists the wildcards first, then every item once under its kind and tier', () => {
-  const groups = itemGroups(sheetAfter())
-  expect(groups[0]?.value).toBe('Any of a kind')
-  expect(groups[0]?.items.map((entry) => entry.label)).toEqual([
-    'Any weapon',
-    'Any melee weapon',
-    'Any thrown weapon',
-    'Any armor',
-    'Any wand',
-    'Any ring',
+it("lists the chosen family's items under the core's tier headings", () => {
+  const sheet = sheetAfter()
+  expect(sheet.form.category.visible).toBe(true)
+  expect(sheet.form.category.options.map((option) => option.value)).toEqual([
+    'weapon',
+    'armor',
+    'wand',
+    'ring',
+    'trinket',
+    'artifact',
   ])
-  expect(groups.map((group) => group.value)).toContain('Melee weapons · Tier 2')
-  expect(groups.map((group) => group.value)).toContain(
-    'Thrown weapons · Tier 5'
-  )
-  expect(groups.map((group) => group.value)).toContain('Trinkets')
-  // Named weapons sit under melee or thrown, never again under "Weapons".
-  expect(groups.map((group) => group.value)).not.toContain('Weapons · Tier 2')
-  const items = groups.flatMap((group) => group.items)
-  const named = items.filter((entry) => entry.item !== null)
-  expect(new Set(named.map((entry) => entry.item)).size).toBe(named.length)
-  expect(items.map((entry) => entry.item)).toContain('rat_skull')
+  const groups = itemGroups(sheet.form)
+  expect(groups[0]).toEqual({
+    value: '',
+    items: [{ value: 'any', label: 'Any weapon', item: null }],
+  })
+  expect(groups.map((group) => group.value)).toEqual([
+    '',
+    'Tier 2',
+    'Tier 3',
+    'Tier 4',
+    'Tier 5',
+  ])
+  expect(currentItem(groups, sheet.form)?.label).toBe('Any weapon')
 })
 
-it('finds the current choice and sends only what a pick changes', () => {
-  const sheet = sheetAfter()
-  const groups = itemGroups(sheet)
-  expect(currentItem(groups, sheet.form)?.label).toBe('Any weapon')
-  const all = groups.flatMap((group) => group.items)
-  const spear = all.find((entry) => entry.item === 'spear')
-  const skull = all.find((entry) => entry.item === 'rat_skull')
-  if (!spear || !skull) throw new Error('missing entries')
-  // The weapon wildcard already offers the spear: the kind stays general.
-  expect(pickChanges(sheet.form, spear)).toEqual([
-    { type: 'set_item', value: 'spear' },
-  ])
-  expect(pickChanges(sheet.form, skull)).toEqual([
-    { type: 'set_kind', value: 'trinket' },
-    { type: 'set_item', value: 'rat_skull' },
+it('switches the list with the category tab and the weapon type', () => {
+  const thrown = itemGroups(
+    sheetAfter({ type: 'set_weapon_type', value: 'thrown' }).form
+  ).flatMap((group) => group.items)
+  expect(thrown[0]?.label).toBe('Any thrown weapon')
+  expect(thrown.map((entry) => entry.item)).toContain('shuriken')
+  expect(thrown.map((entry) => entry.item)).not.toContain('spear')
+
+  const artifacts = sheetAfter({ type: 'set_category', value: 'artifact' })
+  const names = itemGroups(artifacts.form).flatMap((group) => group.items)
+  expect(names.map((entry) => entry.item)).toContain('skeleton_key')
+  // Artifacts are named, never "any": the sheet starts on the first.
+  expect(names.some((entry) => entry.item === null)).toBe(false)
+  expect(currentItem(itemGroups(artifacts.form), artifacts.form)?.item).toBe(
+    artifacts.form.item.value
+  )
+
+  const wands = itemGroups(
+    sheetAfter({ type: 'set_category', value: 'wand' }).form
+  ).flatMap((group) => group.items)
+  expect(wands.slice(0, 2).map((entry) => entry.item)).toEqual([
+    null,
+    'arcane_resin',
   ])
 })
 
