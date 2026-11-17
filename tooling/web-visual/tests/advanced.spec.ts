@@ -94,20 +94,28 @@ for (const viewport of [
   })
 }
 
-test('the sheet picks its item and source from searchable, grouped lists', async ({
+test('the sheet picks its family from tabs, then its item and source from searchable, grouped lists', async ({
   page,
 }) => {
   const errors = collectBrowserErrors(page)
   await openApp(page, { mode: 'find', 'find-view': 'advanced' })
   await page.getByRole('button', { name: 'Add', exact: true }).first().click()
 
+  const category = sheet(page).getByRole('radiogroup', { name: 'Category' })
+  await expect(category.getByRole('radio', { name: 'Weapon' })).toBeChecked()
   await sheet(page).getByRole('combobox', { name: 'Item' }).click()
   const search = page.getByLabel('Search item')
   await expect(search).toBeFocused()
-  await expect(
-    page.getByRole('group', { name: 'Melee weapons · Tier 3' })
-  ).toBeVisible()
+  await expect(page.getByRole('group', { name: 'Tier 3' })).toBeVisible()
+  // The Weapon tab lists weapons only.
   await search.fill('wand of fro')
+  await expect(page.getByRole('option')).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect(search).toHaveCount(0)
+
+  await category.getByRole('radio', { name: 'Wand' }).click()
+  await sheet(page).getByRole('combobox', { name: 'Item' }).click()
+  await page.getByLabel('Search item').fill('wand of fro')
   await expect(page.getByRole('option')).toHaveCount(1)
   await page.getByRole('option', { name: 'Wand of Frost' }).click()
   await expect(page.getByLabel('Search item')).toHaveCount(0)

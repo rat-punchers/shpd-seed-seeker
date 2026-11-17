@@ -49,7 +49,9 @@ Run `bun run build:wasm` again after engine changes. The preview server
   requirement sheet (`sheet/`), presets, share-link import and the settings
   panels (`settings/`).
 - `src/features/query/`: the query document, its codec and share links,
-  validation and limits.
+  validation and limits, and the item list (`item-list.ts`): every item a
+  requirement can name, read from the shared core's picker. Simple shows it
+  in one menu; Advanced shows one family at a time behind category tabs.
 - `src/features/search/`: the search coordinator, its workers and the
   search store, and the results tabs (`tabs.ts`), saved to localStorage.
 - `src/features/analyze/`: seed tabs, the seed field, `?scout=` links,
