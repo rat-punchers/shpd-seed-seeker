@@ -114,6 +114,7 @@ pub(super) fn observe(
     seed: DungeonSeed,
     challenges: Challenges,
     selected: Option<ItemId>,
+    journal: crate::journal::JournalProfile,
 ) -> Result<Observed, String> {
     let dungeon_seed = i64::try_from(seed.value()).expect("seed fits i64");
     let mut collector = Collector {
@@ -127,6 +128,7 @@ pub(super) fn observe(
         challenges,
         &Gate(selected),
         ObservedProfile::Scout,
+        journal,
         &mut collector,
     )
     .map_err(|error| format!("world generation failed: {error}"))?

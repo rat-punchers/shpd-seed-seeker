@@ -178,6 +178,11 @@ controls generation even when `query` has its own challenge list, matching the
 `seed_report` request. `query` is optional and uses the normal query schema.
 Unknown request fields and invalid queries/challenges are rejected.
 
+`lorePages` is optional and defaults to `false` for the standard journal.
+Set it to `true` to match a fresh-journal report. The entrance guide page on
+floor 2, when present, uses an example cell. Its actual location and affected
+loot can vary.
+
 The optional `trinket` field follows scouting semantics:
 
 - Missing or `null`: resolve selection using the query's AutoTrinket policy or

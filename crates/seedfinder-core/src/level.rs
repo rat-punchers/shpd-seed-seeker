@@ -267,6 +267,7 @@ pub struct Level {
     pub intro: bool,
     /// Canonical debug journal state has the searching guide page unlocked.
     pub guide_searching_found: bool,
+    pub(crate) journal: crate::journal::JournalProfile,
     /// `Challenges.NO_HERBALISM`: terrain is still converted to grass, but no
     /// plant object is registered.
     pub plants_enabled: bool,
@@ -291,6 +292,7 @@ impl Level {
             room_order: Vec::new(),
             intro: false,
             guide_searching_found: true,
+            journal: crate::journal::JournalProfile::default(),
             plants_enabled: true,
         }
     }

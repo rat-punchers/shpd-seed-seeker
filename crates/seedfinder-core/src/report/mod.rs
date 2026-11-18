@@ -13,6 +13,8 @@ mod imp_slots;
 mod item;
 #[cfg(test)]
 mod item_tests;
+#[cfg(test)]
+mod journal_parity;
 mod loose;
 mod observe;
 #[cfg(test)]

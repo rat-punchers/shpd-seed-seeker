@@ -241,7 +241,18 @@ impl<C: SewerRoomContent> RoomPaintDispatch for SewerRoomDispatcher<C> {
     ) {
         self.ensure_state(room);
         match rooms[room].kind {
-            RoomKind::Entrance(kind) => self.paint_transition(level, rooms, room, kind, true, rng),
+            RoomKind::Entrance(kind) => {
+                self.paint_transition(level, rooms, room, kind, true, rng);
+                if level.depth == 2
+                    && !level.guide_searching_found
+                    && matches!(
+                        kind,
+                        StandardRoomKind::RegionDecoPatch | StandardRoomKind::WaterBridge
+                    )
+                {
+                    crate::journal::place_entrance_page(level, rooms[room].bounds);
+                }
+            }
             RoomKind::Exit(kind) => self.paint_transition(level, rooms, room, kind, false, rng),
             RoomKind::Standard(kind) => self.paint_standard(level, rooms, room, kind, rng),
             RoomKind::Connection(kind) => self.paint_connection(level, rooms, room, kind, rng),

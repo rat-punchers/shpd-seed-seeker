@@ -16,12 +16,18 @@ apps do not use it. Floor maps stay on `level_map`
 | --- | --- | --- |
 | `seed` | string | Required. A seed code in any case or grouping, or a UTC daily date `YYYY-MM-DD`. |
 | `challenges` | string[] | Optional. Challenge names from `engine_info.challenges`. |
+| `lorePages` | boolean | Optional. `true` uses a fresh journal with the intro page read and no page pickups. Defaults to `false`, the standard journal with the Halls page on floor 24. |
 | `trinket` | string | Optional. One of the seed's four Catalyst offers by item id, or `"none"` for No Trinket. Absent resolves the selection from `query`, as the native scout and `level_map` do. |
 | `query` | object | Optional. A query document ([search-query-format.md](search-query-format.md)). It selects the trinket when `trinket` is absent and sets the `matched`, `resinDonor` and `excluded` item marks. Its own `challenges` are not applied; pass them in `challenges`. |
 
 Unknown request fields, invalid seeds, unknown challenges, invalid queries and
 trinkets outside the four offers are errors. The wasm export throws a
 JavaScript error carrying the message.
+
+With `lorePages` enabled, guide and alchemy pages use the game's placement
+rules and can shift later loot. The floor 2 entrance guide page, when present,
+uses an example cell in the map because its placement is unseeded. Request
+maps with the same `lorePages` and challenge settings as the report.
 
 ## Contract rules
 

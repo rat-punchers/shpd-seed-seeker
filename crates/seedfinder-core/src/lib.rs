@@ -34,6 +34,7 @@ pub mod halls_mobs;
 pub mod halls_rooms;
 pub mod item_mappings;
 pub mod java_math;
+mod journal;
 #[cfg(feature = "json-query")]
 pub mod json_query;
 pub mod level;

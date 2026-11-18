@@ -275,13 +275,31 @@ pub(super) fn validate_location(depth: u8, branch: u8) -> Result<(), MapError> {
 /// # Panics
 /// Panics if an internal generation invariant fails; native bridges contain
 /// these panics at their API boundary.
-#[allow(clippy::too_many_lines)] // Explicit dispatch for each supported main/quest branch.
 pub fn generate_level_map_in_branch(
     seed: DungeonSeed,
     depth: u8,
     branch: u8,
     challenges: Challenges,
     selected_trinket: Option<ItemId>,
+) -> Result<LevelMap, MapError> {
+    generate_level_map_with_journal(
+        seed,
+        depth,
+        branch,
+        challenges,
+        selected_trinket,
+        crate::journal::JournalProfile::default(),
+    )
+}
+
+#[allow(clippy::too_many_lines)] // Explicit dispatch for each supported main/quest branch.
+pub(crate) fn generate_level_map_with_journal(
+    seed: DungeonSeed,
+    depth: u8,
+    branch: u8,
+    challenges: Challenges,
+    selected_trinket: Option<ItemId>,
+    journal: crate::journal::JournalProfile,
 ) -> Result<LevelMap, MapError> {
     validate_location(depth, branch)?;
     if selected_trinket.is_some_and(|id| !crate::trinkets::trinket_order(seed)[..4].contains(&id)) {
@@ -317,6 +335,7 @@ pub fn generate_level_map_in_branch(
         challenges,
         &MapGate(selected_trinket),
         crate::main_world::ObservedProfile::Map,
+        journal,
         &mut |floor: crate::main_world::FloorObservation<'_>| {
             if floor.level.depth != u32::from(depth) {
                 return;

@@ -1,7 +1,7 @@
 //! One JSON request/response contract shared by C, JNI, wasm and Rust callers.
 
 use super::{
-    LevelMap, MapError, SCHEMA_VERSION, assets, generate_level_map_in_branch, validate_location,
+    LevelMap, MapError, SCHEMA_VERSION, assets, generate_level_map_with_journal, validate_location,
 };
 use crate::catalog::item;
 use crate::challenges::Challenges;
@@ -20,6 +20,8 @@ struct Request {
     branch: u8,
     #[serde(default)]
     challenges: Vec<String>,
+    #[serde(default, rename = "lorePages")]
+    lore_pages: bool,
     #[serde(default)]
     query: Option<Value>,
     /// Absent/null resolves from the query; "none" explicitly deselects.
@@ -34,6 +36,7 @@ pub struct LevelMapRequest {
     pub depth: u8,
     pub branch: u8,
     pub challenges: Challenges,
+    pub lore_pages: bool,
     pub selected_trinket: Option<crate::catalog::ItemId>,
 }
 
@@ -59,6 +62,7 @@ pub fn decode_request(input: &str) -> Result<LevelMapRequest, String> {
         depth: request.depth,
         branch: request.branch,
         challenges: run.challenges,
+        lore_pages: request.lore_pages,
         selected_trinket: run.selected_trinket,
     })
 }
@@ -70,12 +74,13 @@ impl LevelMapRequest {
     /// # Errors
     /// Reports a failed map generation.
     pub fn generate_document(&self) -> Result<String, MapError> {
-        let map = generate_level_map_in_branch(
+        let map = generate_level_map_with_journal(
             self.seed,
             self.depth,
             self.branch,
             self.challenges,
             self.selected_trinket,
+            crate::journal::JournalProfile::from_lore_pages(self.lore_pages),
         )?;
         Ok(document(&map).to_string())
     }

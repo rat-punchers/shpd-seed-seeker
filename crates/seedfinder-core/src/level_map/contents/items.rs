@@ -214,6 +214,9 @@ pub(super) fn direct(kind: &str, a: &ItemAppearanceState) -> MapItem {
 pub(super) fn paint(value: PaintItem, a: &ItemAppearanceState) -> MapItem {
     match value {
         PaintItem::Generated(i) => generated(i, a),
+        PaintItem::Direct(DirectPaintItem::Other(crate::journal::EARLY_GUIDE_PAGE)) => {
+            MapItem::unknown("GuidePage", 496)
+        }
         PaintItem::Direct(DirectPaintItem::Other(s)) => direct(s, a),
         PaintItem::Direct(i) => direct(&name(i), a),
         i => direct(&name(i), a),

@@ -579,6 +579,7 @@ impl GeneratorState {
 pub struct RunState {
     pub dungeon_seed: i64,
     pub challenges: Challenges,
+    pub(crate) journal: crate::journal::JournalProfile,
     /// Whether the Imp's Vault sub-level is generated after the City floor
     /// that schedules the quest. The vault has its own depth seed and touches
     /// no run state, so a search whose query no vault treasure can satisfy
@@ -614,6 +615,7 @@ impl RunState {
         Self {
             dungeon_seed,
             challenges,
+            journal: crate::journal::JournalProfile::default(),
             generate_vault: true,
             appearances,
             special_rooms,
