@@ -28,9 +28,12 @@ export async function openApp(
   await page.goto('/')
 }
 
-/** Freeze the first two results before reading their order. */
-export async function settleSearchResults(page: Page): Promise<void> {
-  await expect(page.getByTestId('result-row').nth(1)).toBeVisible()
+/** Freeze the results before reading their order. */
+export async function settleSearchResults(
+  page: Page,
+  count = 2
+): Promise<void> {
+  await expect(page.getByTestId('result-row').nth(count - 1)).toBeVisible()
   // The search can hit its result limit between rendering a row and cancelling.
   await page
     .getByRole('button', { name: 'Cancel', exact: true })
