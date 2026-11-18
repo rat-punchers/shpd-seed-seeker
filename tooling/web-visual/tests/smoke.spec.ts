@@ -23,9 +23,32 @@ for (const viewport of VIEWPORTS) {
     await openApp(page)
 
     await expect(page).toHaveTitle('Seed Seeker')
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'Seed Seeker · SHPD v4.0.2' })
-    ).toBeVisible()
+    const title = page.getByRole('heading', {
+      level: 1,
+      name: 'Seed Seeker',
+      exact: true,
+    })
+    const subtitle = page
+      .getByRole('complementary')
+      .getByText('Shattered Pixel Dungeon v4.0.2', { exact: true })
+    await expect(title).toBeVisible()
+    await expect(subtitle).toBeVisible()
+    const fonts = await title.evaluate(async (node) => {
+      await document.fonts.ready
+      const title = getComputedStyle(node)
+      const subtitle = getComputedStyle(node.nextElementSibling as Element)
+      return {
+        family: title.fontFamily,
+        title: title.fontSize,
+        subtitle: subtitle.fontSize,
+      }
+    })
+    expect(fonts.family).toContain('SPD Pixel')
+    expect(Number.parseFloat(fonts.title)).toBeGreaterThan(20.48)
+    expect(Number.parseFloat(fonts.subtitle)).toBeLessThan(16)
+    expect((await subtitle.boundingBox())?.y).toBeGreaterThan(
+      (await title.boundingBox())?.y ?? 0
+    )
     // Nothing spills past the viewport sideways.
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - window.innerWidth

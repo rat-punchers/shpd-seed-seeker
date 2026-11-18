@@ -32,8 +32,9 @@ function heading(level: number): string | undefined {
 }
 
 it('shows the app name and the supported game version', () => {
-  expect(container.querySelector('h1')?.textContent).toBe(
-    'Seed Seeker · SHPD v4.0.2'
+  expect(container.querySelector('h1')?.textContent).toBe('Seed Seeker')
+  expect(container.querySelector('h1 + p')?.textContent).toBe(
+    'Shattered Pixel Dungeon v4.0.2'
   )
 })
 
