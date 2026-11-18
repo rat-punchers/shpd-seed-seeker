@@ -24,6 +24,7 @@ export function mapRequestJson(request: LevelMapRequest): string {
     depth: request.depth,
     branch: request.branch ?? 0,
     challenges: [...new Set(request.challenges)].sort(),
+    ...(request.lorePages ? { lorePages: true } : {}),
     trinket: request.selectedTrinket ?? 'none',
   })
 }

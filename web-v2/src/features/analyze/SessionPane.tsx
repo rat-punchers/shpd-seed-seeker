@@ -16,7 +16,12 @@ import type { ParsedSeed } from '../../engine/types'
 import { resultsTabsStore } from '../search/tabs'
 import { resultPosition, stepActiveResult } from './navigation'
 import { SeedReportView } from './report/SeedReportView'
-import { cancelReport, type SeedSession, selectTrinket } from './sessions'
+import {
+  cancelReport,
+  type SeedSession,
+  selectTrinket,
+  updateRunSettings,
+} from './sessions'
 
 const NO_MATCHES: ParsedSeed[] = []
 
@@ -78,7 +83,7 @@ export function SessionPane({ session }: { session: SeedSession }) {
   const loading = session.status === 'pending' || session.status === 'loading'
   const code = session.report?.seed.code ?? session.seed
 
-  // A trinket pick regenerates in place; the previous report stays on screen.
+  // A replay setting regenerates in place; the last report stays on screen.
   let body: ReactNode = null
   if (loading && !session.report) {
     body = (
@@ -119,6 +124,15 @@ export function SessionPane({ session }: { session: SeedSession }) {
       <SeedReportView
         report={session.report}
         challenges={session.challenges}
+        lorePages={session.lorePages}
+        runSettings={{
+          busy: loading,
+          error: session.error,
+          selectLorePages: (lorePages) =>
+            void updateRunSettings(session.id, { lorePages }),
+          selectChallenges: (challenges) =>
+            void updateRunSettings(session.id, { challenges }),
+        }}
         trinketChoice={{
           busy: loading,
           select: (trinket) => void selectTrinket(session.id, trinket),

@@ -9,6 +9,7 @@ import { ReportMapContext, type ReportMapRun } from './FloorMapButton'
 import { prefersReducedMotion, stuckBottom, useCurrentFloor } from './hooks'
 import { ItemDetailLayer } from './ItemDetail'
 import { RunHeader } from './RunHeader'
+import type { RunSettingsChoice } from './RunSettings'
 import type { TrinketChoice } from './trinket'
 
 const NO_CHALLENGES: readonly ChallengeName[] = []
@@ -18,11 +19,15 @@ export function SeedReportView({
   report,
   trinketChoice,
   challenges = NO_CHALLENGES,
+  lorePages = false,
+  runSettings,
 }: {
   report: SeedReport
   trinketChoice: TrinketChoice
   /** The challenges the report was asked with; floor maps use them too. */
   challenges?: readonly ChallengeName[]
+  lorePages?: boolean
+  runSettings?: RunSettingsChoice
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const railRef = useRef<HTMLElement>(null)
@@ -31,9 +36,10 @@ export function SeedReportView({
     () => ({
       seed: report.seed.code,
       challenges,
+      lorePages,
       selectedTrinket: report.trinkets.selected,
     }),
-    [report.seed.code, report.trinkets.selected, challenges]
+    [report.seed.code, report.trinkets.selected, challenges, lorePages]
   )
 
   function scrollToFloor(depth: number) {
@@ -59,7 +65,12 @@ export function SeedReportView({
         className="space-y-4"
         data-seed-report={report.seed.code}
       >
-        <RunHeader report={report} />
+        <RunHeader
+          report={report}
+          challenges={challenges}
+          lorePages={lorePages}
+          runSettings={runSettings}
+        />
         {report.floors.length > 0 ? (
           <>
             <div className="flex flex-wrap items-center gap-2">

@@ -34,6 +34,8 @@ export interface SeedReportRequest {
   /** A seed code in any case or grouping, or a UTC daily date `YYYY-MM-DD`. */
   seed: string
   challenges?: ChallengeName[]
+  /** Use the fresh journal replay profile. */
+  lorePages?: boolean
   /** One of the four Catalyst offers by id, or `"none"` for No Trinket. */
   trinket?: string
   /** A query document; selects the trinket when `trinket` is absent and marks items. */

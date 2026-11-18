@@ -180,6 +180,7 @@ export interface LevelMapRequest {
   depth: number
   branch?: number
   challenges: readonly ChallengeName[]
+  lorePages?: boolean
   /** A Catalyst offer id; null or absent is No Trinket. */
   selectedTrinket?: string | null
 }

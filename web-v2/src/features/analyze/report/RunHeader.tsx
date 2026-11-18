@@ -1,10 +1,12 @@
 import { CheckIcon, CopyIcon } from '@phosphor-icons/react'
+import { Badge } from '@seed-seeker/design/ui/badge'
 import { Button } from '@seed-seeker/design/ui/button'
 import { cn } from '@seed-seeker/design/utils'
 import { useEffect, useState } from 'react'
-import type { SeedReport } from '../../../engine/types/report'
+import type { ChallengeName, SeedReport } from '../../../engine/types'
 import { GameWindow } from '../../../shared/ui/GameWindow'
 import { IdentitiesPanel } from './IdentitiesPanel'
+import { RunSettings, type RunSettingsChoice } from './RunSettings'
 import { hasSection } from './report-text'
 
 const COPIED_MS = 2000
@@ -12,6 +14,8 @@ const COPIED_MS = 2000
 /** The seed in the game's pixel font and window frame, with a copy action. */
 function SeedTitle({ report }: { report: SeedReport }) {
   const text = report.seed.code
+  const query = report.query
+  const complete = query?.matchedRequirements === query?.totalRequirements
   const [copied, setCopied] = useState(false)
   const [failed, setFailed] = useState(false)
 
@@ -75,6 +79,23 @@ function SeedTitle({ report }: { report: SeedReport }) {
           </Button>
         </div>
       </GameWindow>
+      {query ? (
+        <Badge
+          data-query-summary
+          variant={complete ? 'secondary' : 'warning'}
+          className="h-auto min-h-6 max-w-full py-1 text-sm whitespace-normal tabular-nums"
+          aria-live="polite"
+        >
+          {complete ? (
+            <CheckIcon data-icon="inline-start" weight="bold" />
+          ) : null}
+          <span>
+            Matches {query.matchedRequirements} of {query.totalRequirements}{' '}
+            query{' '}
+            {query.totalRequirements === 1 ? 'requirement' : 'requirements'}.
+          </span>
+        </Badge>
+      ) : null}
       <span className="sr-only" aria-live="polite">
         {copied ? `Copied ${text} to the clipboard` : ''}
       </span>
@@ -87,16 +108,28 @@ function SeedTitle({ report }: { report: SeedReport }) {
   )
 }
 
-/** Top of a report: the seed, the query it was matched against, its identities. */
-export function RunHeader({ report }: { report: SeedReport }) {
+/** The seed and query summary, replay settings, and identities. */
+export function RunHeader({
+  report,
+  challenges,
+  lorePages,
+  runSettings,
+}: {
+  report: SeedReport
+  challenges: readonly ChallengeName[]
+  lorePages: boolean
+  runSettings?: RunSettingsChoice
+}) {
   return (
     <header data-run-header className="flex flex-col gap-6 pb-6">
       <SeedTitle report={report} />
-      {report.query ? (
-        <p className="text-muted-foreground text-sm" data-query-summary>
-          Matches {report.query.matchedRequirements} of{' '}
-          {report.query.totalRequirements} query requirements.
-        </p>
+      {runSettings ? (
+        <RunSettings
+          report={report}
+          challenges={challenges}
+          lorePages={lorePages}
+          choice={runSettings}
+        />
       ) : null}
       {hasSection(report, 'identities') ? (
         <IdentitiesPanel report={report} />

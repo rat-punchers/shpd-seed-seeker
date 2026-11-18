@@ -15,6 +15,7 @@ import {
   restoreSessions,
   selectTrinket,
   setReportClient,
+  updateRunSettings,
 } from '../../../src/features/analyze/sessions'
 
 /** A report client that answers when the test says so. */
@@ -176,6 +177,46 @@ describe('tab actions', () => {
     expect($savedSeeds.get()).toEqual([
       { seed: 'AAA-AAA-AAA', trinket: 'none' },
     ])
+  })
+
+  it('keeps the last report and settings until a new replay succeeds', async () => {
+    const seed = 'AAA-AAA-AAA'
+    const query = { challenges: ['on_diet' as const], requirements: [] }
+    const opened = openSeed({ seed, query, trinket: 'none' })
+    const original = report(seed)
+    calls[0]?.resolve(original)
+    await opened
+
+    const failed = updateRunSettings(seed, { lorePages: true })
+    expect(calls[1]?.request).toEqual({
+      seed,
+      query,
+      trinket: 'none',
+      challenges: ['on_diet'],
+      lorePages: true,
+    })
+    expect(findSession(seed)).toMatchObject({
+      status: 'loading',
+      report: original,
+    })
+    expect($savedSeeds.get()[0]?.lorePages).toBeUndefined()
+    calls[1]?.reject(new Error('Replay failed'))
+    await failed
+    expect(findSession(seed)).toMatchObject({
+      status: 'ready',
+      report: original,
+      error: 'Replay failed',
+    })
+    expect($savedSeeds.get()[0]?.lorePages).toBeUndefined()
+
+    const edited = updateRunSettings(seed, {
+      lorePages: true,
+      challenges: ['on_diet', 'into_darkness'],
+    })
+    calls[2]?.resolve(report(seed))
+    await edited
+    expect($savedSeeds.get()).toEqual([calls[2]?.request as SeedReportRequest])
+    expect(findSession(seed)?.error).toBeNull()
   })
 
   it('replaces the active tab in place for result navigation', () => {

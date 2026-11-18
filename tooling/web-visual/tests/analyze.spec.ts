@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test'
-import { openApp } from './helpers/app'
+import { openApp, settleSearchResults } from './helpers/app'
 import {
   collectBrowserErrors,
   expectNoBrowserErrors,
@@ -134,29 +134,37 @@ test('J and K walk Find results from Analyze', async ({ page }) => {
     mode: 'find',
     query: JSON.stringify({
       auto_apply_trinket: true,
+      challenges: ['into_darkness'],
       max_depth: 24,
       requirements: [{ kind: 'ring' }],
     }),
   })
   await page.getByRole('button', { name: 'Find', exact: true }).click()
   const cards = page.getByTestId('result-row')
-  await expect(cards.nth(1)).toBeVisible()
+  await settleSearchResults(page)
   const first = (await cards.nth(0).getByRole('heading').textContent()) ?? ''
   const second = (await cards.nth(1).getByRole('heading').textContent()) ?? ''
   await cards.nth(0).getByRole('button', { name: 'Analyze seed' }).click()
 
   await expect(seedTitle(page)).toHaveText(first)
-  // The report is matched against the Find query.
-  await expect(page.locator('[data-query-summary]')).toHaveText(
-    'Matches 1 of 1 query requirements.'
-  )
+  await expect(
+    page.locator('[data-query-summary][data-variant="secondary"]')
+  ).toHaveText('Matches 1 of 1 query requirement.')
   await expect(page.locator('[data-matched]').first()).toBeAttached()
+  const lore = page.getByRole('switch', { name: 'Use a fresh journal' })
+  const darkness = page.getByRole('button', { name: 'Into Darkness' })
+  await expect(darkness).toHaveAttribute('aria-pressed', 'true')
+  await lore.click()
+  await expect(lore).toBeChecked()
+  await darkness.click()
+  await expect(darkness).toHaveAttribute('aria-pressed', 'false')
   const position = page.getByRole('navigation', { name: 'Search results' })
   await expect(position).toContainText(/Result 1 of \d+/)
   await page.keyboard.press('j')
   await expect(seedTitle(page)).toHaveText(second)
+  await expect(lore).not.toBeChecked()
+  await expect(darkness).toHaveAttribute('aria-pressed', 'true')
   await expect(position).toContainText(/Result 2 of/)
-  // Navigation replaces the tab, named after its results, instead of opening another.
   await expect(seedTabs(page).getByRole('tab')).toHaveText(['Results #1'])
   await page.keyboard.press('k')
   await expect(seedTitle(page)).toHaveText(first)
@@ -261,7 +269,7 @@ test.describe('on a phone', () => {
     })
     await page.getByRole('button', { name: 'Find', exact: true }).click()
     const cards = page.getByTestId('result-row')
-    await expect(cards.nth(1)).toBeVisible()
+    await settleSearchResults(page)
     const second = (await cards.nth(1).getByRole('heading').textContent()) ?? ''
     await cards.nth(0).getByRole('button', { name: 'Analyze seed' }).click()
     await expect(page.locator('[data-floor-depth="24"]')).toBeAttached()
