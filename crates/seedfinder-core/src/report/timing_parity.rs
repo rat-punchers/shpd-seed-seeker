@@ -72,7 +72,13 @@ fn trinket_is_active_from_the_first_effective_depth() {
     for value in [0, 1, 7, 42, 1_000, 99_999, 5_000_000, 123_456_789] {
         let seed = DungeonSeed::new(value).unwrap();
         let offers = crate::trinkets::trinket_order(seed);
-        let observed = super::observe::observe(seed, Challenges::NONE, Some(offers[0])).unwrap();
+        let observed = super::observe::observe(
+            seed,
+            Challenges::NONE,
+            Some(offers[0]),
+            crate::journal::JournalProfile::Canonical,
+        )
+        .unwrap();
         let timing = super::timing::timing(&observed.world, &observed.floors).unwrap();
         assert_eq!(
             timing.selection_depth,

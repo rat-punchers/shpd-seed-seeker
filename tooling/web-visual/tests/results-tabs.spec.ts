@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test'
-import { openApp } from './helpers/app'
+import { openApp, settleSearchResults } from './helpers/app'
 import {
   collectBrowserErrors,
   expectNoBrowserErrors,
@@ -35,7 +35,7 @@ test('results tabs keep their searches, survive a reload and name the Analyze ta
     resultsTabs(page).getByRole('tab', { name: 'Results #1' })
   ).toHaveAttribute('aria-selected', 'true')
   await page.getByRole('button', { name: 'Find', exact: true }).click()
-  await expect(page.getByTestId('result-row').nth(2)).toBeVisible()
+  await settleSearchResults(page, 3)
   const first = await cardCode(page, 0)
   const third = await cardCode(page, 2)
 

@@ -405,6 +405,7 @@ pub(crate) fn generate_main_world_observed(
     challenges: Challenges,
     gate: &dyn FloorGate,
     profile: ObservedProfile,
+    journal: crate::journal::JournalProfile,
     observer: &mut impl FloorObserver,
 ) -> Result<Option<GeneratedWorld>, MainWorldError> {
     if !(1..=24).contains(&maximum_depth) {
@@ -423,7 +424,7 @@ pub(crate) fn generate_main_world_observed(
         challenges,
         gate,
         None,
-        Some(profile),
+        Some((profile, journal)),
         observer,
     )
 }
@@ -481,13 +482,14 @@ fn generate_gated_world_attempt(
     challenges: Challenges,
     gate: &dyn FloorGate,
     deferred: Option<&crate::feasibility::QueryPlan>,
-    profile: Option<ObservedProfile>,
+    profile: Option<(ObservedProfile, crate::journal::JournalProfile)>,
     observer: &mut impl FloorObserver,
 ) -> Result<Option<GeneratedWorld>, MainWorldError> {
-    let acquire_hourglass = profile == Some(ObservedProfile::Map);
+    let acquire_hourglass = profile.is_some_and(|(mode, _)| mode == ObservedProfile::Map);
     let dungeon_seed = i64::try_from(seed.value()).expect("base-26 seed range fits Java long");
     let mut pending_vault = None;
     let mut run = RunState::with_challenges(dungeon_seed, challenges);
+    run.journal = profile.map(|(_, journal)| journal).unwrap_or_default();
     run.generate_vault = gate.wants_vault_treasure();
     if !gate.continue_after_run_init(&run) {
         return Ok(None);

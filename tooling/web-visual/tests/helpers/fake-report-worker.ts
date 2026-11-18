@@ -41,60 +41,69 @@ export async function loadReportFixtures(): Promise<
  */
 export async function installFakeReportWorker(
   page: Page,
-  reports: Record<string, ReportFixture>
+  reports: Record<string, ReportFixture>,
+  lorePagesError?: string
 ): Promise<void> {
-  await page.addInitScript((fixtures) => {
-    const RealWorker = window.Worker
+  await page.addInitScript(
+    ({ fixtures, lorePagesError }) => {
+      const RealWorker = window.Worker
 
-    function seedKey(seed: string): string {
-      const text = seed.trim().toUpperCase()
-      const letters = text.replace(/[^A-Z]/g, '')
-      if (/^\d{4}-\d{2}-\d{2}$/.test(text) || letters.length !== 9) return text
-      return `${letters.slice(0, 3)}-${letters.slice(3, 6)}-${letters.slice(6)}`
-    }
-
-    class FakeReportWorker extends EventTarget {
-      onmessage: ((event: MessageEvent) => void) | null = null
-      onerror: ((event: ErrorEvent) => void) | null = null
-      onmessageerror: ((event: MessageEvent) => void) | null = null
-
-      constructor() {
-        super()
-        this.addEventListener('message', (event) =>
-          this.onmessage?.(event as MessageEvent)
-        )
+      function seedKey(seed: string): string {
+        const text = seed.trim().toUpperCase()
+        const letters = text.replace(/[^A-Z]/g, '')
+        if (/^\d{4}-\d{2}-\d{2}$/.test(text) || letters.length !== 9)
+          return text
+        return `${letters.slice(0, 3)}-${letters.slice(3, 6)}-${letters.slice(6)}`
       }
 
-      postMessage(message: {
-        type?: string
-        id?: number
-        request?: { seed?: string }
-      }) {
-        if (message?.type !== 'seed-report') return
-        const report = fixtures[seedKey(message.request?.seed ?? '')]
-        const data = report
-          ? { type: 'seed-report', id: message.id, ok: true, report }
-          : {
-              type: 'seed-report',
-              id: message.id,
-              ok: false,
-              error: `No report fixture for seed ${message.request?.seed}`,
-            }
-        setTimeout(() => {
-          this.dispatchEvent(
-            new MessageEvent('message', { data: structuredClone(data) })
+      class FakeReportWorker extends EventTarget {
+        onmessage: ((event: MessageEvent) => void) | null = null
+        onerror: ((event: ErrorEvent) => void) | null = null
+        onmessageerror: ((event: MessageEvent) => void) | null = null
+
+        constructor() {
+          super()
+          this.addEventListener('message', (event) =>
+            this.onmessage?.(event as MessageEvent)
           )
-        }, 0)
+        }
+
+        postMessage(message: {
+          type?: string
+          id?: number
+          request?: { seed?: string; lorePages?: boolean }
+        }) {
+          if (message?.type !== 'seed-report') return
+          const report = fixtures[seedKey(message.request?.seed ?? '')]
+          const error = message.request?.lorePages ? lorePagesError : undefined
+          const data =
+            report && !error
+              ? { type: 'seed-report', id: message.id, ok: true, report }
+              : {
+                  type: 'seed-report',
+                  id: message.id,
+                  ok: false,
+                  error:
+                    error ??
+                    `No report fixture for seed ${message.request?.seed}`,
+                }
+          setTimeout(() => {
+            this.dispatchEvent(
+              new MessageEvent('message', { data: structuredClone(data) })
+            )
+          }, 0)
+        }
+
+        terminate() {}
       }
 
-      terminate() {}
-    }
-
-    function Worker(url: string | URL, options?: WorkerOptions) {
-      if (/report[.-]worker/.test(String(url))) return new FakeReportWorker()
-      return new RealWorker(url, options)
-    }
-    Worker.prototype = RealWorker.prototype
-    Object.assign(window, { Worker })
-  }, reports)
+      function Worker(url: string | URL, options?: WorkerOptions) {
+        if (/report[.-]worker/.test(String(url))) return new FakeReportWorker()
+        return new RealWorker(url, options)
+      }
+      Worker.prototype = RealWorker.prototype
+      Object.assign(window, { Worker })
+    },
+    { fixtures: reports, lorePagesError }
+  )
 }

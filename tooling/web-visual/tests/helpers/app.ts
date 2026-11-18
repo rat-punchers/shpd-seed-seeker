@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 
 /** web-v2's localStorage prefix (web-v2/src/config.ts). */
 export const STORAGE_PREFIX = 'seed-seeker-v2-'
@@ -26,4 +26,19 @@ export async function openApp(
     { prefix: STORAGE_PREFIX, entries: storage }
   )
   await page.goto('/')
+}
+
+/** Freeze the results before reading their order. */
+export async function settleSearchResults(
+  page: Page,
+  count = 2
+): Promise<void> {
+  await expect(page.getByTestId('result-row').nth(count - 1)).toBeVisible()
+  // The search can hit its result limit between rendering a row and cancelling.
+  await page
+    .getByRole('button', { name: 'Cancel', exact: true })
+    .evaluateAll(([button]) => {
+      if (button instanceof HTMLButtonElement) button.click()
+    })
+  await expect(page.getByText(/^(Cancelled|Completed)$/)).toBeVisible()
 }

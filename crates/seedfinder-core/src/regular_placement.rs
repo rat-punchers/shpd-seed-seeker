@@ -382,6 +382,10 @@ impl<'a, R: RoomPlacementRules> PaintedRegularPlacement<'a, R> {
 impl<R: RoomPlacementRules> RegularItemPlacement for PaintedRegularPlacement<'_, R> {
     type HeapHandle = PlacementHeapHandle;
 
+    fn fresh_journal(&self) -> bool {
+        self.level.journal.is_fresh()
+    }
+
     fn ebony_mimic_cell(&mut self, random: &mut RandomStack) -> i32 {
         let mut cells = Vec::new();
         if random.int_bound(2) == 0 {

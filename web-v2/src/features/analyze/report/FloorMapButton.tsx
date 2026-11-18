@@ -9,6 +9,7 @@ import { branchTitle } from './report-text'
 export interface ReportMapRun {
   seed: string
   challenges: readonly ChallengeName[]
+  lorePages?: boolean
   /** The selected Catalyst offer id, or null for No Trinket. */
   selectedTrinket: string | null
 }

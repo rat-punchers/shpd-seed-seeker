@@ -2,13 +2,19 @@
  * The one item description panel. Hovering a slot points it there; a click
  * pins it until the same slot is clicked again, Escape, or a click outside.
  */
-import type { ReportItem, ReportItemRef } from '../../../engine/types/report'
+import type {
+  ReportIdentity,
+  ReportItem,
+  ReportItemRef,
+} from '../../../engine/types/report'
+import type { ItemArt } from '../../../shared/sprites/sprites'
 
 const HIDE_MS = 160
 
-/** What the panel describes: a floor item, or a trinket with its role. */
+/** What the panel describes. */
 export type DetailSubject =
   | { kind: 'item'; item: ReportItem }
+  | { kind: 'identity'; identity: ReportIdentity; art: ItemArt }
   | { kind: 'trinket'; trinket: ReportItemRef; note: string }
 
 export interface ItemDetailPanel {

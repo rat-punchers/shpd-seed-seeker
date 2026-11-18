@@ -34,6 +34,7 @@ function IdentityGrid({
             scale={IDENTITY_SCALE}
             label={`${entry.name} (${entry.appearance.toLowerCase()})`}
             caption={entry.appearance.toLowerCase()}
+            identity={entry}
           />
         </li>
       ))}

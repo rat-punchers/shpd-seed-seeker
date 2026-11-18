@@ -2,16 +2,11 @@
  * Analyze's seed tabs: open, report, regenerate, close, restore.
  *
  * Persisted: each open seed with the context its report was asked with
- * (query, trinket, challenges), and the active tab. Reports are not stored;
+ * (query, trinket, challenges, journal), and the active tab. Reports are not stored;
  * a reload asks for them again.
  */
 import { CONFIG } from '../../config'
-import type {
-  ChallengeName,
-  QueryDocument,
-  SeedReport,
-  SeedReportRequest,
-} from '../../engine/types'
+import type { SeedReport, SeedReportRequest } from '../../engine/types'
 import { AppStore, persistentStore } from '../../shared/store/persistent'
 import type { AnalyzeRequest } from './handoff'
 import {
@@ -19,9 +14,15 @@ import {
   type ReportTask,
   requestReport,
 } from './report-client'
+import {
+  contextOf,
+  MAX_OPEN_SEEDS,
+  type RunSettings,
+  type SessionContext,
+  savedCodec,
+} from './session-context'
 
-/** The most tabs kept open; opening one more drops the oldest. */
-export const MAX_OPEN_SEEDS = 10
+export { MAX_OPEN_SEEDS } from './session-context'
 
 export type SessionStatus =
   | 'pending'
@@ -29,18 +30,6 @@ export type SessionStatus =
   | 'ready'
   | 'cancelled'
   | 'error'
-
-/** What a report is asked with, and what a reload restores. */
-export interface SessionContext {
-  /** A seed code (`ABC-DEF-GHI`) or daily date, as formatted for input. */
-  seed: string
-  query?: QueryDocument
-  /** A Catalyst offer id or `"none"`; absent lets the query choose. */
-  trinket?: string
-  challenges?: ChallengeName[]
-  /** The Find results tab this tab walks (J/K), named after it. */
-  results?: number
-}
 
 export interface SeedSession extends SessionContext {
   /** The tab id: the results tab it belongs to, else the seed as entered. */
@@ -50,26 +39,6 @@ export interface SeedSession extends SessionContext {
   report: SeedReport | null
   error: string | null
   startedAt: number | null
-}
-
-const savedCodec = {
-  encode: (value: SessionContext[]) => JSON.stringify(value),
-  decode: (text: string): SessionContext[] => {
-    try {
-      const parsed = JSON.parse(text) as unknown
-      if (!Array.isArray(parsed)) return []
-      return parsed
-        .filter(
-          (entry): entry is SessionContext =>
-            typeof entry === 'object' &&
-            entry !== null &&
-            typeof (entry as SessionContext).seed === 'string'
-        )
-        .slice(-MAX_OPEN_SEEDS)
-    } catch {
-      return []
-    }
-  },
 }
 
 export const $savedSeeds = persistentStore<SessionContext[]>(
@@ -101,17 +70,6 @@ export function sessionIdFor(seed: string, results?: number): string {
   return results === undefined
     ? seed.trim().toUpperCase()
     : `results-${results}`
-}
-
-function contextOf(session: SessionContext): SessionContext {
-  const { seed, query, trinket, challenges, results } = session
-  return {
-    seed,
-    ...(query ? { query } : {}),
-    ...(trinket ? { trinket } : {}),
-    ...(challenges?.length ? { challenges } : {}),
-    ...(results === undefined ? {} : { results }),
-  }
 }
 
 function newSession(context: SessionContext): SeedSession {
@@ -146,26 +104,27 @@ export function requestFor(session: SessionContext): SeedReportRequest {
 }
 
 /** Asks for the session's report; resolves once it lands or fails. */
-async function run(id: string): Promise<void> {
+async function run(id: string, settings?: RunSettings): Promise<void> {
   const session = findSession(id)
   if (!session) return
-  tasks.get(id)?.cancel()
-  const task = client(requestFor(session))
-  tasks.set(id, task)
+  cancelTask(id)
   patch(id, { status: 'loading', error: null, startedAt: Date.now() })
+  let task: ReportTask | undefined
   try {
+    task = client(requestFor({ ...session, ...settings }))
+    tasks.set(id, task)
     const report = await task.promise
     if (tasks.get(id) !== task) return
-    patch(id, { status: 'ready', report, error: null })
+    patch(id, { ...settings, status: 'ready', report, error: null })
   } catch (error) {
     if (tasks.get(id) !== task) return
     patch(id, {
-      status: 'error',
-      report: null,
+      status: settings ? 'ready' : 'error',
+      report: settings ? session.report : null,
       error: error instanceof Error ? error.message : String(error),
     })
   } finally {
-    if (tasks.get(id) === task) tasks.delete(id)
+    if (task && tasks.get(id) === task) tasks.delete(id)
   }
 }
 
@@ -177,13 +136,13 @@ function sameContext(a: SessionContext, b: SessionContext): boolean {
  * Opens a seed in a tab and reports it. An open seed is focused instead;
  * it reports again when asked with a different context or after a failure.
  */
-export async function openSeed(request: AnalyzeRequest): Promise<void> {
+export async function openSeed(
+  request: AnalyzeRequest & RunSettings
+): Promise<void> {
   const context = contextOf({
     ...request,
     seed: request.seed.trim(),
-    ...(request.query?.challenges?.length
-      ? { challenges: request.query.challenges }
-      : {}),
+    challenges: request.challenges ?? request.query?.challenges,
   })
   if (!context.seed) return
   const id = sessionIdFor(context.seed, context.results)
@@ -191,7 +150,11 @@ export async function openSeed(request: AnalyzeRequest): Promise<void> {
   $activeSeedId.set(id)
   if (existing) {
     const changed =
-      (request.query || request.trinket || request.results !== undefined) &&
+      (request.query ||
+        request.trinket ||
+        request.challenges ||
+        request.lorePages !== undefined ||
+        request.results !== undefined) &&
       !sameContext(existing, context)
     // Replace rather than patch: keys the new context leaves out must clear.
     if (changed)
@@ -269,6 +232,18 @@ export function selectTrinket(id: string, trinket: string): Promise<void> {
   if (!session || session.trinket === trinket) return Promise.resolve()
   patch(id, { trinket })
   return run(id)
+}
+
+/** Applies a journal or challenge change only when its report succeeds. */
+export function updateRunSettings(
+  id: string,
+  settings: RunSettings
+): Promise<void> {
+  const session = findSession(id)
+  if (session?.status !== 'ready' || !session.report) return Promise.resolve()
+  if (sameContext(session, { ...session, ...settings }))
+    return Promise.resolve()
+  return run(id, settings)
 }
 
 /** Restores the saved tabs and reports them one after another. */

@@ -1,13 +1,14 @@
 import { Badge } from '@seed-seeker/design/ui/badge'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
-import type { ReportItem } from '../../../engine/types/report'
-import { itemArt } from '../../../shared/sprites/sprites'
+import type { ReportIdentity, ReportItem } from '../../../engine/types/report'
+import { type ItemArt, itemArt } from '../../../shared/sprites/sprites'
 import { ItemSprite } from '../../../shared/ui/ItemSprite'
 import { ItemName } from './ItemName'
 import { ItemRangeDetails } from './ItemRangeDetails'
 import {
   cancelHideItemDetail,
+  type DetailSubject,
   getItemDetail,
   hideItemDetail,
   scheduleHideItemDetail,
@@ -75,6 +76,60 @@ export function ItemDetail({ item }: { item: ReportItem }) {
   )
 }
 
+function IdentityDetail({
+  identity,
+  art,
+}: {
+  identity: ReportIdentity
+  art: ItemArt
+}) {
+  return (
+    <div className="flex gap-3">
+      <div className="shrink-0">
+        <ItemSprite art={art} size={32} />
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <p className="text-popover-foreground font-semibold">{identity.name}</p>
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="font-medium">Unidentified appearance:</span>{' '}
+          <Badge variant="secondary" className="font-mono text-sm">
+            {identity.appearance}
+          </Badge>
+        </p>
+        {identity.description ? (
+          <p className="text-muted-foreground whitespace-pre-wrap">
+            {identity.description}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
+function describe(subject: DetailSubject) {
+  switch (subject.kind) {
+    case 'item':
+      return {
+        title: itemTitle(subject.item),
+        content: <ItemDetail item={subject.item} />,
+      }
+    case 'identity':
+      return {
+        title: subject.identity.name,
+        content: (
+          <IdentityDetail identity={subject.identity} art={subject.art} />
+        ),
+      }
+    case 'trinket':
+      return {
+        title: subject.trinket.name,
+        content: (
+          <TrinketDetail trinket={subject.trinket} note={subject.note} />
+        ),
+      }
+  }
+}
+
 function panelPosition(anchor: DOMRect) {
   const margin = 8
   const left = Math.min(
@@ -115,7 +170,11 @@ export function ItemDetailLayer() {
       if (!(target instanceof Element)) return
       if (current.anchor.contains(target)) return
       if (layerRef.current?.contains(target)) return
-      if (target.closest('[data-slot="item-box"], [data-slot="trinket-box"]'))
+      if (
+        target.closest(
+          '[data-slot="item-box"], [data-slot="trinket-box"], [data-slot="identity-box"]'
+        )
+      )
         return
       hideItemDetail()
     }
@@ -133,6 +192,7 @@ export function ItemDetailLayer() {
 
   if (!current) return null
   const place = panelPosition(current.anchor.getBoundingClientRect())
+  const { title, content } = describe(current.subject)
   // Portaled: inside the report it would add a spaced child to the page and
   // shift the scroll position the moment it opens.
   return createPortal(
@@ -140,24 +200,13 @@ export function ItemDetailLayer() {
       ref={layerRef}
       data-slot="item-detail"
       role="dialog"
-      aria-label={
-        current.subject.kind === 'item'
-          ? itemTitle(current.subject.item)
-          : current.subject.trinket.name
-      }
+      aria-label={title}
       className="bg-popover text-popover-foreground shadow-window inset-shadow-raised fixed z-50 max-h-80 overflow-y-auto rounded-lg border p-3.5 text-sm"
       style={{ width: PANEL_WIDTH, ...place }}
       onPointerEnter={cancelHideItemDetail}
       onPointerLeave={() => scheduleHideItemDetail(current.anchor)}
     >
-      {current.subject.kind === 'item' ? (
-        <ItemDetail item={current.subject.item} />
-      ) : (
-        <TrinketDetail
-          trinket={current.subject.trinket}
-          note={current.subject.note}
-        />
-      )}
+      {content}
     </div>,
     document.body
   )

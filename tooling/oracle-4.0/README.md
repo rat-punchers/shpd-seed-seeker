@@ -37,6 +37,7 @@ document on stdin.
 ```sh
 tooling/oracle-4.0/build.sh
 tooling/oracle-4.0/run.sh --seed AAA-AAA-AAA --floors 1 --format ndjson
+tooling/oracle-4.0/run.sh AAA-AAA-AAA 2,4,9 --fresh-journal
 tooling/oracle-4.0/run.sh --daily 2026-09-25 --floors 1 --format json
 tooling/oracle-4.0/run.sh SEE-EEE-EED 1,3-5 --format json
 tooling/oracle-4.0/run.sh AAA-AAA-AAA 6-9 --run-checkpoints
@@ -53,6 +54,10 @@ after every generated floor (selected or not). `--boss-skip-checkpoints`
 snapshots Generator, LimitedDrops, quest, room-queue and shop-dependent hero
 state around depths 5, 10, 15, 20 and 25. `--challenges N` sets the challenge
 mask.
+
+`--fresh-journal` resets the Adventurer's and Alchemy guides with the intro
+page read. The floor 2 entrance page can move between oracle runs because the
+game places it outside the seeded stream.
 
 `--vault` additionally builds the Imp's Vault (see below) after the main
 floors. If the highest requested depth is below the Imp's floor, the oracle

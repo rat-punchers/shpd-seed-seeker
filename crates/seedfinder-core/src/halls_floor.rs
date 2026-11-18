@@ -621,7 +621,7 @@ pub(crate) fn paint_halls_floor_filtered(
         next_choice_group: 0,
     });
     let shared_generator = SharedGenerator(&generator);
-    let shared_prizes = SharedPrizes(&prizes);
+    let shared_prizes = SharedPrizes(&prizes, run.journal);
     let content = SharedSewerContent {
         depth: i32::try_from(depth).expect("Halls depth fits Java int"),
         generator: shared_generator,
@@ -646,6 +646,7 @@ pub(crate) fn paint_halls_floor_filtered(
 
     let mut rooms = built.rooms;
     let mut level = Level::new(depth, prepared.feeling);
+    level.journal = run.journal;
     level.plants_enabled = !run
         .challenges
         .contains(crate::challenges::Challenges::NO_HERBALISM);

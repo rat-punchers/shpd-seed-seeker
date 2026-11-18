@@ -64,6 +64,9 @@ export function FloorMapDialog({
           <DialogDescription>
             Items, mobs, and traps as generated for this seed. Secret rooms,
             doors and traps fade in and out. Hover or tap a tile to inspect it.
+            {request.lorePages && request.depth === 2
+              ? ' An entrance guide page, when present, uses an example location. Its position and affected loot can vary.'
+              : ''}
           </DialogDescription>
         </DialogHeader>
         <MapBody

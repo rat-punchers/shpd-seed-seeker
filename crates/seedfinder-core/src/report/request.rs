@@ -16,6 +16,8 @@ struct Request {
     seed: String,
     #[serde(default)]
     challenges: Vec<String>,
+    #[serde(default, rename = "lorePages")]
+    lore_pages: bool,
     /// Absent resolves from the query; "none" explicitly selects No Trinket.
     #[serde(default)]
     trinket: Option<String>,
@@ -28,11 +30,12 @@ struct Request {
 pub struct ReportRequest {
     pub seed: DungeonSeed,
     pub challenges: Challenges,
+    pub lore_pages: bool,
     pub selected_trinket: Option<ItemId>,
     pub query: Option<SearchQuery>,
 }
 
-/// Reads `{seed, challenges?, trinket?, query?}`. The seed is a seed code in
+/// Reads `{seed, challenges?, lorePages?, trinket?, query?}`. The seed is a seed code in
 /// any grouping or case, or a daily date.
 ///
 /// # Errors
@@ -52,6 +55,7 @@ pub fn decode_request(input: &str) -> Result<ReportRequest, String> {
     Ok(ReportRequest {
         seed,
         challenges: run.challenges,
+        lore_pages: request.lore_pages,
         selected_trinket: run.selected_trinket,
         query: run.query,
     })
@@ -63,12 +67,16 @@ impl ReportRequest {
     /// # Errors
     /// Reports a failed world generation.
     pub fn generate(&self) -> Result<super::SeedReport, String> {
-        let observed = super::observe::observe(self.seed, self.challenges, self.selected_trinket)?;
-        Ok(super::build(
-            &observed,
-            self.selected_trinket,
-            self.query.as_ref(),
-        ))
+        let journal = crate::journal::JournalProfile::from_lore_pages(self.lore_pages);
+        let observed =
+            super::observe::observe(self.seed, self.challenges, self.selected_trinket, journal)?;
+        let mut report = super::build(&observed, self.selected_trinket, self.query.as_ref());
+        if journal.is_fresh() {
+            report
+                .notes
+                .push(crate::journal::FRESH_JOURNAL_NOTE.to_owned());
+        }
+        Ok(report)
     }
 }
 
