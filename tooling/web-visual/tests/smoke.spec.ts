@@ -31,8 +31,10 @@ for (const viewport of VIEWPORTS) {
     const subtitle = page
       .getByRole('complementary')
       .getByText('Shattered Pixel Dungeon v4.0.2', { exact: true })
+    const theme = page.getByRole('button', { name: /^Theme:/ })
     await expect(title).toBeVisible()
     await expect(subtitle).toBeVisible()
+    await expect(theme).toBeVisible()
     const fonts = await title.evaluate(async (node) => {
       await document.fonts.ready
       const title = getComputedStyle(node)
@@ -44,11 +46,18 @@ for (const viewport of VIEWPORTS) {
       }
     })
     expect(fonts.family).toContain('SPD Pixel')
-    expect(Number.parseFloat(fonts.title)).toBeGreaterThan(20.48)
-    expect(Number.parseFloat(fonts.subtitle)).toBeLessThan(16)
-    expect((await subtitle.boundingBox())?.y).toBeGreaterThan(
-      (await title.boundingBox())?.y ?? 0
+    expect(Number.parseFloat(fonts.title)).toBeGreaterThan(
+      Number.parseFloat(fonts.subtitle)
     )
+    const [heading, info, toggle] = await Promise.all([
+      title.boundingBox(),
+      subtitle.boundingBox(),
+      theme.boundingBox(),
+    ])
+    if (!heading || !info || !toggle) throw new Error('Branding is hidden')
+    expect(info.y).toBeGreaterThanOrEqual(heading.y + heading.height)
+    expect(toggle.x).toBeGreaterThanOrEqual(heading.x + heading.width)
+    expect(toggle.y).toBeLessThan(info.y)
     // Nothing spills past the viewport sideways.
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - window.innerWidth

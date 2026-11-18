@@ -33,14 +33,14 @@ export function AppSidebar() {
               alt=""
               width={40}
               height={40}
-              className="pixelated row-span-2 size-10"
+              className="pixelated size-10"
             />
-            <h1 className="font-pixel text-px-2 col-span-2">
-              {CONFIG.appName}
-            </h1>
-            <p className="text-muted-foreground text-xs leading-snug">
-              Shattered Pixel Dungeon v{SHPD_VERSION}
-            </p>
+            <div className="min-w-0">
+              <h1 className="font-pixel text-px-1">{CONFIG.appName}</h1>
+              <p className="text-muted-foreground text-xs leading-snug">
+                Shattered Pixel Dungeon v{SHPD_VERSION}
+              </p>
+            </div>
             <ThemeToggle />
           </div>
 
