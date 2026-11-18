@@ -74,7 +74,7 @@ maps with the same `lorePages` and challenge settings as the report.
 | `sections` | string[] | Filled sections, in the order of the table above. |
 | `seed` | object | `code` (`XXX-XXX-XXX` or the daily date), `value` (the numeric seed), `daily`. |
 | `query` | object | Present only with a request query: `matchedRequirements`, `totalRequirements`. |
-| `identities` | object | `scrolls`, `potions`, `rings`: twelve `{name, appearance, spriteIndex, icon?}` each, in the game's class order. `icon` is the class's type glyph in `item_icons.png`, `[x, y, width, height]`, drawn over the appearance at its upper right. |
+| `identities` | object | `scrolls`, `potions`, `rings`: twelve `{name, appearance, description?, spriteIndex, icon?}` each, in the game's class order. `description` is the game's examine text. `icon` is the class's type glyph in `item_icons.png`, `[x, y, width, height]`, drawn over the appearance at its upper right. |
 | `ringGems` | number[12] | The gem each ring class is drawn with, in catalog ring order. |
 | `trinkets` | object | See below. |
 | `floors` | object[] | Floors 1–24 in depth order. See below. |

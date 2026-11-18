@@ -66,6 +66,8 @@ export interface SeedReport {
 export interface ReportIdentity {
   name: string
   appearance: string
+  /** The game's examine text. */
+  description?: string
   spriteIndex: number
   /** The class's type glyph in `item_icons.png` (x, y, w, h). */
   icon?: [number, number, number, number]

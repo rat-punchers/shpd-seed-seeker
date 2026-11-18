@@ -27,7 +27,7 @@ test('a typed seed opens a tab with the engine report', async ({ page }) => {
   ).toHaveAttribute('aria-selected', 'true')
   await expect(seedTitle(page)).toHaveText('AAA-AAA-AAA')
   await expect(seedField(page)).toHaveValue('')
-  await expect(page.locator('[data-identities] [role="img"]')).toHaveCount(36)
+  await expect(page.locator('[data-identities] button')).toHaveCount(36)
   await expect(
     page.getByRole('navigation', { name: 'Floors' }).getByRole('button')
   ).toHaveCount(24)

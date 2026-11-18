@@ -64,7 +64,7 @@ describe('a real report', () => {
         all('[data-quest]').map((card) => card.getAttribute('data-quest'))
       ).toEqual(report.quests.map((quest) => quest.quest))
       const identities = container.querySelector('[data-identities]')
-      expect(identities?.querySelectorAll('[role="img"]')).toHaveLength(36)
+      expect(identities?.querySelectorAll('button')).toHaveLength(36)
       // The Catalyst choice sits on the floor the trinket is picked on.
       const band = container.querySelector('[data-trinket-choice]')
       expect(

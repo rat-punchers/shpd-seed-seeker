@@ -162,6 +162,9 @@ pub struct Identities {
 pub struct Identity {
     pub name: String,
     pub appearance: String,
+    /// The game's examine text.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
     pub sprite_index: u16,
     /// The class's type glyph in `item_icons.png` (x, y, width, height).
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -288,6 +291,7 @@ fn identities(world: &GeneratedWorld) -> Identities {
             .map(|entry| Identity {
                 name: entry.name.to_owned(),
                 appearance: entry.appearance.to_owned(),
+                description: item::description(entry.name),
                 sprite_index: entry.sprite_index,
                 icon: crate::level_map::item_icon(entry.name),
             })

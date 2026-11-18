@@ -34,6 +34,7 @@
       {
         "name": "Scroll of upgrade",
         "appearance": "KAUNAN",
+        "description": "This scroll will upgrade a single item or set of thrown weapons. Wands will increase in power and number of charges, weapons and armor will deal and block more damage, thrown weapon sets will be fully repaired and more durable, and the effects of rings will intensify.\n\nIt can even weaken or sometimes totally dispel curses, though it is not as potent as a scroll of remove curse. Unfortunately, the upgrading magic can also erase enchantments or glyphs on higher level gear.",
         "spriteIndex": 304,
         "icon": [
           0,
@@ -45,6 +46,7 @@
       {
         "name": "Scroll of identify",
         "appearance": "LAGUZ",
+        "description": "This scroll permanently reveals all of the secrets of a single item.",
         "spriteIndex": 306,
         "icon": [
           8,
@@ -56,6 +58,7 @@
       {
         "name": "Scroll of remove curse",
         "appearance": "ISAZ",
+        "description": "The incantation on this scroll will instantly strip any curses from a single weapon, ring, wand, armor, or artifact.",
         "spriteIndex": 310,
         "icon": [
           16,
@@ -67,6 +70,7 @@
       {
         "name": "Scroll of mirror image",
         "appearance": "MANNAZ",
+        "description": "The incantation on this scroll will create two illusory twins of the reader. These mirror images act as weaker clones of the reader, and will chase down their enemies. They have no durability however, and will fade upon taking damage.",
         "spriteIndex": 311,
         "icon": [
           24,
@@ -78,6 +82,7 @@
       {
         "name": "Scroll of recharging",
         "appearance": "NAUDIZ",
+        "description": "The raw magical power bound up in this parchment will charge up all the user's wands over time when released.",
         "spriteIndex": 312,
         "icon": [
           32,
@@ -89,6 +94,7 @@
       {
         "name": "Scroll of teleportation",
         "appearance": "TIWAZ",
+        "description": "The spell on this parchment instantly transports the reader to a different location on the dungeon level. The scroll prioritizes areas the reader hasn't been to before, though it is not able to teleport past locked doors or barricades. It can, however, reveal hidden doors that lead to new areas.",
         "spriteIndex": 315,
         "icon": [
           40,
@@ -100,6 +106,7 @@
       {
         "name": "Scroll of lullaby",
         "appearance": "RAIDO",
+        "description": "Reading this scroll emits a soothing melody which will lull all who hear it into a deep magical sleep. For the reader and their allies the sleep is restorative.",
         "spriteIndex": 309,
         "icon": [
           48,
@@ -111,6 +118,7 @@
       {
         "name": "Scroll of magic mapping",
         "appearance": "BERKANAN",
+        "description": "When this scroll is read, an image of crystal clarity will be etched into your memory, alerting you to the precise layout of the level and revealing all hidden secrets. The locations of items and creatures will remain unknown.",
         "spriteIndex": 313,
         "icon": [
           56,
@@ -122,6 +130,7 @@
       {
         "name": "Scroll of rage",
         "appearance": "YNGVI",
+        "description": "When read aloud, this scroll will unleash a great roar that draws all enemies to the reader, and enrages nearby ones.",
         "spriteIndex": 307,
         "icon": [
           64,
@@ -133,6 +142,7 @@
       {
         "name": "Scroll of retribution",
         "appearance": "SOWILO",
+        "description": "This scroll contains destructive energy which channels the reader's suffering outward into a blast of power. The weaker the reader is, the more damage they will deal. At very low health this scroll can kill most enemies instantly.\n\nUsing the scroll takes a toll on the user however, blinding and weakening them.",
         "spriteIndex": 305,
         "icon": [
           72,
@@ -144,6 +154,7 @@
       {
         "name": "Scroll of terror",
         "appearance": "ODAL",
+        "description": "When read, this scroll will emit a flash of red light that will overwhelm all enemies in your field of view with terror, and they will turn and flee. Attacking a fleeing enemy will shorten the effect.",
         "spriteIndex": 314,
         "icon": [
           80,
@@ -155,6 +166,7 @@
       {
         "name": "Scroll of transmutation",
         "appearance": "GYFU",
+        "description": "This scroll contains powerful transmutation magic. When used on an eligible item it will transform it into a different item of the same type. The magic will even preserve upgrades, enchantments, and glyphs. Scrolls and potions will be transmuted into their exotic equivalent, and vice-versa.",
         "spriteIndex": 308,
         "icon": [
           88,
@@ -168,6 +180,7 @@
       {
         "name": "Potion of strength",
         "appearance": "Crimson",
+        "description": "This powerful liquid will course through your muscles, permanently increasing your strength by one point.",
         "spriteIndex": 352,
         "icon": [
           0,
@@ -179,6 +192,7 @@
       {
         "name": "Potion of healing",
         "appearance": "Indigo",
+        "description": "This elixir will rapidly restore your health and instantly cure many ailments.",
         "spriteIndex": 358,
         "icon": [
           8,
@@ -190,6 +204,7 @@
       {
         "name": "Potion of mind vision",
         "appearance": "Turquoise",
+        "description": "After drinking this, your mind will become attuned to the psychic signature of distant creatures, enabling you to sense biological presences through walls. Also this potion will permit you to see through nearby walls and doors.",
         "spriteIndex": 356,
         "icon": [
           16,
@@ -201,6 +216,7 @@
       {
         "name": "Potion of frost",
         "appearance": "Charcoal",
+        "description": "The chemical contained in this potion will evaporate into a freezing cloud upon exposure to open air.",
         "spriteIndex": 361,
         "icon": [
           24,
@@ -212,6 +228,7 @@
       {
         "name": "Potion of liquid flame",
         "appearance": "Magenta",
+        "description": "This flask contains an unstable compound which will burst violently into flame upon exposure to open air.",
         "spriteIndex": 359,
         "icon": [
           32,
@@ -223,6 +240,7 @@
       {
         "name": "Potion of toxic gas",
         "appearance": "Amber",
+        "description": "Uncorking or shattering this pressurized glass will cause its contents to explode into a deadly cloud of toxic green gas. You might choose to fling this potion at distant enemies instead of uncorking it by hand.",
         "spriteIndex": 353,
         "icon": [
           40,
@@ -234,6 +252,7 @@
       {
         "name": "Potion of haste",
         "appearance": "Ivory",
+        "description": "Drinking this oddly sweet liquid will imbue you with tremendous energy for a short time, allowing you to run at high speeds.",
         "spriteIndex": 363,
         "icon": [
           48,
@@ -245,6 +264,7 @@
       {
         "name": "Potion of invisibility",
         "appearance": "Golden",
+        "description": "Drinking this potion will render you temporarily invisible. While invisible, enemies will be unable to see you. Physical attacks and magical effects (such as scrolls and wands) will immediately cancel invisibility.",
         "spriteIndex": 354,
         "icon": [
           56,
@@ -256,6 +276,7 @@
       {
         "name": "Potion of levitation",
         "appearance": "Silver",
+        "description": "Drinking this curious liquid will cause you to hover in the air, able to drift effortlessly over traps and pits. Throwing this potion will create a cloud of unrefined gas, disorienting anything caught in it.",
         "spriteIndex": 362,
         "icon": [
           64,
@@ -267,6 +288,7 @@
       {
         "name": "Potion of paralytic gas",
         "appearance": "Azure",
+        "description": "Upon exposure to open air, the liquid in this flask will vaporize into a numbing yellow haze. Anyone who inhales the cloud will be paralyzed instantly, unable to move for some time after the cloud dissipates. This item can be thrown at distant enemies to catch them within the effect of the gas.",
         "spriteIndex": 357,
         "icon": [
           72,
@@ -278,6 +300,7 @@
       {
         "name": "Potion of purity",
         "appearance": "Jade",
+        "description": "This magical reagent will quickly neutralize all harmful area-bound effects in a large area. Drinking it will give you temporary immunity to such effects.",
         "spriteIndex": 355,
         "icon": [
           80,
@@ -289,6 +312,7 @@
       {
         "name": "Potion of experience",
         "appearance": "Bistre",
+        "description": "The storied experiences of multitudes of battles reduced to liquid form, this draught will instantly raise your experience level.",
         "spriteIndex": 360,
         "icon": [
           88,
@@ -302,6 +326,7 @@
       {
         "name": "Ring of accuracy",
         "appearance": "Ruby",
+        "description": "This ring increases your focus, making it easier for your attacks to find their mark. A cursed ring will instead make it harder for your attacks to connect.",
         "spriteIndex": 225,
         "icon": [
           0,
@@ -313,6 +338,7 @@
       {
         "name": "Ring of arcana",
         "appearance": "Quartz",
+        "description": "This ring enhances magical enchantments on weapons and glyphs on armor, including curses! It first increases activation chance, and then increases the strength of the effect once activation chance is 100%. A cursed ring will instead weaken enchantments, glyphs, and curses.",
         "spriteIndex": 233,
         "icon": [
           8,
@@ -324,6 +350,7 @@
       {
         "name": "Ring of elements",
         "appearance": "Tourmaline",
+        "description": "This ring provides resistance to most elemental and magical effects, decreasing damage and debuff duration. Naturally a cursed ring will instead worsen these effects.",
         "spriteIndex": 230,
         "icon": [
           16,
@@ -335,6 +362,7 @@
       {
         "name": "Ring of energy",
         "appearance": "Onyx",
+        "description": "Your magical equipment will recharge more quickly in the arcane field that radiates from this ring. A cursed ring will instead slow recharge.",
         "spriteIndex": 228,
         "icon": [
           24,
@@ -346,6 +374,7 @@
       {
         "name": "Ring of evasion",
         "appearance": "Sapphire",
+        "description": "This ring quickens the wearer's reactions, making it harder to land blows on them. A cursed ring will instead make the user easier to strike.",
         "spriteIndex": 231,
         "icon": [
           32,
@@ -357,6 +386,7 @@
       {
         "name": "Ring of force",
         "appearance": "Garnet",
+        "description": "This ring enhances the force of the wearer's melee blows. This extra power is fairly weak when wielding weapons, but an unarmed attack will be made much stronger. A cursed ring will instead weaken the wearer's blows.",
         "spriteIndex": 224,
         "icon": [
           40,
@@ -368,6 +398,7 @@
       {
         "name": "Ring of furor",
         "appearance": "Agate",
+        "description": "This ring grants the wearer an inner fury, allowing them to attack more rapidly. A cursed ring will instead slow the wearer's speed of attack.",
         "spriteIndex": 234,
         "icon": [
           48,
@@ -379,6 +410,7 @@
       {
         "name": "Ring of haste",
         "appearance": "Diamond",
+        "description": "This ring reduces the stress of movement on the wearer, allowing them to run at superhuman speeds. A cursed ring will instead weigh the wearer down.",
         "spriteIndex": 235,
         "icon": [
           56,
@@ -390,6 +422,7 @@
       {
         "name": "Ring of might",
         "appearance": "Topaz",
+        "description": "This ring enhances the physical traits of the wearer, granting them greater physical strength and constitution. A cursed ring will weaken the wearer.",
         "spriteIndex": 226,
         "icon": [
           64,
@@ -401,6 +434,7 @@
       {
         "name": "Ring of sharpshooting",
         "appearance": "Amethyst",
+        "description": "This ring enhances the wearer's precision and aim, which will make all projectile weapons more damaging and durable. A cursed ring will have the opposite effect.",
         "spriteIndex": 232,
         "icon": [
           72,
@@ -412,6 +446,7 @@
       {
         "name": "Ring of tenacity",
         "appearance": "Opal",
+        "description": "When worn, this ring will allow the wearer to resist normally mortal strikes. The more injured the user is, the more resistant they will be to damage. A cursed ring will instead make it easier for enemies to execute the wearer.",
         "spriteIndex": 229,
         "icon": [
           80,
@@ -423,6 +458,7 @@
       {
         "name": "Ring of wealth",
         "appearance": "Emerald",
+        "description": "This ring acts like a magnet for treasure, increasing the likelihood that enemies and containers will be carrying valuable items. A cursed ring will instead reduce your chance of receiving loot.",
         "spriteIndex": 227,
         "icon": [
           88,
