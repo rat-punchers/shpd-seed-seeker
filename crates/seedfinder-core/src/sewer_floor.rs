@@ -480,7 +480,7 @@ pub(crate) fn paint_sewer_floor_filtered(
         next_choice_group: 0,
     });
     let shared_generator = SharedGenerator(&generator);
-    let shared_prizes = SharedPrizes(&prizes);
+    let shared_prizes = SharedPrizes(&prizes, run.journal);
     let content = SharedSewerContent {
         depth: i32::try_from(depth).expect("Sewer depth fits Java int"),
         generator: shared_generator,
@@ -506,6 +506,8 @@ pub(crate) fn paint_sewer_floor_filtered(
 
     let mut rooms = built.rooms;
     let mut level = Level::new(depth, prepared.feeling);
+    level.journal = run.journal;
+    level.guide_searching_found = !run.journal.is_fresh();
     level.plants_enabled = !run
         .challenges
         .contains(crate::challenges::Challenges::NO_HERBALISM);
@@ -835,7 +837,10 @@ impl QuestGeneratorContext for SharedGenerator<'_> {
 }
 
 #[derive(Clone, Copy)]
-pub(crate) struct SharedPrizes<'a>(pub(crate) &'a RefCell<PrizePool>);
+pub(crate) struct SharedPrizes<'a>(
+    pub(crate) &'a RefCell<PrizePool>,
+    pub(crate) crate::journal::JournalProfile,
+);
 
 impl SpecialPrizeContext for SharedPrizes<'_> {
     fn take_prize_item(&mut self, random: &mut RandomStack) -> Option<SpecialItem> {
@@ -922,7 +927,7 @@ impl ForcedPrizeContext for SharedPrizes<'_> {
     }
 
     fn is_alchemy_page_found(&self, _page: AlchemyGuidePage) -> bool {
-        true
+        !self.1.is_fresh()
     }
 }
 

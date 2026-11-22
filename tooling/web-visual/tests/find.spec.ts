@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test'
-import { openApp } from './helpers/app'
+import { openApp, settleSearchResults } from './helpers/app'
 import {
   collectBrowserErrors,
   expectNoBrowserErrors,
@@ -22,10 +22,7 @@ test('the first match previews beside the list and a click previews another', as
   await editItem(page, 1, { item: 'Any ring', floor: 24 })
   await page.getByRole('button', { name: 'Find', exact: true }).click()
   const second = page.getByTestId('result-row').nth(1)
-  await expect(second).toBeVisible()
-  // Stop well before the result limit: filling it takes over 15 s on CI.
-  await page.getByRole('button', { name: 'Cancel' }).click()
-  await expect(page.getByText('Cancelled', { exact: true })).toBeVisible()
+  await settleSearchResults(page)
 
   const first = page.getByTestId('result-row').first()
   const code = (await first.getByRole('heading').textContent()) ?? ''

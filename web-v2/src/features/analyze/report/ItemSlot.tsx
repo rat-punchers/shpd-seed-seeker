@@ -2,7 +2,7 @@ import { formatLevel, tierClass } from '@seed-seeker/design/spd/item-slot'
 import { cn } from '@seed-seeker/design/utils'
 import type { ReactNode } from 'react'
 import { useRef } from 'react'
-import type { ReportItem } from '../../../engine/types/report'
+import type { ReportIdentity, ReportItem } from '../../../engine/types/report'
 import {
   type ItemArt,
   itemArt,
@@ -22,29 +22,29 @@ function slotSize(scale: number) {
   return 17 * scale + 8
 }
 
-/** One sprite in a recessed slot, without the item behaviour. */
+/** Recessed slot for a preview sprite or an inspectable identity. */
 export function SpriteSlot({
   art,
   label,
   scale = 2,
   caption,
   children,
+  identity,
 }: {
   art: ItemArt
   label: string
   scale?: number
   caption?: string
   children?: ReactNode
+  identity?: ReportIdentity
 }) {
+  const ref = useRef<HTMLButtonElement>(null)
   const size = slotSize(scale)
-  return (
-    <span
-      role="img"
-      aria-label={label}
-      title={label}
-      className="bg-muted inset-shadow-recessed relative inline-grid shrink-0 place-items-center border"
-      style={{ width: size, height: size }}
-    >
+  const className =
+    'bg-muted inset-shadow-recessed relative inline-grid shrink-0 place-items-center border'
+  const style = { width: size, height: size }
+  const contents = (
+    <>
       <ItemSprite art={art} size={16 * scale} />
       {children}
       {caption ? (
@@ -52,7 +52,40 @@ export function SpriteSlot({
           {caption}
         </span>
       ) : null}
-    </span>
+    </>
+  )
+  if (!identity) {
+    return (
+      <span
+        role="img"
+        aria-label={label}
+        title={label}
+        className={className}
+        style={style}
+      >
+        {contents}
+      </span>
+    )
+  }
+  const subject = { kind: 'identity', identity, art } as const
+  return (
+    <button
+      ref={ref}
+      type="button"
+      data-slot="identity-box"
+      aria-label={label}
+      aria-haspopup="dialog"
+      className={cn(
+        className,
+        'cursor-pointer p-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring'
+      )}
+      style={style}
+      onPointerEnter={() => ref.current && showItemDetail(ref.current, subject)}
+      onPointerLeave={() => ref.current && scheduleHideItemDetail(ref.current)}
+      onClick={() => ref.current && togglePinItemDetail(ref.current, subject)}
+    >
+      {contents}
+    </button>
   )
 }
 

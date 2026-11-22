@@ -23,9 +23,41 @@ for (const viewport of VIEWPORTS) {
     await openApp(page)
 
     await expect(page).toHaveTitle('Seed Seeker')
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'Seed Seeker · SHPD v4.0.2' })
-    ).toBeVisible()
+    const title = page.getByRole('heading', {
+      level: 1,
+      name: 'Seed Seeker',
+      exact: true,
+    })
+    const subtitle = page
+      .getByRole('complementary')
+      .getByText('Shattered Pixel Dungeon v4.0.2', { exact: true })
+    const theme = page.getByRole('button', { name: /^Theme:/ })
+    await expect(title).toBeVisible()
+    await expect(subtitle).toBeVisible()
+    await expect(theme).toBeVisible()
+    const fonts = await title.evaluate(async (node) => {
+      await document.fonts.ready
+      const title = getComputedStyle(node)
+      const subtitle = getComputedStyle(node.nextElementSibling as Element)
+      return {
+        family: title.fontFamily,
+        title: title.fontSize,
+        subtitle: subtitle.fontSize,
+      }
+    })
+    expect(fonts.family).toContain('SPD Pixel')
+    expect(Number.parseFloat(fonts.title)).toBeGreaterThan(
+      Number.parseFloat(fonts.subtitle)
+    )
+    const [heading, info, toggle] = await Promise.all([
+      title.boundingBox(),
+      subtitle.boundingBox(),
+      theme.boundingBox(),
+    ])
+    if (!heading || !info || !toggle) throw new Error('Branding is hidden')
+    expect(info.y).toBeGreaterThanOrEqual(heading.y + heading.height)
+    expect(toggle.x).toBeGreaterThanOrEqual(heading.x + heading.width)
+    expect(toggle.y).toBeLessThan(info.y)
     // Nothing spills past the viewport sideways.
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - window.innerWidth

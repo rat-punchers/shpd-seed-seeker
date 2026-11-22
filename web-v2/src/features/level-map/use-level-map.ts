@@ -27,6 +27,7 @@ export function useLevelMap(request: LevelMapRequest): {
       depth: number
       branch: number
       challenges: LevelMapRequest['challenges']
+      lorePages?: boolean
       trinket: string
     }
     requestLevelMap({

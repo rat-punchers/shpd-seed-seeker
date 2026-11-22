@@ -139,6 +139,10 @@ pub enum RegularMimicKind {
 pub trait RegularItemPlacement {
     type HeapHandle;
 
+    fn fresh_journal(&self) -> bool {
+        false
+    }
+
     fn ebony_mimic_cell(&mut self, random: &mut RandomStack) -> i32 {
         self.random_drop_cell(random, DropCellKind::StandardRoom)
     }
@@ -828,7 +832,19 @@ fn consume_isolated_streams<P: RegularItemPlacement>(
                     );
                 }
             }
-            IsolatedItemStreamKind::LorePages if depth == 24 => {
+            IsolatedItemStreamKind::GuidePages
+                if placement.fresh_journal() && random.float() < 0.25 * f32::from(depth - 1) =>
+            {
+                place_queued_item(
+                    depth,
+                    random,
+                    placement,
+                    RegularItem::Queued(QueuedItemKind::Other("GuidePage")),
+                    records,
+                    world_items,
+                );
+            }
+            IsolatedItemStreamKind::LorePages if depth == 24 && !placement.fresh_journal() => {
                 // v4.0.0 leaves HALLS_KING's "attrition" page unfound even in
                 // debug journal defaults. With 5/6 pages read its first
                 // eligible floor is 21 + round(3 * 5/6) = 24.

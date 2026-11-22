@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
@@ -141,8 +142,12 @@ public final class ParityOracle {
 		Dungeon.initSeed();
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
-		// Preserve v4.0.2's debug journal defaults: the Halls "attrition" page
-		// remains unfound and is generated on floor 24, matching the engine.
+		if (options.freshJournal) {
+			for (Document document : Arrays.asList(Document.ADVENTURERS_GUIDE, Document.ALCHEMY_GUIDE)) {
+				for (String page : document.pageNames()) document.deletePage(page);
+			}
+			Document.ADVENTURERS_GUIDE.readPage(Document.GUIDE_INTRO);
+		}
 
 		output.emit(runInitRecord(options));
 
@@ -1037,6 +1042,7 @@ public final class ParityOracle {
 		System.out.println("Usage: parity-oracle (--seed XXX-XXX-XXX | --daily YYYY-MM-DD) [--floors LIST] [--format ndjson|json]");
 		System.out.println("  --floors 1,3-5     Generate through the highest depth and emit the selected depths (0: run init only)");
 		System.out.println("  --challenges N     Challenge bit mask (default: 0)");
+		System.out.println("  --fresh-journal   Reset guide and alchemy pages, with the intro page read");
 		System.out.println("  --run-checkpoints  Emit a Generator-state hash after every generated floor");
 		System.out.println("  --boss-skip-checkpoints  Compare all persistent state around boss floors");
 		System.out.println("  --vault            Also build the Imp's Vault (branch 1) after the main floors");
@@ -1141,6 +1147,7 @@ public final class ParityOracle {
 		boolean runCheckpoints;
 		boolean bossSkipCheckpoints;
 		boolean vault;
+		boolean freshJournal;
 		boolean help;
 
 		static Options parse(String[] args) {
@@ -1162,6 +1169,8 @@ public final class ParityOracle {
                     result.acquireHourglass = true;
                 } else if ("--vault".equals(arg)) {
 					result.vault = true;
+				} else if ("--fresh-journal".equals(arg)) {
+					result.freshJournal = true;
 				} else if ("--daily".equals(arg)) {
                     result.dailyDate = requireValue(args, ++i, arg);
                 } else if ("--seed".equals(arg)) {

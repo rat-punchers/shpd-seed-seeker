@@ -27,21 +27,20 @@ export function AppSidebar() {
     <aside className="border-border bg-sidebar text-sidebar-foreground lg:relative lg:w-80 lg:shrink-0 lg:border-r">
       <div className="lg:absolute lg:inset-0">
         <div className="flex flex-col gap-4 p-4 lg:sticky lg:top-0 lg:h-svh lg:max-h-full">
-          <div className="flex items-center gap-3">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3">
             <img
               src="/favicon.svg"
               alt=""
               width={40}
               height={40}
-              className="pixelated size-10 shrink-0"
+              className="pixelated size-10"
             />
-            <h1 className="font-pixel text-px-1 min-w-0 flex-1">
-              {CONFIG.appName}
-              <span className="text-muted-foreground"> · </span>
-              <span className="text-muted-foreground">
-                SHPD v{SHPD_VERSION}
-              </span>
-            </h1>
+            <div className="min-w-0">
+              <h1 className="font-pixel text-px-1">{CONFIG.appName}</h1>
+              <p className="text-muted-foreground text-xs leading-snug">
+                Shattered Pixel Dungeon v{SHPD_VERSION}
+              </p>
+            </div>
             <ThemeToggle />
           </div>
 
