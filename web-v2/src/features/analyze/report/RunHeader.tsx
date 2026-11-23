@@ -1,18 +1,27 @@
 import { CheckIcon, CopyIcon } from '@phosphor-icons/react'
 import { Badge } from '@seed-seeker/design/ui/badge'
 import { Button } from '@seed-seeker/design/ui/button'
-import { cn } from '@seed-seeker/design/utils'
 import { useEffect, useState } from 'react'
 import type { ChallengeName, SeedReport } from '../../../engine/types'
 import { GameWindow } from '../../../shared/ui/GameWindow'
+import { seedPath } from '../seed-link'
 import { IdentitiesPanel } from './IdentitiesPanel'
 import { RunSettings, type RunSettingsChoice } from './RunSettings'
 import { hasSection } from './report-text'
+import { ShareSeedButton } from './ShareSeedButton'
 
 const COPIED_MS = 2000
 
 /** The seed in the game's pixel font and window frame, with a copy action. */
-function SeedTitle({ report }: { report: SeedReport }) {
+function SeedTitle({
+  report,
+  sharePath,
+  shareDisabled,
+}: {
+  report: SeedReport
+  sharePath: string
+  shareDisabled?: boolean
+}) {
   const text = report.seed.code
   const query = report.query
   const complete = query?.matchedRequirements === query?.totalRequirements
@@ -51,32 +60,18 @@ function SeedTitle({ report }: { report: SeedReport }) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size="icon-sm"
             onClick={() => void copy()}
             aria-label={copied ? `Copied ${text}` : `Copy seed ${text}`}
+            title={copied ? 'Copied seed' : 'Copy seed'}
           >
-            {copied ? (
-              <CheckIcon data-icon="inline-start" weight="bold" />
-            ) : (
-              <CopyIcon data-icon="inline-start" />
-            )}
-            {/* Both labels share one cell so the button keeps the wider width. */}
-            <span className="grid">
-              <span
-                className={cn('col-start-1 row-start-1', copied && 'invisible')}
-              >
-                Copy seed
-              </span>
-              <span
-                className={cn(
-                  'col-start-1 row-start-1',
-                  !copied && 'invisible'
-                )}
-              >
-                Copied
-              </span>
-            </span>
+            {copied ? <CheckIcon weight="bold" /> : <CopyIcon />}
           </Button>
+          <ShareSeedButton
+            seed={text}
+            path={sharePath}
+            disabled={shareDisabled}
+          />
         </div>
       </GameWindow>
       {query ? (
@@ -122,7 +117,16 @@ export function RunHeader({
 }) {
   return (
     <header data-run-header className="flex flex-col gap-6 pb-6">
-      <SeedTitle report={report} />
+      <SeedTitle
+        report={report}
+        sharePath={seedPath({
+          seed: report.seed.code,
+          challenges: [...challenges],
+          lorePages,
+          trinket: report.trinkets.selected ?? undefined,
+        })}
+        shareDisabled={runSettings?.busy}
+      />
       {runSettings ? (
         <RunSettings
           report={report}

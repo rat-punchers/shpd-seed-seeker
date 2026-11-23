@@ -14,6 +14,7 @@ import {
   type ReportTask,
   requestReport,
 } from './report-client'
+import { type SeedLink, seedPath } from './seed-link'
 import {
   contextOf,
   MAX_OPEN_SEEDS,
@@ -115,7 +116,9 @@ async function run(id: string, settings?: RunSettings): Promise<void> {
     tasks.set(id, task)
     const report = await task.promise
     if (tasks.get(id) !== task) return
-    patch(id, { ...settings, status: 'ready', report, error: null })
+    // Save query-selected trinkets with the replay so a URL can restore it.
+    const trinket = session.trinket ?? report.trinkets.selected ?? undefined
+    patch(id, { ...settings, trinket, status: 'ready', report, error: null })
   } catch (error) {
     if (tasks.get(id) !== task) return
     patch(id, {
@@ -246,13 +249,17 @@ export function updateRunSettings(
   return run(id, settings)
 }
 
-/** Restores the saved tabs and reports them one after another. */
-export async function restoreSessions(): Promise<void> {
+/** Reports the startup seed first, then restores any background tabs. */
+export async function restoreSessions(linked?: SeedLink): Promise<void> {
   const restored = $savedSeeds.get().map(newSession)
-  if (restored.length === 0) return
   setSessions(restored)
   if (!findSession($activeSeedId.get())) {
     $activeSeedId.set(restored[0]?.id ?? null)
+  }
+  if (linked) {
+    const saved = findSession($activeSeedId.get())
+    if (saved && seedPath(saved) === seedPath(linked)) await run(saved.id)
+    else await openSeed(linked)
   }
   const active = $activeSeedId.get()
   const order = [...restored].sort(

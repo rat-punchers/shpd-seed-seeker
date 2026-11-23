@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import type { SeedReport } from '../../../src/engine/types'
-import { scoutLinkSeed } from '../../../src/features/analyze/init'
 import {
   resultPosition,
   stepActiveResult,
   stepResult,
   swipeDelta,
 } from '../../../src/features/analyze/navigation'
+import { scoutLinkSeed } from '../../../src/features/analyze/seed-link'
 import {
   $activeSeedId,
   $sessions,
@@ -52,7 +52,8 @@ describe('stepping the active tab through Find results', () => {
       return {
         promise: Promise.resolve({
           seed: { code: request.seed, value: 0, daily: false },
-        } as SeedReport),
+          trinkets: { offers: [], selected: null, transmutationOrder: [] },
+        } as unknown as SeedReport),
         cancel: () => {},
       }
     })

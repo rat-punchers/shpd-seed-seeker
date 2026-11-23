@@ -1,2 +1,2 @@
 export { AdvancedQuery } from './AdvancedQuery'
-export { initShareLink } from './share-import'
+export { openShareLink } from './share-import'

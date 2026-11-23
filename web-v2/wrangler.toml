@@ -7,7 +7,7 @@ workers_dev = false
 
 [assets]
 directory = "./dist"
-# Deep links fall back to index.html.
+# Screen routes resolve to their HTML assets. Other navigations use index.html.
 not_found_handling = "single-page-application"
 
 [[routes]]

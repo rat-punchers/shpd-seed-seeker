@@ -4,9 +4,23 @@
 
 /** Every localStorage key this app writes starts with this prefix. */
 const STORAGE_PREFIX = 'seed-seeker-v2-'
+const APP_NAME = 'Seed Seeker'
 
 export const CONFIG = Object.freeze({
-  appName: 'Seed Seeker',
+  appName: APP_NAME,
+  siteOrigin: 'https://seedseeker.nerdcoder.xyz',
+  routes: Object.freeze({
+    home: '/',
+    analyze: '/analyze',
+    find: '/find',
+    advanced: '/find/advanced',
+  }),
+  screenTitles: Object.freeze({
+    analyze: `Analyze a Seed · ${APP_NAME}`,
+    find: `Find Seeds · ${APP_NAME}`,
+    advanced: `Advanced Seed Search · ${APP_NAME}`,
+  }),
+  socialImage: '/social-card.png',
   storagePrefix: STORAGE_PREFIX,
   storageKeys: Object.freeze({
     mode: `${STORAGE_PREFIX}mode`,
