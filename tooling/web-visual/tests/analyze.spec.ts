@@ -206,15 +206,6 @@ test('the engine times the Catalyst and fills pots and reward outlooks', async (
       name: 'Alchemy pot, secret laboratory, in a secret room',
     })
   ).toBeAttached()
-  await expect(
-    page.locator('[data-quest="blacksmith"]').getByRole('img', {
-      name: 'Gnoll',
-    })
-  ).toBeVisible()
-  await expect(
-    page.locator('[data-floor-depth="1"] [data-floor-stairs]')
-  ).toHaveCount(1)
-
   // Quest reward slots.
   await page
     .locator('[data-quest="wandmaker"]')

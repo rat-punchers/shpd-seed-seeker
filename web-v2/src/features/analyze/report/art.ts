@@ -1,9 +1,11 @@
 // Region floor strips, quest giver, quest target and boss sprites from the design package.
 import blacksmithUrl from '@seed-seeker/design/assets/sprites/blacksmith.png'
 import crabUrl from '@seed-seeker/design/assets/sprites/crab.png'
+import crystalGuardianUrl from '@seed-seeker/design/assets/sprites/crystal_guardian.png'
 import dm300Url from '@seed-seeker/design/assets/sprites/dm300.png'
 import ghostUrl from '@seed-seeker/design/assets/sprites/ghost.png'
 import gnollUrl from '@seed-seeker/design/assets/sprites/gnoll.png'
+import gnollGeomancerUrl from '@seed-seeker/design/assets/sprites/gnoll_geomancer.png'
 import gooUrl from '@seed-seeker/design/assets/sprites/goo.png'
 import impUrl from '@seed-seeker/design/assets/sprites/imp.png'
 import kingUrl from '@seed-seeker/design/assets/sprites/king.png'
@@ -128,9 +130,25 @@ export const GHOST_TARGET_FILMS: Record<string, SpriteFilm> = {
   great_crab: film(crabUrl, [256, 64], [16, 16], [32, 33, 32, 34], 5),
 }
 
-/** The Troll Blacksmith's Gnoll target. */
-export const BLACKSMITH_TARGET_FILMS: Record<string, SpriteFilm> = {
-  gnoll: film(gnollUrl, [256, 64], [12, 15], [0, 0, 0, 1], 2),
+/** Mine targets use the same sprite crops as the map. */
+export const BLACKSMITH_TARGETS: Record<
+  string,
+  { label: string; film: SpriteFilm; scale?: number } | undefined
+> = {
+  gnoll: {
+    label: 'Gnoll geomancer',
+    film: film(
+      gnollGeomancerUrl,
+      [256, 32],
+      [12, 16],
+      [21, 21, 21, 22, 21, 21, 22, 22],
+      1
+    ),
+  },
+  crystal: {
+    label: 'Crystal guardian',
+    film: film(crystalGuardianUrl, [256, 64], [12, 15], [0, 0, 0, 1], 2),
+  },
 }
 
 const POT_REGIONS: RegionId[] = ['sewers', 'prison', 'caves', 'city', 'halls']

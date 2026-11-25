@@ -11,11 +11,7 @@ import type { ReportBranch, ReportQuest } from '../../../engine/types/report'
 import type { RingGems } from '../../../shared/sprites/sprites'
 import { itemArt } from '../../../shared/sprites/sprites'
 import { ItemSprite } from '../../../shared/ui/ItemSprite'
-import {
-  BLACKSMITH_TARGET_FILMS,
-  GHOST_TARGET_FILMS,
-  QUEST_NPC_FILMS,
-} from './art'
+import { BLACKSMITH_TARGETS, GHOST_TARGET_FILMS, QUEST_NPC_FILMS } from './art'
 import { FilmSprite } from './FilmSprite'
 import { FloorBanner } from './FloorBanner'
 import { ItemList } from './FloorItemSections'
@@ -61,20 +57,20 @@ function ImpStatue() {
 /** The quest's target, beside its title. */
 function QuestTarget({ quest }: { quest: ReportQuest }) {
   if (quest.quest === 'imp') return <ImpStatue />
+  const miningTarget =
+    quest.quest === 'blacksmith' ? BLACKSMITH_TARGETS[quest.variant] : undefined
   const label =
     quest.quest === 'wandmaker'
       ? itemName(quest.variant)
-      : humanize(quest.variant)
+      : (miningTarget?.label ?? humanize(quest.variant))
   const mob =
     quest.quest === 'ghost'
       ? GHOST_TARGET_FILMS[quest.variant]
-      : quest.quest === 'blacksmith'
-        ? BLACKSMITH_TARGET_FILMS[quest.variant]
-        : undefined
+      : miningTarget?.film
   if (mob) {
     return (
       <span data-quest-target={quest.variant} title={label} className="flex">
-        <FilmSprite film={mob} label={label} />
+        <FilmSprite film={mob} label={label} scale={miningTarget?.scale} />
       </span>
     )
   }
