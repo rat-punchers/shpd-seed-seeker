@@ -4,7 +4,7 @@ import {
   collectBrowserErrors,
   expectNoBrowserErrors,
 } from './helpers/browser-errors'
-import { waitForCanvasPaint } from './helpers/canvas'
+import { canvasDataUrl, waitForCanvasPaint } from './helpers/canvas'
 import {
   installFakeReportWorker,
   loadReportFixtures,
@@ -42,9 +42,7 @@ test('lore settings regenerate the report and an already cached floor map', asyn
   await expect(pageItem).toHaveCount(0)
   const normal = await openMap(page, LAB)
   await waitForCanvasPaint(normal.canvas)
-  const snapshot = await normal.canvas.evaluate((canvas: HTMLCanvasElement) =>
-    canvas.toDataURL()
-  )
+  const snapshot = await canvasDataUrl(normal.canvas)
   await normal.dialog.getByRole('button', { name: 'Close' }).click()
 
   await lore.press('Space')
@@ -52,11 +50,7 @@ test('lore settings regenerate the report and an already cached floor map', asyn
   await expect(pageItem).toBeVisible()
   const fresh = await openMap(page, LAB)
   await waitForCanvasPaint(fresh.canvas)
-  expect(
-    await fresh.canvas.evaluate((canvas: HTMLCanvasElement) =>
-      canvas.toDataURL()
-    )
-  ).not.toBe(snapshot)
+  expect(await canvasDataUrl(fresh.canvas)).not.toBe(snapshot)
   // AAA floor 4 uses width 47. The oracle places its AlchemyPage at cell 250.
   await hoverMapPoint(page, fresh.canvas, 15 * 16 + 8, 5 * 16 + 3)
   await expect(

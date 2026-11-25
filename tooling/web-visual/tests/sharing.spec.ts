@@ -63,7 +63,6 @@ test('screens initialize from the route and only stores change the in-app route'
   await page.evaluate(() => {
     history.replaceState(null, '', '/analyze?seed=ABC-DEF-GHI')
     window.dispatchEvent(new PopStateEvent('popstate'))
-    location.hash = 'q=invalid'
   })
   await expect(views.getByRole('tab', { name: 'Simple' })).toHaveAttribute(
     'aria-selected',
@@ -76,7 +75,7 @@ test('screens initialize from the route and only stores change the in-app route'
   ).toBeVisible()
   await mode.getByRole('tab', { name: 'Find' }).click()
   await expect(page).toHaveURL(/\/find$/)
-  expect(await page.evaluate(() => history.length)).toBe(historySize + 1)
+  expect(await page.evaluate(() => history.length)).toBe(historySize)
   await page.goto('/find/advanced')
   await expect(views.getByRole('tab', { name: 'Advanced' })).toHaveAttribute(
     'aria-selected',

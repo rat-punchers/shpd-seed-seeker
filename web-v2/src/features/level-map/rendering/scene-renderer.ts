@@ -2,36 +2,21 @@ import type { MapBundle } from '../types'
 import type { MapContext } from './canvas'
 import { createMapParticleRenderer } from './particles'
 import { createLevelMapRenderer } from './render'
+import type { MapRenderFrame } from './render-worker'
 
-/** Preserve the original two surfaces and particle density in either thread. */
-export function createMapSceneRenderer(
-  scenery: MapContext,
-  effects: MapContext,
-  bundle: MapBundle,
-  revealSecrets: boolean
-) {
-  const renderer = createLevelMapRenderer(scenery, bundle, revealSecrets)
-  const particles = createMapParticleRenderer(
-    effects,
-    scenery.canvas,
-    bundle,
-    revealSecrets
-  )
+export function createMapSceneRenderer(scenery: MapContext, bundle: MapBundle) {
+  const renderer = createLevelMapRenderer(scenery, bundle, true)
+  let particles: ReturnType<typeof createMapParticleRenderer> | undefined
+  const hasParticles = (bundle.map.scene.emitters?.length ?? 0) > 0
   return {
-    animated: renderer.animated || particles.animated,
-    draw(elapsed: number, advanceSprites = true, density = 1) {
+    draw(
+      { elapsed, advanceSprites, effects: view }: MapRenderFrame,
+      effects: MapContext | null
+    ) {
       renderer.draw(elapsed, advanceSprites)
-      const width = Math.round(
-        bundle.map.width * bundle.map.scene.tileSize * density
-      )
-      const height = Math.round(
-        bundle.map.height * bundle.map.scene.tileSize * density
-      )
-      if (effects.canvas.width !== width || effects.canvas.height !== height) {
-        effects.canvas.width = width
-        effects.canvas.height = height
-      }
-      particles.draw(elapsed)
+      if (!effects || !view || !hasParticles) return renderer.animated
+      particles ??= createMapParticleRenderer(scenery.canvas, bundle)
+      return particles.draw(effects, elapsed, view) || renderer.animated
     },
   }
 }

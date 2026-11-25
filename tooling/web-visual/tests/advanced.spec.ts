@@ -214,7 +214,6 @@ test('a share link that cannot be read says why, and the notice dismisses', asyn
   page,
 }) => {
   const errors = collectBrowserErrors(page)
-  await openApp(page)
   await page.goto('/#q=not-a-share-code')
   const notice = page
     .getByRole('alert')

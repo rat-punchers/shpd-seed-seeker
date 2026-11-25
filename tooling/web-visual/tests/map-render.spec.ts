@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { test } from '@playwright/test'
 import {
   collectBrowserErrors,
   expectNoBrowserErrors,
@@ -19,7 +19,6 @@ for (const fixture of MAP_FIXTURES) {
     const errors = collectBrowserErrors(page)
     await analyzeSeed(page, fixture.typed, fixture.seed)
     const { canvas } = await openMap(page, fixture.level)
-    await expect(page.locator('canvas[data-secret-overlay]')).toBeAttached()
     await waitForCanvasPaint(canvas)
     await snapshotCanvas(canvas, mapSnapshotName(fixture))
     expectNoBrowserErrors(errors)

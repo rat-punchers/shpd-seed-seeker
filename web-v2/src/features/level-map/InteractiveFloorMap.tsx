@@ -164,17 +164,22 @@ export function InteractiveFloorMap({
         contentHeight={contentHeight}
         rasterScale={1}
       >
-        {(zoom) => (
+        {(frame, moving) => (
           <div
             className={cn(
               'relative leading-none',
               hoverInspectable && 'cursor-pointer'
             )}
+            style={{
+              width: contentWidth * (frame?.view.zoom ?? 1),
+              height: contentHeight * (frame?.view.zoom ?? 1),
+            }}
           >
             <FloorMapCanvas
               bundle={bundle}
               focusCell={inspection?.cell ?? null}
-              displayScale={zoom}
+              frame={frame}
+              moving={moving}
               label={label}
             />
             {[

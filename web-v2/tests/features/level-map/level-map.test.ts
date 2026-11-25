@@ -14,8 +14,9 @@ import {
   itemBounds,
   kindName,
 } from '../../../src/features/level-map/item-inspection'
-import { particleState } from '../../../src/features/level-map/rendering/particles'
+import { particleState } from '../../../src/features/level-map/rendering/particle-state'
 import { glowAmount } from '../../../src/features/level-map/rendering/render'
+import { buildSecretOverlay } from '../../../src/features/level-map/rendering/secret-overlay'
 import type {
   LevelMapDocument,
   LevelMapRequest,
@@ -208,6 +209,15 @@ describe('tile inspection', () => {
 })
 
 describe('rendering contract', () => {
+  it('skips overlay allocation for the Imp Vault without secrets', () => {
+    const level = map('AAA-AAA-AAA', 19, 1)
+    expect(
+      buildSecretOverlay({ map: level, textures: new Map() }, () => {
+        throw new Error('The secret overlay must not allocate a canvas')
+      })
+    ).toEqual([])
+  })
+
   it('pulses glows to the game’s 60% peak', () => {
     expect(glowAmount(1000, 0)).toBe(0)
     expect(glowAmount(1000, 500)).toBe(0.3)

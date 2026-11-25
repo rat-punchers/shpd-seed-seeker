@@ -163,7 +163,21 @@ test('the map dialog focuses itself, then Tab reaches the zoom controls', async 
 
   // Secrets fade in and out over the map instead of behind a toggle.
   await expect(dialog.getByRole('button', { name: 'Secrets' })).toHaveCount(0)
-  await expect(dialog.locator('canvas[data-secret-overlay]')).toBeAttached()
+  const overlays = dialog.locator('canvas[data-secret-overlay]')
+  await expect(overlays.first()).toBeAttached()
+  // Concealment repacks the actor layers on this floor. The shared
+  // background layers should still stay outside the overlay crops.
+  const overlayPixels = await overlays.evaluateAll((nodes) =>
+    (nodes as HTMLCanvasElement[]).reduce(
+      (total, crop) => total + crop.width * crop.height,
+      0
+    )
+  )
+  const mapPixels = await canvas.evaluate((node) => {
+    const element = node as HTMLCanvasElement
+    return element.width * element.height
+  })
+  expect(overlayPixels).toBeLessThan(mapPixels / 4)
 
   await page.keyboard.press('Escape')
   await expect(dialog).toBeHidden()

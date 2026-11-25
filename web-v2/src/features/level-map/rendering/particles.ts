@@ -1,146 +1,33 @@
-import type { MapBundle, MapCurve, MapEmitter, Rectangle } from '../types'
+import type { MapBundle, MapEmitter } from '../types'
 import {
   type MapCanvas,
   type MapContext,
   makeMapCanvas,
   mapContext,
 } from './canvas'
+import {
+  clipRectangle,
+  type EffectsView,
+  sameEffectsView,
+} from './effects-view'
+import { emitterBounds, particleState } from './particle-state'
 import { drawCommand } from './render'
 import { drawTexture } from './textures'
-
-export function curveValue(curve: MapCurve, progress: number): number {
-  const points = curve.points
-  const p = Math.max(0, Math.min(1, progress)) * 1000
-  const point = (index: number): [number, number] => points[index] ?? [0, 0]
-  const right = points.findIndex(([x]) => x >= p)
-  let value: number
-  if (right <= 0) value = point(right === 0 ? 0 : points.length - 1)[1]
-  else {
-    const [x0, y0] = point(right - 1),
-      [x1, y1] = point(right)
-    value = y0 + ((y1 - y0) * (p - x0)) / (x1 - x0)
-  }
-  value /= 1000
-  return curve.sqrt ? Math.sqrt(value) : value
-}
-
-export function particleState(
-  emitter: MapEmitter,
-  particle: MapEmitter['particles'][number],
-  elapsed: number
-) {
-  const clock = Math.max(0, elapsed) - (emitter.startMs ?? 0)
-  // Scheduled hazards start with the captured first turn; ambient emitters
-  // retain their prewarmed loops. Never wrap a future first emission backward.
-  if (emitter.startMs !== undefined && clock < particle.birthMs) return null
-  const age =
-    (((clock - particle.birthMs) % emitter.loopMs) + emitter.loopMs) %
-    emitter.loopMs
-  if (age >= particle.lifespanMs) return null
-  const seconds = age / 1000,
-    progress = age / particle.lifespanMs
-  return {
-    x:
-      particle.position[0] / 1000 +
-      emitter.velocity[0] * seconds +
-      (emitter.acceleration[0] * seconds * seconds) / 2,
-    y:
-      particle.position[1] / 1000 +
-      emitter.velocity[1] * seconds +
-      (emitter.acceleration[1] * seconds * seconds) / 2,
-    scale: (particle.scale / 1000) * curveValue(emitter.scale, progress),
-    alpha: curveValue(emitter.alpha, progress),
-    scaleX: emitter.scaleX ? curveValue(emitter.scaleX, progress) : 1,
-    scaleY: emitter.scaleY ? curveValue(emitter.scaleY, progress) : 1,
-    angle: ((particle.angle + emitter.angularSpeed * seconds) * Math.PI) / 180,
-  }
-}
-
-/** The largest value a stretch curve reaches; 1 without a curve. */
-function curvePeak(curve: MapCurve | undefined): number {
-  if (!curve) return 1
-  return Math.max(...curve.points.map(([x]) => curveValue(curve, x / 1000)))
-}
-
-function emitterBounds(
-  emitter: MapEmitter,
-  width: number,
-  size: number
-): Rectangle {
-  const positions: [number, number][] = []
-  for (const particle of emitter.particles) {
-    // Include trajectory extrema, not just its endpoints (e.g. upward sparks).
-    const end = particle.lifespanMs / 1000
-    const times = [0, end]
-    for (const axis of [0, 1] as const) {
-      const t = -emitter.velocity[axis] / emitter.acceleration[axis]
-      if (t > 0 && t < end) times.push(t)
-    }
-    for (const t of times)
-      positions.push(
-        ([0, 1] as const).map(
-          (axis) =>
-            particle.position[axis] / 1000 +
-            emitter.velocity[axis] * t +
-            (emitter.acceleration[axis] * t * t) / 2
-        ) as [number, number]
-      )
-  }
-  const maxCurve =
-    Math.max(...emitter.scale.points.map(([, value]) => value)) / 1000
-  const maxScale =
-    ((emitter.scale.sqrt ? Math.sqrt(maxCurve) : maxCurve) *
-      Math.max(...emitter.particles.map((particle) => particle.scale))) /
-    1000
-  const radius =
-    (Math.hypot(
-      emitter.image.destination[2] * curvePeak(emitter.scaleX),
-      emitter.image.destination[3] * curvePeak(emitter.scaleY)
-    ) *
-      maxScale) /
-      2 +
-    1
-  const x = Math.floor(
-    (emitter.cell % width) * size +
-      Math.min(...positions.map(([x]) => x)) -
-      radius
-  )
-  const y = Math.floor(
-    Math.floor(emitter.cell / width) * size +
-      Math.min(...positions.map(([, y]) => y)) -
-      radius
-  )
-  return [
-    x,
-    y,
-    Math.ceil(Math.max(...positions.map(([x]) => x))) -
-      Math.floor(Math.min(...positions.map(([x]) => x))) +
-      Math.ceil(radius) * 2 +
-      2,
-    Math.ceil(Math.max(...positions.map(([, y]) => y))) -
-      Math.floor(Math.min(...positions.map(([, y]) => y))) +
-      Math.ceil(radius) * 2 +
-      2,
-  ]
-}
 
 /** Separate display-rate surface. Only particle bounds are copied from scenery,
  * providing the destination pixels required by the game's additive blending. */
 export function createMapParticleRenderer(
-  context: MapContext,
   scenery: MapCanvas,
-  bundle: MapBundle,
-  revealSecrets: boolean
+  bundle: MapBundle
 ) {
   const { map } = bundle,
     size = map.scene.tileSize
   const width = map.width * size,
     height = map.height * size
-  const emitters =
-    (revealSecrets ? map.scene.emitters : map.scene.concealedEmitters) ?? []
+  const emitters = map.scene.emitters ?? []
   const wind = emitters.filter((emitter) => emitter.clipToChasm)
-  // The engine chooses visible chasms for this secret-visibility mode. Clip the
-  // complete trajectories, so wind cannot drift onto floors or into outer void.
+  // Clip complete wind trajectories so they cannot drift onto floors or into
+  // the outer void.
   const chasms = wind.length ? new Path2D() : null
   for (const emitter of wind)
     chasms?.rect(
@@ -149,26 +36,21 @@ export function createMapParticleRenderer(
       size,
       size
     )
-  const regions = emitters
-    .map((emitter) => emitterBounds(emitter, map.width, size))
-    .map(([x, y, w, h]): Rectangle => {
-      const left = Math.max(0, x),
-        top = Math.max(0, y)
-      return [
-        left,
-        top,
-        Math.max(0, Math.min(width, x + w) - left),
-        Math.max(0, Math.min(height, y + h) - top),
-      ]
-    })
-  const layers = revealSecrets ? map.scene.layers : map.scene.concealedLayers
+  const entries = emitters.map((emitter) => ({
+    emitter,
+    bounds: emitterBounds(emitter, map.width, size),
+    texture:
+      emitter.image.kind === 'blit' ? drawTexture(bundle, emitter.image) : null,
+  }))
   const makeMask = (names: string[]) => {
     const mask = makeMapCanvas()
     mask.width = width
     mask.height = height
     const target = mapContext(mask)
     target.imageSmoothingEnabled = false
-    for (const layer of layers.filter((layer) => names.includes(layer.name))) {
+    for (const layer of map.scene.layers.filter((layer) =>
+      names.includes(layer.name)
+    )) {
       layer.cells.forEach((sprite, cell) => {
         if (sprite === null) return
         for (const draw of map.scene.sprites[sprite]?.frames[0] ?? [])
@@ -185,38 +67,51 @@ export function createMapParticleRenderer(
   }
   const darkness = makeMask(['darkness'])
   const walls = makeMask(['raised', 'walls', 'room_walls', 'boss_walls'])
-  // Resolve tinted atlas pixels once, outside the display-rate loop.
-  const images = emitters.map((emitter) =>
-    emitter.image.kind === 'blit' ? drawTexture(bundle, emitter.image) : null
-  )
-  let initial = true
+  let previous: EffectsView | null = null
+  let previousContext: MapContext | null = null
+  const select = (view: EffectsView) =>
+    entries.flatMap((entry) => {
+      const region = clipRectangle(entry.bounds, view.bounds)
+      return region ? [{ ...entry, region }] : []
+    })
+  let visible: ReturnType<typeof select> = []
   return {
-    animated: emitters.length > 0,
-    draw(elapsed: number) {
+    draw(context: MapContext, elapsed: number, view: EffectsView): boolean {
+      const changed =
+        previousContext !== context || !sameEffectsView(previous, view)
+      const [left, top, w, h] = view.bounds
+      if (changed) {
+        previous = view
+        previousContext = context
+        visible = select(view)
+        const pixelWidth = Math.round(w * view.density)
+        const pixelHeight = Math.round(h * view.density)
+        if (context.canvas.width !== pixelWidth)
+          context.canvas.width = pixelWidth
+        if (context.canvas.height !== pixelHeight)
+          context.canvas.height = pixelHeight
+        context.resetTransform()
+        context.clearRect(0, 0, pixelWidth, pixelHeight)
+      }
+      if (visible.length === 0) return false
+      const scaleX = context.canvas.width / w
+      const scaleY = context.canvas.height / h
       context.save()
-      context.setTransform(
-        context.canvas.width / width,
-        0,
-        0,
-        context.canvas.height / height,
-        0,
-        0
-      )
+      context.setTransform(scaleX, 0, 0, scaleY, -left * scaleX, -top * scaleY)
       context.imageSmoothingEnabled = false
       context.globalAlpha = 1
       context.globalCompositeOperation = 'source-over'
-      // A reused overlay may still contain scenery from the previous secret
-      // mode outside these emitters' regions, even when there are no emitters.
-      if (initial) {
-        context.clearRect(0, 0, width, height)
-        initial = false
-      }
       // Copy all backgrounds before drawing any emitter; overlaps retain particles.
-      for (const [x, y, w, h] of regions) {
+      for (const {
+        region: [x, y, w, h],
+      } of visible) {
         context.clearRect(x, y, w, h)
-        if (w && h) context.drawImage(scenery, x, y, w, h, x, y, w, h)
+        context.drawImage(scenery, x, y, w, h, x, y, w, h)
       }
-      const drawEmitter = (emitter: MapEmitter, index: number) => {
+      const drawEmitter = (
+        emitter: MapEmitter,
+        texture: CanvasImageSource | null
+      ) => {
         const ox = (emitter.cell % map.width) * size,
           oy = Math.floor(emitter.cell / map.width) * size
         const image = emitter.image,
@@ -243,7 +138,6 @@ export function createMapParticleRenderer(
             (image.kind === 'blit'
               ? (image.opacity ?? 255) / 255
               : image.rgba[3] / 255)
-          const texture = images[index]
           if (image.kind === 'blit') {
             if (texture)
               context.drawImage(texture, ...image.source, -w / 2, -h / 2, w, h)
@@ -257,28 +151,31 @@ export function createMapParticleRenderer(
       const eraseMask = (mask: MapCanvas) => {
         context.globalAlpha = 1
         context.globalCompositeOperation = 'destination-out'
-        for (const [x, y, w, h] of regions)
-          if (w && h) context.drawImage(mask, x, y, w, h, x, y, w, h)
+        for (const {
+          region: [x, y, w, h],
+        } of visible)
+          context.drawImage(mask, x, y, w, h, x, y, w, h)
       }
       if (chasms) {
         context.save()
         context.clip(chasms)
-        emitters.forEach((emitter, index) => {
-          if (emitter.clipToChasm) drawEmitter(emitter, index)
+        visible.forEach(({ emitter, texture }) => {
+          if (emitter.clipToChasm) drawEmitter(emitter, texture)
         })
         context.restore()
       }
-      emitters.forEach((emitter, index) => {
+      visible.forEach(({ emitter, texture }) => {
         if (emitter.wallMask && !emitter.clipToChasm)
-          drawEmitter(emitter, index)
+          drawEmitter(emitter, texture)
       })
       eraseMask(walls)
-      emitters.forEach((emitter, index) => {
+      visible.forEach(({ emitter, texture }) => {
         if (!emitter.wallMask && !emitter.clipToChasm)
-          drawEmitter(emitter, index)
+          drawEmitter(emitter, texture)
       })
       eraseMask(darkness)
       context.restore()
+      return true
     },
   }
 }
