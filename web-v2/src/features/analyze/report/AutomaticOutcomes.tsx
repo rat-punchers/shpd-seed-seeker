@@ -6,7 +6,7 @@ import { alchemyPotSprite } from './art'
 import { FloorBanner } from './FloorBanner'
 import { FloorItemSections } from './FloorItemSections'
 import { FloorMapButton } from './FloorMapButton'
-import { questRewardItems } from './floor-items'
+import { questItemGroups } from './floor-items'
 import { BranchNote, QuestCard } from './QuestCard'
 import { hasSection, humanize } from './report-text'
 import { TrinketChoiceBand } from './TrinketChoiceBand'
@@ -112,11 +112,7 @@ function FloorDetail({
           <QuestCard
             key={quest.quest}
             quest={quest}
-            rewards={questRewardItems(
-              report,
-              quest.rewards.source,
-              floor.depth
-            )}
+            items={questItemGroups(floor, quest)}
             branch={branchOf(quest.quest)}
             ringGems={ringGems}
           />

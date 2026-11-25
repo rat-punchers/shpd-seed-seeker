@@ -8,11 +8,7 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from '@seed-seeker/design/ui/popover'
-import type {
-  ReportBranch,
-  ReportItem,
-  ReportQuest,
-} from '../../../engine/types/report'
+import type { ReportBranch, ReportQuest } from '../../../engine/types/report'
 import type { RingGems } from '../../../shared/sprites/sprites'
 import { itemArt } from '../../../shared/sprites/sprites'
 import { ItemSprite } from '../../../shared/ui/ItemSprite'
@@ -21,7 +17,9 @@ import { FilmSprite } from './FilmSprite'
 import { FloorBanner } from './FloorBanner'
 import { ItemList } from './FloorItemSections'
 import { BranchMapButton } from './FloorMapButton'
+import type { QuestItemGroups } from './floor-items'
 import { ImpRewardDistribution } from './ImpRewardDistribution'
+import { ImpVaultLoot } from './ImpVaultLoot'
 import { branchTitle, humanize, itemName, questTitle } from './report-text'
 import { WandmakerRewardDistribution } from './WandmakerRewardDistribution'
 
@@ -135,16 +133,18 @@ export function BranchNote({
  */
 export function QuestCard({
   quest,
-  rewards,
+  items,
   branch,
   ringGems,
 }: {
   quest: ReportQuest
-  rewards: ReportItem[]
+  items: QuestItemGroups
   branch?: ReportBranch
   ringGems?: RingGems
 }) {
   const slots = quest.slots ?? []
+  const { rewards, vaultTreasure } = items
+  const imp = quest.quest === 'imp'
   const { optionCount, selectedCount, favorRequirement } = quest.rewards
   const favor = favorRequirement ? ` at ${favorRequirement} favor` : ''
   return (
@@ -173,13 +173,15 @@ export function QuestCard({
       <div className="flex flex-col gap-2 border-t px-3 py-2.5">
         <div className="flex items-center gap-1">
           <p className="text-sm font-semibold">
-            Rewards{' '}
+            {imp ? 'Final room rewards' : 'Rewards'}{' '}
             <span className="text-muted-foreground font-normal">
-              choose {selectedCount} of {optionCount}
+              {imp
+                ? `${optionCount} options`
+                : `choose ${selectedCount} of ${optionCount}`}
               {favor}
             </span>
           </p>
-          {quest.quest === 'imp' ? (
+          {imp ? (
             <ImpRewardDistribution
               slots={slots}
               upgradesPinned={quest.upgradesPinned ?? true}
@@ -192,6 +194,9 @@ export function QuestCard({
         </div>
         {rewards.length > 0 ? (
           <ItemList items={rewards} ringGems={ringGems} />
+        ) : null}
+        {imp ? (
+          <ImpVaultLoot treasure={vaultTreasure} ringGems={ringGems} />
         ) : null}
         <p className="text-muted-foreground text-xs">
           The giver can appear on floors {quest.spawnDepthRange.min}–
