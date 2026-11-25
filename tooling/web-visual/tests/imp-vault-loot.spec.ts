@@ -4,7 +4,7 @@ import {
   expectNoBrowserErrors,
 } from './helpers/browser-errors'
 
-test('the Imp quest lists every Vault prize with one shared item limit', async ({
+test('the Imp quest groups Vault prizes and shows the statuette examine text', async ({
   page,
 }) => {
   const errors = collectBrowserErrors(page)
@@ -12,11 +12,21 @@ test('the Imp quest lists every Vault prize with one shared item limit', async (
   const floor = page.getByRole('region', { name: 'Floor 19', exact: true })
   const quest = floor.getByRole('region', { name: 'Ambitious Imp quest' })
   const treasure = quest.getByRole('region', { name: 'Vault treasure' })
-  await expect(quest).toContainText(
-    'You can take only one item out of the vault.'
+  await expect(quest.locator('[data-slot="item-box"]')).toHaveCount(21)
+  await expect(floor).not.toContainText(
+    /The giver can appear|opens once the quest is accepted|take only one item/
   )
   await expect(treasure.locator('[data-slot="item-box"]')).toHaveCount(15)
-  await expect(quest.locator('[data-slot="item-box"]')).toHaveCount(21)
+  const statue = quest.getByRole('button', { name: 'Obsidian statuette' })
+  await expect(statue.locator('svg')).toHaveCount(0)
+  await statue.click()
+  const examine = page
+    .getByRole('dialog')
+    .filter({ hasText: 'Obsidian statuette' })
+  await expect(examine).toContainText(
+    'A small jet-black statue carved out of obsidian.'
+  )
+  await page.keyboard.press('Escape')
   await expect(
     treasure.getByRole('button', { name: 'Ring of Arcana +2' })
   ).toBeVisible()

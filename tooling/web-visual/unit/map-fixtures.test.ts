@@ -58,8 +58,8 @@ describe('floor map snapshots', () => {
       branch: 1,
       objective: 'Vault',
     } as const
-    expect(mapLabel(vault)).toBe('Imp Vault floor 19, branch 1 map')
-    expect(mapDialogTitle(vault)).toBe('Imp Vault - Floor 19, branch 1')
+    expect(mapLabel(vault)).toBe('Imp Vault floor 19 map')
+    expect(mapDialogTitle(vault)).toBe('Imp Vault - Floor 19')
     expect(branchTitle('Crystal')).toBe('Crystal Mine')
     expect(branchTitle('Gnoll')).toBe('Gnoll Mine')
     expect(branchQuest('Vault')).toBe('imp')

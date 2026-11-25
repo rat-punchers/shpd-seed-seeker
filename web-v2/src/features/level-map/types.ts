@@ -1,5 +1,5 @@
 // The `level_map` document (schema 2 or 3) and the map worker's messages.
-import type { ChallengeName } from '../../engine/types'
+import type { ChallengeName, FloorFeeling } from '../../engine/types'
 
 export type Rectangle = [number, number, number, number]
 
@@ -146,6 +146,7 @@ export interface LevelMapDocument {
   depth: number
   branch: number
   kind: MapKind
+  feeling?: FloorFeeling
   challenges: ChallengeName[]
   selectedTrinket: string | null
   width: number

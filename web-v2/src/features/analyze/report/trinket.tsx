@@ -1,9 +1,11 @@
 import type {
   ReportTrinkets,
+  SeedReport,
   TrinketTiming,
 } from '../../../engine/types/report'
 import { itemArt } from '../../../shared/sprites/sprites'
 import { ItemSprite } from '../../../shared/ui/ItemSprite'
+import { hasSection } from './report-text'
 
 /** The player's Catalyst pick for one seed tab. */
 export interface TrinketChoice {
@@ -35,20 +37,35 @@ export function trinketEffectLabel(effect: TrinketEffect): string {
   }
 }
 
-/** Banner mark for floors generated with the selected trinket; jumps to the pick. */
+export function heldTrinketAt(report: SeedReport, depth: number) {
+  const { trinkets } = report
+  const timing = hasSection(report, 'trinketTiming')
+    ? trinkets.timing
+    : undefined
+  if (!timing || depth < timing.firstEffectiveDepth) return undefined
+  return trinkets.offers.find((offer) => offer.id === trinkets.selected)
+}
+
+/** Banner mark for floors generated with the selected trinket. */
 export function HeldTrinketChip({
   name,
   spriteIndex,
+  changeable = true,
 }: {
   name: string
   spriteIndex: number
+  changeable?: boolean
 }) {
-  const label = `Generated with ${name}. Change trinket`
+  const label = `Generated with ${name}`
+  const art = itemArt(spriteIndex)
+  if (!changeable) return <ItemSprite art={art} label={label} />
+
+  const changeLabel = `${label}. Change trinket`
   return (
     <button
       type="button"
-      aria-label={label}
-      title={label}
+      aria-label={changeLabel}
+      title={changeLabel}
       className="focus-visible:ring-ring inline-flex cursor-pointer items-center gap-1 rounded-sm px-1 outline-none hover:bg-white/10 focus-visible:ring-2"
       onClick={() => {
         const reduce = window.matchMedia(
@@ -60,7 +77,7 @@ export function HeldTrinketChip({
         })
       }}
     >
-      <ItemSprite art={itemArt(spriteIndex)} size={32} />
+      <ItemSprite art={art} />
     </button>
   )
 }

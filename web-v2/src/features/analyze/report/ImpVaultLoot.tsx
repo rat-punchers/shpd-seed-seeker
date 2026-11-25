@@ -9,18 +9,11 @@ export function ImpVaultLoot({
   treasure: ReportItem[]
   ringGems?: RingGems
 }) {
-  return (
-    <>
-      {treasure.length > 0 ? (
-        <ItemGroupSection
-          label="Vault treasure"
-          items={treasure}
-          ringGems={ringGems}
-        />
-      ) : null}
-      <p className="text-muted-foreground text-sm">
-        You can take only one item out of the vault.
-      </p>
-    </>
-  )
+  return treasure.length > 0 ? (
+    <ItemGroupSection
+      label="Vault treasure"
+      items={treasure}
+      ringGems={ringGems}
+    />
+  ) : null
 }

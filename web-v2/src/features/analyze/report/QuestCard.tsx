@@ -1,4 +1,3 @@
-import { InfoIcon } from '@phosphor-icons/react'
 import { Button } from '@seed-seeker/design/ui/button'
 import {
   Popover,
@@ -12,7 +11,11 @@ import type { ReportBranch, ReportQuest } from '../../../engine/types/report'
 import type { RingGems } from '../../../shared/sprites/sprites'
 import { itemArt } from '../../../shared/sprites/sprites'
 import { ItemSprite } from '../../../shared/ui/ItemSprite'
-import { GHOST_TARGET_FILMS, QUEST_NPC_FILMS } from './art'
+import {
+  BLACKSMITH_TARGET_FILMS,
+  GHOST_TARGET_FILMS,
+  QUEST_NPC_FILMS,
+} from './art'
 import { FilmSprite } from './FilmSprite'
 import { FloorBanner } from './FloorBanner'
 import { ItemList } from './FloorItemSections'
@@ -20,7 +23,7 @@ import { BranchMapButton } from './FloorMapButton'
 import type { QuestItemGroups } from './floor-items'
 import { ImpRewardDistribution } from './ImpRewardDistribution'
 import { ImpVaultLoot } from './ImpVaultLoot'
-import { branchTitle, humanize, itemName, questTitle } from './report-text'
+import { humanize, itemName, questTitle } from './report-text'
 import { WandmakerRewardDistribution } from './WandmakerRewardDistribution'
 
 /** `ItemSpriteSheet` cells of the Wandmaker's quest items. */
@@ -30,30 +33,24 @@ const WANDMAKER_ITEMS: Record<string, number> = {
   rotberry: 384,
 }
 
-/**
- * Every Imp option is +2 or better, and lower vault scores only let an
- * item at +0/+1 leave, so the statue is the only way to keep one.
- */
-function ImpStatueNote() {
+/** ImpStatue in the game's item sheet and English examine text. */
+function ImpStatue() {
+  const name = 'Obsidian statuette'
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          aria-label="About the Imp Statue"
-          className="text-white hover:text-white"
-        >
-          <InfoIcon />
+        <Button variant="ghost" size="icon" aria-label={name}>
+          <ItemSprite art={itemArt(474)} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-80">
+      <PopoverContent align="start" className="w-80 max-w-[calc(100vw-1rem)]">
         <PopoverHeader>
-          <PopoverTitle>Imp Statue</PopoverTitle>
+          <PopoverTitle>{name}</PopoverTitle>
           <PopoverDescription>
-            Keeping one of these six requires leaving with the Imp Statue: every
-            option is +2 or better, and lower vault scores can only take out an
-            item at +0/+1.
+            A small jet-black statue carved out of obsidian. It resembles the
+            Imp who sent you down here, it even has their glowing green eyes.
+            There is an inscription on the base of the statue in a language
+            you've never seen before.
           </PopoverDescription>
         </PopoverHeader>
       </PopoverContent>
@@ -63,13 +60,17 @@ function ImpStatueNote() {
 
 /** The quest's target, beside its title. */
 function QuestTarget({ quest }: { quest: ReportQuest }) {
-  if (quest.quest === 'imp') return <ImpStatueNote />
+  if (quest.quest === 'imp') return <ImpStatue />
   const label =
     quest.quest === 'wandmaker'
       ? itemName(quest.variant)
       : humanize(quest.variant)
   const mob =
-    quest.quest === 'ghost' ? GHOST_TARGET_FILMS[quest.variant] : undefined
+    quest.quest === 'ghost'
+      ? GHOST_TARGET_FILMS[quest.variant]
+      : quest.quest === 'blacksmith'
+        ? BLACKSMITH_TARGET_FILMS[quest.variant]
+        : undefined
   if (mob) {
     return (
       <span data-quest-target={quest.variant} title={label} className="flex">
@@ -86,44 +87,6 @@ function QuestTarget({ quest }: { quest: ReportQuest }) {
       )}
       {label}
     </span>
-  )
-}
-
-function accessText(branch: ReportBranch): string {
-  const parts = [
-    branch.access.requiresAcceptance
-      ? 'opens once the quest is accepted'
-      : 'always open',
-  ]
-  if (branch.access.requiredItem) {
-    parts.push(`needs ${itemName(branch.access.requiredItem)}`)
-  }
-  return parts.join(', ')
-}
-
-/** A quest sub-floor entered from this floor; `map` adds its map button. */
-export function BranchNote({
-  depth,
-  branch,
-  map = true,
-}: {
-  depth: number
-  branch: ReportBranch
-  map?: boolean
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <p
-        data-branch-kind={branch.kind}
-        className="text-muted-foreground text-sm"
-      >
-        <span className="text-foreground font-semibold">
-          {branchTitle(branch.kind)}
-        </span>{' '}
-        (branch {branch.branch}): {accessText(branch)}.
-      </p>
-      {map ? <BranchMapButton depth={depth} branch={branch} /> : null}
-    </div>
   )
 }
 
@@ -197,13 +160,6 @@ export function QuestCard({
         ) : null}
         {imp ? (
           <ImpVaultLoot treasure={vaultTreasure} ringGems={ringGems} />
-        ) : null}
-        <p className="text-muted-foreground text-xs">
-          The giver can appear on floors {quest.spawnDepthRange.min}–
-          {quest.spawnDepthRange.max}.
-        </p>
-        {branch ? (
-          <BranchNote depth={quest.depth} branch={branch} map={false} />
         ) : null}
       </div>
     </section>

@@ -128,6 +128,11 @@ export const GHOST_TARGET_FILMS: Record<string, SpriteFilm> = {
   great_crab: film(crabUrl, [256, 64], [16, 16], [32, 33, 32, 34], 5),
 }
 
+/** The Troll Blacksmith's Gnoll target. */
+export const BLACKSMITH_TARGET_FILMS: Record<string, SpriteFilm> = {
+  gnoll: film(gnollUrl, [256, 64], [12, 15], [0, 0, 0, 1], 2),
+}
+
 const POT_REGIONS: RegionId[] = ['sewers', 'prison', 'caves', 'city', 'halls']
 
 /** The region's raised alchemy pot, 16×20, as the game draws its tile. */

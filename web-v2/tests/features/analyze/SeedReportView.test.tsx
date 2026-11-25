@@ -113,7 +113,10 @@ describe('a real report', () => {
   it('labels a floor with its feeling and its boss', async () => {
     render(await realReport('aaa-aaa-aaa.json'))
     const floor2 = container.querySelector('[data-floor-depth="2"]')
-    expect(floor2?.querySelector('[data-feeling]')?.textContent).toBe('Chasm')
+    expect(floor2?.querySelector('[aria-label="Chasm floor"]')).not.toBeNull()
+    expect(
+      container.querySelector('[data-floor-depth="1"] [data-floor-stairs]')
+    ).not.toBeNull()
     expect(floor2?.querySelector('[data-boss]')).toBeNull()
     const floor5 = container.querySelector('[data-floor-depth="5"]')
     expect(floor5?.textContent).toContain('Sewers')

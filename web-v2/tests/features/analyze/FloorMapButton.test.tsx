@@ -51,12 +51,14 @@ describe('floor map buttons', () => {
       expect(mapButtons()).not.toContain(`Expand floor ${depth} map`)
     }
     // Branches come from the report: the Blacksmith and Imp quest cards.
-    expect(mapButtons().filter((label) => label?.includes('branch'))).toEqual([
-      'Expand Crystal Mine floor 13, branch 1 map',
-      'Expand Imp Vault floor 19, branch 1 map',
+    expect(
+      mapButtons().filter((label) => !label?.startsWith('Expand floor '))
+    ).toEqual([
+      'Expand Crystal Mine floor 13 map',
+      'Expand Imp Vault floor 19 map',
     ])
     const crystal = container.querySelector(
-      'button[aria-label="Expand Crystal Mine floor 13, branch 1 map"]'
+      'button[aria-label="Expand Crystal Mine floor 13 map"]'
     )
     expect(crystal?.closest('[data-quest]')?.getAttribute('data-quest')).toBe(
       'blacksmith'
@@ -70,7 +72,9 @@ describe('floor map buttons', () => {
       ...report,
       sections: report.sections.filter((section) => section !== 'branches'),
     })
-    expect(mapButtons().some((label) => label?.includes('branch'))).toBe(false)
+    expect(
+      mapButtons().every((label) => label?.startsWith('Expand floor '))
+    ).toBe(true)
     expect(mapButtons()).toContain('Expand floor 1 map')
   })
 })

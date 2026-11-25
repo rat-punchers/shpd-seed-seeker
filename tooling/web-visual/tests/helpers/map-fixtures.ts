@@ -82,13 +82,13 @@ export function mapIdentityKey(level: MapLevel): string {
 export function mapLabel(level: MapLevel): string {
   return level.kind === 'main'
     ? `floor ${level.depth} map`
-    : `${branchTitle(level.objective)} floor ${level.depth}, branch ${level.branch} map`
+    : `${branchTitle(level.objective)} floor ${level.depth} map`
 }
 
 export function mapDialogTitle(level: MapLevel): string {
   return level.kind === 'main'
     ? `Floor ${level.depth}`
-    : `${branchTitle(level.objective)} - Floor ${level.depth}, branch ${level.branch}`
+    : `${branchTitle(level.objective)} - Floor ${level.depth}`
 }
 
 export function mapSnapshotName({ seed, level }: MapFixture): string {

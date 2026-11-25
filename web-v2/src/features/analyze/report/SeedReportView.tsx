@@ -5,7 +5,11 @@ import type { SeedReport } from '../../../engine/types/report'
 import { STAIRS_ICON } from '../../../shared/ui/game-icons'
 import { AutomaticOutcomes } from './AutomaticOutcomes'
 import { DescentRail } from './DescentRail'
-import { ReportMapContext, type ReportMapRun } from './FloorMapButton'
+import {
+  ReportMapContext,
+  type ReportMapRun,
+  reportMapTargets,
+} from './FloorMapButton'
 import { prefersReducedMotion, stuckBottom, useCurrentFloor } from './hooks'
 import { ItemDetailLayer } from './ItemDetail'
 import { RunHeader } from './RunHeader'
@@ -38,8 +42,9 @@ export function SeedReportView({
       challenges,
       lorePages,
       selectedTrinket: report.trinkets.selected,
+      maps: reportMapTargets(report),
     }),
-    [report.seed.code, report.trinkets.selected, challenges, lorePages]
+    [report, challenges, lorePages]
   )
 
   function scrollToFloor(depth: number) {

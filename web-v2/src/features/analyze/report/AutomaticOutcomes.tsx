@@ -5,12 +5,12 @@ import { AlchemyBubbles } from './AlchemyBubbles'
 import { alchemyPotSprite } from './art'
 import { FloorBanner } from './FloorBanner'
 import { FloorItemSections } from './FloorItemSections'
-import { FloorMapButton } from './FloorMapButton'
+import { BranchMapButton, FloorMapButton } from './FloorMapButton'
 import { questItemGroups } from './floor-items'
-import { BranchNote, QuestCard } from './QuestCard'
+import { QuestCard } from './QuestCard'
 import { hasSection, humanize } from './report-text'
 import { TrinketChoiceBand } from './TrinketChoiceBand'
-import { HeldTrinketChip, type TrinketChoice } from './trinket'
+import { HeldTrinketChip, heldTrinketAt, type TrinketChoice } from './trinket'
 
 /** Source pixels from the pot sprite's bottom edge up to its open rim. */
 const POT_RIM = 16
@@ -53,10 +53,7 @@ function FloorDetail({
   const timing = hasSection(report, 'trinketTiming')
     ? trinkets.timing
     : undefined
-  const held =
-    timing && floor.depth >= timing.firstEffectiveDepth
-      ? trinkets.offers.find((offer) => offer.id === trinkets.selected)
-      : undefined
+  const held = heldTrinketAt(report, floor.depth)
   const quests = hasSection(report, 'quests')
     ? report.quests.filter((quest) => quest.depth === floor.depth)
     : []
@@ -83,16 +80,9 @@ function FloorDetail({
       >
         <FloorBanner
           depth={floor.depth}
+          feeling={feeling}
           action={<FloorMapButton depth={floor.depth} />}
         >
-          {feeling ? (
-            <span
-              data-feeling={feeling}
-              className="rounded-sm bg-white/15 px-1.5 text-sm font-semibold text-white"
-            >
-              {humanize(feeling)}
-            </span>
-          ) : null}
           {hasSection(report, 'alchemyPots') ? (
             <AlchemyPots floor={floor} />
           ) : null}
@@ -119,7 +109,7 @@ function FloorDetail({
         ))}
         <FloorItemSections floor={floor} report={report} />
         {leftover.map((branch) => (
-          <BranchNote
+          <BranchMapButton
             key={`${branch.kind}-${branch.branch}`}
             depth={floor.depth}
             branch={branch}
