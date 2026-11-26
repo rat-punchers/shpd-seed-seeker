@@ -20,6 +20,7 @@ import {
   wheelZoomFactor,
   zoomAtPoint,
 } from './map-view'
+import { useMapGesture } from './use-map-gesture'
 
 const ZOOM_STEP = 1.5
 const KEY_PAN = 48
@@ -31,15 +32,7 @@ const ARROWS: Record<string, [number, number]> = {
   ArrowDown: [0, -KEY_PAN],
 }
 
-function formatZoom(zoom: number) {
-  return zoom.toFixed(4)
-}
-
-/**
- * The pannable, zoomable map surface: wheel, drag, pinch, the zoom buttons,
- * and arrow keys, +, - and 0 while it has focus. `data-zoom`, `data-pan-x`
- * and friends expose the view to tests.
- */
+/** Pannable map surface with touch, wheel, buttons, and keyboard controls. */
 export function MapStage({
   contentWidth,
   contentHeight,
@@ -48,9 +41,9 @@ export function MapStage({
 }: {
   contentWidth: number
   contentHeight: number
-  /** Canvas backing-store scale. View zoom is applied as CSS size on top. */
+  /** Canvas backing-store scale, before the map's CSS transform. */
   rasterScale: number
-  children: (zoom: number) => ReactNode
+  children: (frame: MapFrame | null, moving: boolean) => ReactNode
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const metricsRef = useRef<MapMetrics>({
@@ -66,6 +59,7 @@ export function MapStage({
     null
   )
   const [frame, setFrame] = useState<MapFrame | null>(null)
+  const { active, move, end } = useMapGesture()
 
   useLayoutEffect(() => {
     const node = containerRef.current
@@ -117,6 +111,8 @@ export function MapStage({
         deltaMode: event.deltaMode,
         pageHeight: metrics.height,
       })
+      move()
+      if (pointers.current.size === 0) end()
       setFrame((current) =>
         applyZoom(
           current,
@@ -130,10 +126,12 @@ export function MapStage({
 
     node.addEventListener('wheel', onWheel, { passive: false })
     return () => node.removeEventListener('wheel', onWheel)
-  }, [])
+  }, [move, end])
 
   function zoomBy(factor: number) {
     const metrics = metricsRef.current
+    move()
+    end()
     setFrame((current) =>
       applyZoom(current, metrics, factor, metrics.width / 2, metrics.height / 2)
     )
@@ -204,6 +202,8 @@ export function MapStage({
     if (!previous) return
     const next = pointFrom(event)
     pointers.current.set(event.pointerId, next)
+    if (next.x === previous.x && next.y === previous.y) return
+    move()
 
     const last = pinch.current
     if (pointers.current.size >= 2 && last) {
@@ -213,13 +213,13 @@ export function MapStage({
     }
     const dx = next.x - previous.x
     const dy = next.y - previous.y
-    if (dx === 0 && dy === 0) return
     setFrame((current) => panBy(current, metricsRef.current, dx, dy))
   }
 
   function endPointer(event: ReactPointerEvent<HTMLDivElement>) {
-    pointers.current.delete(event.pointerId)
+    if (!pointers.current.delete(event.pointerId)) return
     rememberPinch()
+    if (pointers.current.size === 0) end()
   }
 
   function onKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
@@ -270,9 +270,9 @@ export function MapStage({
           pannable && 'active:cursor-grabbing'
         )}
         data-testid="map-scroll-container"
-        data-zoom={frame ? formatZoom(zoom) : undefined}
-        data-min-zoom={frame ? formatZoom(frame.minZoom) : undefined}
-        data-max-zoom={frame ? formatZoom(frame.maxZoom) : undefined}
+        data-zoom={frame ? zoom.toFixed(4) : undefined}
+        data-min-zoom={frame?.minZoom.toFixed(4)}
+        data-max-zoom={frame?.maxZoom.toFixed(4)}
         data-pan-x={frame ? frame.view.x.toFixed(2) : undefined}
         data-pan-y={frame ? frame.view.y.toFixed(2) : undefined}
         onKeyDown={onKeyDown}
@@ -290,7 +290,7 @@ export function MapStage({
             transform: `translate(${frame?.view.x ?? 0}px, ${frame?.view.y ?? 0}px)`,
           }}
         >
-          {children(zoom)}
+          {children(frame, active)}
         </div>
       </div>
     </div>

@@ -47,7 +47,10 @@ function fakeClient() {
 }
 
 function report(code: string): SeedReport {
-  return { seed: { code, value: 0, daily: false } } as SeedReport
+  return {
+    seed: { code, value: 0, daily: false },
+    trinkets: { offers: [], selected: null, transmutationOrder: [] },
+  } as unknown as SeedReport
 }
 
 const ids = () => $sessions.get().map((session) => session.id)

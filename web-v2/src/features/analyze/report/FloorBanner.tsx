@@ -1,6 +1,8 @@
 import { isBossFloor, regionOf } from '@seed-seeker/design/lib/regions'
 import { cn } from '@seed-seeker/design/utils'
 import type { ReactNode } from 'react'
+import type { FloorFeeling } from '../../../engine/types'
+import { FloorStairs } from '../../../shared/ui/FloorStairs'
 import { BOSS_FILMS, REGION_STRIPS } from './art'
 import { FilmSprite } from './FilmSprite'
 
@@ -17,6 +19,14 @@ export function bossOf(depth: number): string | undefined {
   return isBossFloor(depth) ? BOSSES[depth] : undefined
 }
 
+export function FloorBossSprite({ depth }: { depth: number }) {
+  const boss = bossOf(depth)
+  const film = BOSS_FILMS[depth]
+  return boss && film ? (
+    <FilmSprite film={film} label={`Boss: ${boss}`} />
+  ) : null
+}
+
 /**
  * Floor header: a region-colored depth block, then a strip of the region's
  * tiles, darkened so the outlined white title reads in either theme. Kept
@@ -28,6 +38,7 @@ export function FloorBanner({
   headingLevel = 3,
   showDepth = true,
   leading,
+  feeling,
   meta,
   children,
   action,
@@ -43,6 +54,8 @@ export function FloorBanner({
   showDepth?: boolean
   /** Before the title, such as the quest giver. */
   leading?: ReactNode
+  /** The floor feeling shown in the staircase sprite. */
+  feeling?: FloorFeeling
   /** Short text after the title. Defaults to the region; `null` hides it. */
   meta?: ReactNode
   /** Marks after the title, such as the feeling or alchemy pots. */
@@ -61,7 +74,7 @@ export function FloorBanner({
     <div className="border-border flex h-14 w-full items-stretch overflow-hidden border-y bg-black">
       {showDepth ? (
         <div
-          aria-hidden={bossFilm ? undefined : true}
+          aria-hidden={bossFilm || feeling ? undefined : true}
           title={bossLabel}
           data-boss={boss}
           className={cn(
@@ -70,9 +83,9 @@ export function FloorBanner({
           )}
         >
           {bossFilm ? (
-            <FilmSprite film={bossFilm} label={bossLabel} />
+            <FloorBossSprite depth={depth} />
           ) : (
-            <span className="font-pixel text-px-2">{depth}</span>
+            <FloorStairs feeling={feeling} />
           )}
         </div>
       ) : null}

@@ -1,49 +1,7 @@
-import type { MapBundle, MapDraw, MapSprite } from '../types'
+import type { MapBundle, MapDraw } from '../types'
 import type { MapCanvas, MapContext } from './canvas'
 import { makeFrameCanvas, mapSpriteCache } from './frame-cache'
 import { drawTexture, glowTexture } from './textures'
-
-export function spriteFrame(sprite: MapSprite, elapsed: number): MapDraw[] {
-  return (
-    sprite.frames[
-      Math.floor(Math.max(0, elapsed) / Math.max(1, sprite.frameDurationMs)) %
-        sprite.frames.length
-    ] ?? []
-  )
-}
-export function drawLevelMap(
-  context: MapContext,
-  bundle: MapBundle,
-  elapsed: number,
-  revealSecrets: boolean
-) {
-  const { map } = bundle
-  const tileSize = map.scene.tileSize
-  context.globalCompositeOperation = 'source-over'
-  context.globalAlpha = 1
-  context.clearRect(0, 0, map.width * tileSize, map.height * tileSize)
-  context.fillStyle = '#000'
-  context.fillRect(0, 0, map.width * tileSize, map.height * tileSize)
-  context.imageSmoothingEnabled = false
-  for (const layer of revealSecrets
-    ? map.scene.layers
-    : map.scene.concealedLayers) {
-    context.globalCompositeOperation =
-      layer.blend === 'add' ? 'lighter' : 'source-over'
-    for (let cell = 0; cell < layer.cells.length; cell++) {
-      const index = layer.cells[cell]
-      const sprite = index == null ? undefined : map.scene.sprites[index]
-      if (!sprite) continue
-      const ox = (cell % map.width) * tileSize
-      const oy = Math.floor(cell / map.width) * tileSize
-      for (const draw of spriteFrame(sprite, elapsed)) {
-        drawCommand(context, bundle, draw, ox, oy, elapsed)
-      }
-    }
-  }
-  context.globalAlpha = 1
-  context.globalCompositeOperation = 'source-over'
-}
 
 export function glowAmount(periodMs: number, elapsed: number): number {
   const phase = (Math.max(0, elapsed) / Math.max(1, periodMs)) % 2

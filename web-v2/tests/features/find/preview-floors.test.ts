@@ -57,6 +57,23 @@ describe('the Find preview floors', () => {
     expect(floors[1]?.items[0]?.matched).toBe(true)
   })
 
+  it('keeps matched Vault treasure inside the Imp quest', () => {
+    const report = withMatch(
+      withMatch(fixture, 19, 'skeleton'),
+      19,
+      'vault_treasure'
+    )
+    const floor = previewFloors(report, {
+      requirements: [],
+      max_depth: 19,
+    }).find((entry) => entry.depth === 19)
+    const imp = floor?.quests.find(({ quest }) => quest.quest === 'imp')
+    expect(floor?.items.map((item) => item.source)).toEqual(['skeleton'])
+    expect(imp?.rewards).toHaveLength(6)
+    expect(imp?.vaultTreasure).toHaveLength(15)
+    expect(imp?.vaultTreasure.filter((item) => item.matched)).toHaveLength(1)
+  })
+
   it('shows the asked-for rooms and feeling a floor has', () => {
     const floors = previewFloors(fixture, {
       requirements: [],

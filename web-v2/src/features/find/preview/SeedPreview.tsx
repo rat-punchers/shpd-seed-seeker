@@ -10,6 +10,7 @@ import { WorkspaceEmptyPlaceholder } from '../../../shared/ui/WorkspaceEmptyPlac
 import {
   ReportMapContext,
   type ReportMapRun,
+  reportMapTargets,
 } from '../../analyze/report/FloorMapButton'
 import { ItemDetailLayer } from '../../analyze/report/ItemDetail'
 import { searchStore } from '../../search/store'
@@ -61,6 +62,7 @@ export function SeedPreview() {
             seed: report.seed.code,
             challenges: query?.challenges ?? [],
             selectedTrinket: report.trinkets.selected,
+            maps: reportMapTargets(report),
           }
         : null,
     [report, query]

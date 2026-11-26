@@ -9,10 +9,7 @@ import {
   defaultQueryState,
   toQueryJson,
 } from '../../../src/features/query/query'
-import {
-  hasShareCode,
-  withoutFragment,
-} from '../../../src/features/query/share-link'
+import { hasShareCode } from '../../../src/features/query/share-link'
 import { loadEngine } from '../../engine/engine'
 
 describe('share link fragments', () => {
@@ -25,18 +22,13 @@ describe('share link fragments', () => {
     expect(hasShareCode('#faq=1')).toBe(false)
   })
 
-  it('strips the fragment from an href', () => {
-    expect(withoutFragment('https://x.app/#q=QAMtCYAA')).toBe('https://x.app/')
-    expect(withoutFragment('https://x.app/')).toBe('https://x.app/')
-  })
-
   it("points the engine's link at this app, keeping its code", () => {
     expect(
       linkHere(
         'https://shpd-seed-seeker.pages.dev/#q=QAMtCYAA',
         'https://seedseeker.nerdcoder.xyz'
       )
-    ).toBe('https://seedseeker.nerdcoder.xyz/#q=QAMtCYAA')
+    ).toBe('https://seedseeker.nerdcoder.xyz/find/advanced?share=1#q=QAMtCYAA')
     expect(linkHere('QAMtCYAA', 'http://127.0.0.1:46001')).toBe('QAMtCYAA')
   })
 })

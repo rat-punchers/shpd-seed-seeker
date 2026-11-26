@@ -1,14 +1,14 @@
 /**
- * How a floor's items are grouped on screen: quest rewards go to their
- * quest card, shop stock to its own group, and the rest splits into notable
- * and other items. Shared by the floor sections and the floor strip.
+ * Quest loot goes to its quest card, shop stock to its own group, and the
+ * remaining floor items split into notable and other items.
  */
 import type {
   ReportFloor,
   ReportItem,
+  ReportQuest,
   SeedReport,
 } from '../../../engine/types/report'
-import { hasSection, QUEST_REWARD_SOURCES } from './report-text'
+import { hasSection } from './report-text'
 
 /** Notable at any upgrade. */
 const ALWAYS_CATEGORIES = new Set(['wand', 'ring', 'artifact', 'trinket'])
@@ -58,19 +58,18 @@ export function isListed(item: ReportItem): boolean {
   return !HIDDEN_CATEGORIES.has(item.category) && !QUEST_ITEMS.has(item.id)
 }
 
-/**
- * The floor's item lists, without gold, keys and quest items. Quest rewards are left out
- * when the report lists quests, because each quest card shows its own.
- */
+/** The floor's item lists, leaving loot to the quest cards that show it. */
 export function floorItemGroups(
   floor: ReportFloor,
   report: SeedReport
 ): FloorItemGroups {
-  const questCards = hasSection(report, 'quests')
+  const quests = hasSection(report, 'quests')
+    ? report.quests.filter((quest) => quest.depth === floor.depth)
+    : []
   const groups: FloorItemGroups = { notable: [], other: [], shop: [] }
   for (const item of floor.items) {
     if (!isListed(item)) continue
-    if (questCards && QUEST_REWARD_SOURCES.includes(item.source)) continue
+    if (quests.some((quest) => questItemGroup(item, quest))) continue
     if (item.source === 'shop') groups.shop.push(item)
     else if (isNotable(item)) groups.notable.push(item)
     else groups.other.push(item)
@@ -78,12 +77,28 @@ export function floorItemGroups(
   return groups
 }
 
-/** A quest's reward items, from the floor its giver stands on. */
-export function questRewardItems(
-  report: SeedReport,
-  source: string,
-  depth: number
-): ReportItem[] {
-  const floor = report.floors.find((entry) => entry.depth === depth)
-  return (floor?.items ?? []).filter((item) => item.source === source)
+export interface QuestItemGroups {
+  rewards: ReportItem[]
+  vaultTreasure: ReportItem[]
+}
+
+export function questItemGroup(
+  item: ReportItem,
+  quest: ReportQuest
+): keyof QuestItemGroups | undefined {
+  if (item.source === quest.rewards.source) return 'rewards'
+  if (quest.quest === 'imp' && item.source === 'vault_treasure')
+    return 'vaultTreasure'
+}
+
+export function questItemGroups(
+  floor: ReportFloor,
+  quest: ReportQuest
+): QuestItemGroups {
+  const groups: QuestItemGroups = { rewards: [], vaultTreasure: [] }
+  for (const item of floor.items) {
+    const group = questItemGroup(item, quest)
+    if (group) groups[group].push(item)
+  }
+  return groups
 }

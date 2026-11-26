@@ -190,7 +190,9 @@ test('Share copies a link to this app that opens the same query in Advanced', as
     .getByRole('button', { name: 'Copy a shareable link to this search' })
     .click()
   const link = await page.evaluate(() => navigator.clipboard.readText())
-  expect(link).toMatch(/^http:\/\/127\.0\.0\.1:46001\/#q=/)
+  expect(link).toMatch(
+    /^http:\/\/127\.0\.0\.1:46001\/find\/advanced\?share=1#q=/
+  )
 
   // A fresh visitor opens the link with nothing saved.
   await page.evaluate(() => localStorage.clear())
@@ -203,7 +205,7 @@ test('Share copies a link to this app that opens the same query in Advanced', as
     'true'
   )
   await expect(chip(visitor, /^Any weapon.*Blazing/)).toBeVisible()
-  await expect.poll(() => visitor.evaluate(() => window.location.hash)).toBe('')
+  await expect(visitor).toHaveURL(/\/find\/advanced$/)
   expectNoBrowserErrors(errors)
   expectNoBrowserErrors(visitorErrors)
 })
@@ -212,7 +214,6 @@ test('a share link that cannot be read says why, and the notice dismisses', asyn
   page,
 }) => {
   const errors = collectBrowserErrors(page)
-  await openApp(page)
   await page.goto('/#q=not-a-share-code')
   const notice = page
     .getByRole('alert')

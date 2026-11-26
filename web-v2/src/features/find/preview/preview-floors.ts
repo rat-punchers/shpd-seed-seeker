@@ -11,17 +11,21 @@ import type {
   ReportQuest,
   SeedReport,
 } from '../../../engine/types'
-import { isListed, questRewardItems } from '../../analyze/report/floor-items'
+import {
+  isListed,
+  type QuestItemGroups,
+  questItemGroup,
+  questItemGroups,
+} from '../../analyze/report/floor-items'
 import { hasSection } from '../../analyze/report/report-text'
 
-export interface PreviewQuest {
+export interface PreviewQuest extends QuestItemGroups {
   quest: ReportQuest
-  rewards: ReportItem[]
 }
 
 export interface PreviewFloor {
   depth: number
-  /** Matched items, except those a listed quest shows among its rewards. */
+  /** Matched items outside the quests listed on this floor. */
   items: ReportItem[]
   /** Asked-for rooms the floor has, in the order the query lists them. */
   rooms: string[]
@@ -55,13 +59,13 @@ export function previewFloors(
       .filter((quest) => quest.depth === floor.depth)
       .map((quest) => ({
         quest,
-        rewards: questRewardItems(report, quest.rewards.source, floor.depth),
+        ...questItemGroups(floor, quest),
       }))
-    const questSources = new Set(
-      floorQuests.map(({ quest }) => quest.rewards.source)
-    )
     const items = floor.items.filter(
-      (item) => item.matched && isListed(item) && !questSources.has(item.source)
+      (item) =>
+        item.matched &&
+        isListed(item) &&
+        !floorQuests.some(({ quest }) => questItemGroup(item, quest))
     )
     const wanted = wantedRooms(query, floor.depth)
     const rooms = hasSection(report, 'rooms')

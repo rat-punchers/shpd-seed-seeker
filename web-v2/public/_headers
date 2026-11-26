@@ -6,7 +6,7 @@
 /third_party/*
   Cache-Control: public, max-age=86400
 
-# The build (`vite/csp.ts`) puts the hashes of index.html's inline scripts in
+# The build (`vite/csp.ts`) puts the hashes of the static shells' inline scripts in
 # script-src. Radix's scroll lock injects <style> elements, hence 'unsafe-inline'
 # for styles. The Cloudflare hosts serve the Web Analytics beacon.
 /*

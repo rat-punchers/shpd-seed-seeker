@@ -63,7 +63,7 @@ export function ItemList({
   )
 }
 
-function ItemGroupSection({
+export function ItemGroupSection({
   label,
   items,
   empty,

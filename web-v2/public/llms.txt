@@ -10,8 +10,9 @@ The app has two modes:
 ## Links
 
 - [Seed Seeker](https://seedseeker.nerdcoder.xyz/): the app.
-- Query share links have the form `https://seedseeker.nerdcoder.xyz/#q=CODE` and open the shared query in Find.
-- Seed links have the form `https://seedseeker.nerdcoder.xyz/?scout=ABC-DEF-GHI` and open that seed in Analyze.
+- [Analyze](https://seedseeker.nerdcoder.xyz/analyze), [Simple Find](https://seedseeker.nerdcoder.xyz/find), and [Advanced Find](https://seedseeker.nerdcoder.xyz/find/advanced) have their own routes.
+- Query share links have the form `https://seedseeker.nerdcoder.xyz/find/advanced?share=1#q=CODE` and open the shared query in Advanced Find.
+- Seed links have the form `https://seedseeker.nerdcoder.xyz/analyze?seed=ABC-DEF-GHI` and open that seed in Analyze. They can include replay settings, and daily runs use `YYYY-MM-DD` as the seed.
 
 ## License and attribution
 

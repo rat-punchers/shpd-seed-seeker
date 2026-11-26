@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto'
-import { readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { dirname, join } from 'node:path'
 import type { Plugin } from 'vite'
+import { screenShells } from './screen-shells.ts'
 
 const PLACEHOLDER = 'INLINE_SCRIPT_HASHES'
 const INLINE_SCRIPT = /<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g
@@ -15,8 +16,7 @@ export function inlineScriptHashes(html: string): string[] {
 }
 
 /**
- * Fills the emitted `_headers` Content-Security-Policy with the hashes of the
- * emitted `index.html`'s inline scripts, so they run without 'unsafe-inline'.
+ * Writes the static screen shells and hashes their inline scripts into CSP.
  */
 export function contentSecurityPolicy(): Plugin {
   return {
@@ -30,14 +30,25 @@ export function contentSecurityPolicy(): Plugin {
         typeof page.source === 'string'
           ? page.source
           : new TextDecoder().decode(page.source)
-      const hashes = inlineScriptHashes(html)
-      const path = join(options.dir, '_headers')
+      const dir = options.dir
+      const shells = screenShells(html)
+      const hashes = [
+        ...new Set(shells.flatMap((shell) => inlineScriptHashes(shell.html))),
+      ]
+      const path = join(dir, '_headers')
       const headers = await readFile(path, 'utf8')
       if (!headers.includes(PLACEHOLDER) || hashes.length === 0)
         this.error(
           `_headers needs ${PLACEHOLDER} and index.html inline scripts`
         )
-      await writeFile(path, headers.replaceAll(PLACEHOLDER, hashes.join(' ')))
+      await Promise.all([
+        writeFile(path, headers.replaceAll(PLACEHOLDER, hashes.join(' '))),
+        ...shells.map(async (shell) => {
+          const output = join(dir, shell.file)
+          await mkdir(dirname(output), { recursive: true })
+          await writeFile(output, shell.html)
+        }),
+      ])
     },
   }
 }

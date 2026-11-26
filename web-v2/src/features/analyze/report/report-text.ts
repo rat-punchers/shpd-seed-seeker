@@ -32,14 +32,6 @@ export function questTitle(quest: QuestName): string {
   return QUEST_TITLES[quest]
 }
 
-/** The sources that hold quest rewards; quest cards list those items. */
-export const QUEST_REWARD_SOURCES: readonly string[] = [
-  'ghost_reward',
-  'wandmaker_reward',
-  'blacksmith_reward',
-  'imp_reward',
-]
-
 export function branchTitle(kind: ReportBranch['kind']): string {
   switch (kind) {
     case 'blacksmith_crystal':

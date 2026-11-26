@@ -206,7 +206,6 @@ test('the engine times the Catalyst and fills pots and reward outlooks', async (
       name: 'Alchemy pot, secret laboratory, in a secret room',
     })
   ).toBeAttached()
-
   // Quest reward slots.
   await page
     .locator('[data-quest="wandmaker"]')

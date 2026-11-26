@@ -1,102 +1,113 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import type { MapFrame } from './map-view'
+import {
+  type EffectsView,
+  sameEffectsView,
+  visibleEffects,
+} from './rendering/effects-view'
 import { createMapFrameRenderer } from './rendering/frame-renderer'
-import { paintSecretOverlay, secretOverlay } from './rendering/secret-overlay'
+import { secretOverlay } from './rendering/secret-overlay'
+import { SecretOverlayCanvas } from './SecretOverlayCanvas'
 import type { MapBundle } from './types'
 
 /** Sprite frames advance at most this often; particles follow the display. */
 const SPRITE_FRAME_MS = 50
 
-/**
- * The map's three surfaces: the revealed floor at one canvas pixel per map
- * pixel, particles at the displayed density, and the concealed floor over
- * both, fading in and out where secrets hide. All are sized by
- * `displayScale` in CSS. Animation pauses off-screen, in a hidden tab, and
- * with reduced motion, which draws the first frame only and holds the
- * secrets half faded.
- */
+/** The revealed scenery, viewport-sized particles, and concealed secret overlay. */
 export function FloorMapCanvas({
   bundle,
   focusCell,
-  displayScale,
+  frame,
+  moving,
   label,
 }: {
   bundle: MapBundle
-  /** The inspected cell; its secret region is shown revealed. */
   focusCell: number | null
-  displayScale: number
+  frame: MapFrame | null
+  moving: boolean
   label: string
 }) {
   const { map } = bundle
-  const width = map.width * map.scene.tileSize
-  const height = map.height * map.scene.tileSize
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const particleRef = useRef<HTMLCanvasElement>(null)
-  const secretRef = useRef<HTMLCanvasElement>(null)
-  const overlay = useMemo(() => secretOverlay(bundle), [bundle])
-  const densityRef = useRef(1)
-  densityRef.current = Math.max(
-    1,
-    Math.min(4, displayScale * (window.devicePixelRatio || 1))
-  )
+  const tileSize = map.scene.tileSize
+  const width = map.width * tileSize
+  const height = map.height * tileSize
+  const hasEffects = (map.scene.emitters?.length ?? 0) > 0
+  const hostRef = useRef<HTMLDivElement>(null)
+  const movingRef = useRef(false)
+  const viewRef = useRef<EffectsView | null>(null)
+  const updateRef = useRef<(() => void) | null>(null)
+  const crops = useMemo(() => secretOverlay(bundle), [bundle])
+
+  useLayoutEffect(() => {
+    const hold = hasEffects && moving
+    const wasMoving = movingRef.current
+    movingRef.current = hold
+    if (hold && viewRef.current) return
+    const view = hasEffects
+      ? visibleEffects(
+          frame,
+          width,
+          height,
+          tileSize,
+          window.devicePixelRatio || 1
+        )
+      : null
+    if (!sameEffectsView(view, viewRef.current) || wasMoving) {
+      viewRef.current = view
+      updateRef.current?.()
+    }
+  }, [frame, width, height, tileSize, moving, hasEffects])
 
   useEffect(() => {
-    const context = secretRef.current?.getContext('2d')
-    if (!context) return
-    paintSecretOverlay(
-      context,
-      overlay,
-      map.width,
-      map.scene.tileSize,
-      focusCell
-    )
-  }, [overlay, map, focusCell])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    const context = canvas?.getContext('2d')
-    const particleContext = particleRef.current?.getContext('2d')
-    if (!canvas || !context || !particleContext) return
-    const renderer = createMapFrameRenderer(
-      context,
-      particleContext,
-      bundle,
-      true
-    )
+    const host = hostRef.current
+    if (!host) return
+    const renderer = createMapFrameRenderer(host, bundle, label)
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
-    let frame = 0
+    let frameId = 0
     let last = Number.NEGATIVE_INFINITY
     let stopped = false
     let drawing = false
+    let painted = false
     let redraw = true
     let onScreen = true
     const start = performance.now()
     const visible = () => onScreen && !document.hidden
+    // The effects surface also contains scenery pixels for additive blending.
+    // Hold both layers together while their existing crop tracks the gesture.
+    const canDraw = () => visible() && (!movingRef.current || !painted)
     const schedule = () => {
-      if (!stopped && !frame && !drawing && visible()) {
-        frame = requestAnimationFrame(tick)
+      if (!stopped && !frameId && !drawing && canDraw()) {
+        frameId = requestAnimationFrame(tick)
       }
     }
     const tick = (time: number) => {
-      frame = 0
-      if (stopped || drawing || !visible()) return
+      frameId = 0
+      if (stopped || drawing || !canDraw()) return
       const advanceSprites = time - last >= SPRITE_FRAME_MS || motion.matches
       if (advanceSprites) last = time
       redraw = false
       drawing = true
+      const effects = viewRef.current
       void renderer
-        .draw(
-          motion.matches ? 0 : time - start,
+        .draw({
+          elapsed: motion.matches ? 0 : time - start,
           advanceSprites,
-          densityRef.current
-        )
+          effects,
+        })
         .then((animated) => {
+          if (stopped) return
           drawing = false
+          painted = true
           if (redraw || (animated && !motion.matches)) schedule()
         })
     }
     const resume = () => {
-      cancelAnimationFrame(frame)
-      frame = 0
+      cancelAnimationFrame(frameId)
+      frameId = 0
+      redraw = true
+      schedule()
+    }
+    updateRef.current = () => {
       redraw = true
       schedule()
     }
@@ -104,53 +115,41 @@ export function FloorMapCanvas({
       onScreen = entry?.isIntersecting ?? true
       resume()
     })
-    intersection.observe(canvas)
-    resume()
+    intersection.observe(host)
+    tick(performance.now())
     document.addEventListener('visibilitychange', resume)
     motion.addEventListener('change', resume)
     return () => {
       stopped = true
-      cancelAnimationFrame(frame)
+      updateRef.current = null
+      cancelAnimationFrame(frameId)
       renderer.dispose()
       intersection.disconnect()
       document.removeEventListener('visibilitychange', resume)
       motion.removeEventListener('change', resume)
     }
-  }, [bundle])
+  }, [bundle, label])
 
-  const style = {
-    width: width * displayScale,
-    height: height * displayScale,
-    imageRendering: 'pixelated',
-  } as const
   return (
-    <>
-      <canvas
-        ref={canvasRef}
-        width={width}
-        height={height}
-        role="img"
-        aria-label={label}
-        data-map-canvas
-        className="block max-w-none"
-        style={style}
-      />
-      <canvas
-        ref={particleRef}
-        aria-hidden
-        className="pointer-events-none absolute top-0 left-0 block max-w-none"
-        style={style}
-      />
-      <canvas
-        ref={secretRef}
-        width={width}
-        height={height}
-        aria-hidden
-        data-secret-overlay
-        data-secret-regions={overlay.regions.length}
-        className="secret-fade pointer-events-none absolute top-0 left-0 block max-w-none"
-        style={style}
-      />
-    </>
+    <div
+      className="absolute top-0 left-0 origin-top-left"
+      style={{
+        width,
+        height,
+        imageRendering: 'pixelated',
+        transform: `scale(${frame?.view.zoom ?? 1})`,
+      }}
+    >
+      <div ref={hostRef} className="absolute inset-0" />
+      {crops.map((crop) => (
+        <SecretOverlayCanvas
+          key={crop.firstCell}
+          crop={crop}
+          columns={map.width}
+          tileSize={tileSize}
+          focusCell={focusCell}
+        />
+      ))}
+    </div>
   )
 }

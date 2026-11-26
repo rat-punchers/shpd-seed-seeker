@@ -12,6 +12,19 @@ WebAssembly in the browser. It has two modes:
   ([docs/seed-report-format.md](../docs/seed-report-format.md)), with floor
   maps from `level_map` and seeds read from a screenshot.
 
+## Routes and share links
+
+The build serves static shells at `/`, `/analyze`, `/find`, and
+`/find/advanced`. The root opens the saved workspace. The browser reads the
+route on document load, then the TanStack stores drive navigation and update
+the address bar.
+
+**Share seed** opens a link such as `/analyze?seed=ABC-DEF-GHI` with the replay
+settings. `challenge` can be repeated, `lore=1` selects a fresh journal,
+and `trinket` identifies the selected Catalyst offer. Daily runs use
+`YYYY-MM-DD` in `seed`. Query links use `/find/advanced?share=1#q=CODE`.
+Legacy `/?scout=…` and `/#q=…` links also open on document load.
+
 ## Commands
 
 From the repository root:
@@ -54,7 +67,7 @@ Run `bun run build:wasm` again after engine changes. The preview server
   in one menu; Advanced shows one family at a time behind category tabs.
 - `src/features/search/`: the search coordinator, its workers and the
   search store, and the results tabs (`tabs.ts`), saved to localStorage.
-- `src/features/analyze/`: seed tabs, the seed field, `?scout=` links,
+- `src/features/analyze/`: seed tabs, the seed field, seed share links,
   result navigation (J/K, swipe), the report worker client, the report view
   (`report/`) and the screenshot reader (`screenshot/`).
 - `src/features/level-map/`: the floor map dialog, stage, settings and

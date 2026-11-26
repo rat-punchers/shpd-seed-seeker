@@ -1,4 +1,5 @@
 import { $query } from '../../app/store/query'
+import { CONFIG } from '../../config'
 import { encodeQueryDocument, encodeShareLink } from '../../engine/wasm'
 import { AppStore } from '../../shared/store/persistent'
 import { toQueryJson } from '../query/query'
@@ -21,7 +22,9 @@ let timer: ReturnType<typeof setTimeout> | undefined
  */
 export function linkHere(link: string, origin: string): string {
   const cut = link.indexOf('#')
-  return cut === -1 ? link : `${origin}/${link.slice(cut)}`
+  return cut === -1
+    ? link
+    : `${origin}${CONFIG.routes.advanced}?share=1${link.slice(cut)}`
 }
 
 /**

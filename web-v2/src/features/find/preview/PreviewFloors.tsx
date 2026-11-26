@@ -5,6 +5,7 @@ import type { ReportItem, SeedReport } from '../../../engine/types'
 import type { RingGems } from '../../../shared/sprites/sprites'
 import { ItemList } from '../../analyze/report/FloorItemSections'
 import { FloorMapButton } from '../../analyze/report/FloorMapButton'
+import { ImpVaultLoot } from '../../analyze/report/ImpVaultLoot'
 import { ItemName } from '../../analyze/report/ItemName'
 import { ItemSlot } from '../../analyze/report/ItemSlot'
 import {
@@ -46,7 +47,8 @@ function QuestRewards({
   entry: PreviewQuest
   ringGems?: RingGems
 }) {
-  const { quest, rewards } = entry
+  const { quest, rewards, vaultTreasure } = entry
+  const imp = quest.quest === 'imp'
   const { optionCount, selectedCount } = quest.rewards
   return (
     <section
@@ -57,11 +59,16 @@ function QuestRewards({
       <p className="text-sm font-semibold">
         {questTitle(quest.quest)}{' '}
         <span className="text-muted-foreground font-normal">
-          rewards, choose {selectedCount} of {optionCount}
+          {imp
+            ? `final room rewards, ${optionCount} options`
+            : `rewards, choose ${selectedCount} of ${optionCount}`}
         </span>
       </p>
       {rewards.length > 0 ? (
         <ItemList items={rewards} ringGems={ringGems} />
+      ) : null}
+      {imp ? (
+        <ImpVaultLoot treasure={vaultTreasure} ringGems={ringGems} />
       ) : null}
     </section>
   )

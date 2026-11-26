@@ -2,27 +2,19 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { expect, type Locator, test } from '@playwright/test'
 
-/** Waits until the canvas has a backing bitmap with at least one painted pixel. */
+/** Waits for the map's opaque background without taking ownership of the canvas. */
 export async function waitForCanvasPaint(canvas: Locator): Promise<void> {
   await expect(canvas).toBeVisible()
   await expect
     .poll(async () =>
       canvas.evaluate((node) => {
         const element = node as HTMLCanvasElement
-        const context = element.getContext('2d')
-        if (!context || element.width === 0 || element.height === 0) {
-          return false
-        }
-        const pixels = context.getImageData(
-          0,
-          0,
-          element.width,
-          element.height
-        ).data
-        for (let alpha = 3; alpha < pixels.length; alpha += 4) {
-          if (pixels[alpha] !== 0) return true
-        }
-        return false
+        if (element.width === 0 || element.height === 0) return false
+        const scratch = new OffscreenCanvas(1, 1)
+        const context = scratch.getContext('2d')
+        if (!context) return false
+        context.drawImage(element, 0, 0, 1, 1, 0, 0, 1, 1)
+        return context.getImageData(0, 0, 1, 1).data[3] === 255
       })
     )
     .toBe(true)
@@ -35,6 +27,20 @@ export async function waitForCanvasPaint(canvas: Locator): Promise<void> {
  */
 export const MAX_CHANNEL_DELTA = 2
 
+export async function canvasDataUrl(canvas: Locator): Promise<string> {
+  return canvas.evaluate(async (node) => {
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    })
+    const source = node as HTMLCanvasElement
+    const scratch = document.createElement('canvas')
+    scratch.width = source.width
+    scratch.height = source.height
+    scratch.getContext('2d')?.drawImage(source, 0, 0)
+    return scratch.toDataURL('image/png')
+  })
+}
+
 /**
  * Compares the canvas backing bitmap, pixel for pixel, with a committed
  * snapshot, allowing `MAX_CHANNEL_DELTA` per channel. The bitmap is read
@@ -46,12 +52,7 @@ export async function snapshotCanvas(
   canvas: Locator,
   snapshot: string
 ): Promise<void> {
-  const dataUrl = await canvas.evaluate(async (node) => {
-    await new Promise<void>((resolve) => {
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
-    })
-    return (node as HTMLCanvasElement).toDataURL('image/png')
-  })
+  const dataUrl = await canvasDataUrl(canvas)
   const png = Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64')
   const info = test.info()
   const path = info.snapshotPath(snapshot)

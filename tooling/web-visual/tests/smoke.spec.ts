@@ -22,7 +22,7 @@ for (const viewport of VIEWPORTS) {
     const errors = collectBrowserErrors(page)
     await openApp(page)
 
-    await expect(page).toHaveTitle('Seed Seeker')
+    await expect(page).toHaveTitle('Analyze a Seed · Seed Seeker')
     const title = page.getByRole('heading', {
       level: 1,
       name: 'Seed Seeker',

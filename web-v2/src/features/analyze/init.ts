@@ -1,39 +1,31 @@
-import { setMode } from '../../app/store/mode'
 import { formatSeedCode } from '../../engine/wasm'
-import { hasShareCode } from '../query/share-link'
 import { $analyzeRequest } from './handoff'
 import { initResultKeys } from './navigation'
 import { loadSeedFormatter } from './seed-input'
+import type { SeedLink } from './seed-link'
 import { openSeed, restoreSessions } from './sessions'
 
-/** The seed a `?scout=` link asks for, if any. */
-export function scoutLinkSeed(search: string): string | undefined {
-  const seed = new URLSearchParams(search).get('scout')?.trim()
-  return seed ? seed : undefined
-}
-
 /**
- * Starts Analyze: restores the saved tabs, opens a `?scout=` seed link,
- * takes seeds handed over by Find, and installs J/K. Returns the cleanup.
- * A query share link (`#q=`) takes priority over a seed link.
+ * Starts Analyze with the startup replay, saved tabs, Find handoffs and J/K.
+ * Waits for the linked seed to be formatted before publishing route state.
  */
-export function initAnalyze(): () => void {
-  const linked = hasShareCode(window.location.hash)
-    ? undefined
-    : scoutLinkSeed(window.location.search)
-  if (linked) setMode('analyze')
-  // Restored reports come from the report worker; only a link needs the
-  // engine here.
-  const ready = linked ? loadSeedFormatter() : undefined
-  void restoreSessions().then(async () => {
-    if (!linked || !ready) return
-    // Format like the seed field, so `?scout=abcdefghi` opens `ABC-DEF-GHI`.
-    const seed = await ready.then(
+export async function initAnalyze({
+  seed,
+  legacySeed,
+}: {
+  seed?: SeedLink
+  legacySeed?: string
+}): Promise<() => void> {
+  const linked = seed?.seed ?? legacySeed
+  let replay: SeedLink | undefined
+  if (linked) {
+    const formatted = await loadSeedFormatter().then(
       () => formatSeedCode(linked),
       () => linked
     )
-    await openSeed({ seed: seed || linked })
-  })
+    replay = { ...seed, seed: formatted || linked }
+  }
+  void restoreSessions(replay)
 
   const take = (request = $analyzeRequest.get()) => {
     if (!request) return
